@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+root="$(git rev-parse --show-toplevel)"
+svc="${APP_PHP_SERVICE:-$(basename "$root")-php}"
+cd "$root"
+if ! docker ps --format '{{.Names}}' | grep -qx "$svc"; then
+  echo "✖ Container $svc belum berjalan. Jalankan: (cd ~/code && docker compose up -d $svc)"
+  exit 1
+fi
+run() { docker exec -w /var/www/html "$svc" "$@"; }
+run ./vendor/bin/pint --test
+run php artisan test --stop-on-failure

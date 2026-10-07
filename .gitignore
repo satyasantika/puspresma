@@ -1,0 +1,47 @@
+# Laravel
+/vendor
+/node_modules
+/public/build
+/public/css/filament
+/public/hot
+/public/js/filament
+/public/storage
+/storage/*.key
+/storage/app/tmp/*
+!/storage/app/tmp/.gitignore
+/storage/app/backup*
+.phpunit.result.cache
+.phpunit.cache
+.env
+.env.*
+!.env.example
+!.env.production.example
+auth.json
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.zed
+/.phpactor.json
+/storage/pail
+.DS_Store
+Thumbs.db
+*.log
+
+# Data & cadangan (tidak boleh masuk repo)
+*.sql
+*.sql.gz
+*.zip
+/*.xlsx
+/*.csv
+
+# Bahan di luar repo aplikasi (konteks pengembangan, tidak dilacak)
+/vibecoding/
+/docs/vibecoding/
+/CLAUDE.md
+/Permendikbudristek-No-46-Tahun-2023-PPKSP.pdf
+/_laravel/
