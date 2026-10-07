@@ -23,3 +23,7 @@ Redis memakai container bersama `redis` (DB 40 default, 41 cache, 42 antrean; pr
 ## K-06 — Service Horizon dan scheduler di compose pusat
 
 Ditambahkan ke `~/code/docker-compose.yml` (di luar repo; pola `kerjasama-scheduler`): `puspresma-horizon` (`php artisan horizon`, `stop_grace_period: 60s`) dan `puspresma-scheduler` (`schedule:work`), memakai image PHP 8.5 dan kode yang sama. Cadangan berkas compose sebelum diubah disimpan agen di scratchpad sesi. Test tidak menyentuh Redis: `phpunit.xml` memaksa cache/sesi `array` dan antrean `sync`, sehingga pengaturan Redis diuji lewat `.env.example` dan konfigurasi koneksi (`RedisHorizonTest`).
+
+## K-07 — CI, deploy, dan berkas produksi
+
+`ci.yml` memakai MariaDB 10.11 (bukan MySQL 8.4) dan PHP 8.5 mengikuti perintah pemilik. `deploy.yml` mengikuti pola proyek sigap (`appleboy/ssh-action`, `~/docker-apps/deploy.sh puspresma`); repositori GitHub dan secret dibuat manusia (tidak ada remote pada sesi ini, tidak ada push). `Dockerfile`, `docker-compose.prod.yml`, dan `docker/` disalin dari pola surat sejak F1.8 agar CI/deploy konsisten; Gotenberg tidak dipakai, langkah `filament:upgrade` ditambahkan pada F2.1 saat Filament dipasang, dan daftar tabel `uji-pulih.sh` diperluas saat tabel domain ada.

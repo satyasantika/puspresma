@@ -1,5 +1,7 @@
 # Puspresma FKIP Unsil
 
+[![CI](https://github.com/satyasantika/puspresma/actions/workflows/ci.yml/badge.svg)](https://github.com/satyasantika/puspresma/actions/workflows/ci.yml)
+
 Puspresma (Pusat Prestasi Mahasiswa) FKIP Universitas Siliwangi mencatat prestasi akademik dan non-akademik mahasiswa
 (kompetisi dan rekognisi; tingkat lokal, wilayah, nasional, internasional) sebagai bukti dukung akreditasi, laporan
 kinerja/IKU, bahan ekspor SIMKATMAWA, dan seleksi beasiswa. Bukti prestasi berupa tautan (tanpa unggah berkas ke server).
@@ -8,7 +10,7 @@ Stack: Laravel 13, PHP 8.5, MariaDB, Redis 7, Filament 5, Livewire 4, Tailwind 4
 
 ## Dokumentasi
 
-Lihat `docs/` (keputusan teknis di `docs/KEPUTUSAN.md`).
+Lihat `docs/`: keputusan teknis (`KEPUTUSAN.md`) dan deploy (`DEPLOY.md`; CI di `.github/workflows/ci.yml`, deploy otomatis di `deploy.yml`).
 
 ## Menjalankan lokal
 
