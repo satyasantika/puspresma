@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Masuk;
+use App\Http\Middleware\ArahkanKePanelSesuaiPeran;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -44,6 +45,7 @@ class AdminPanelProvider extends PanelProvider
                 ShareErrorsFromSession::class,
                 PreventRequestForgery::class,
                 SubstituteBindings::class,
+                ArahkanKePanelSesuaiPeran::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
