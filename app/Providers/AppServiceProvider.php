@@ -2,14 +2,23 @@
 
 namespace App\Providers;
 
+use App\Listeners\CatatAktivitasAuth;
 use App\Listeners\CatatLoginTerakhir;
+use App\Listeners\CatatPerubahanPeran;
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Permission\Events\RoleAttachedEvent;
+use Spatie\Permission\Events\RoleDetachedEvent;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -44,6 +53,12 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Event::listen(Login::class, CatatLoginTerakhir::class);
+        Event::listen([Login::class, Failed::class, Logout::class], CatatAktivitasAuth::class);
+        Event::listen([RoleAttachedEvent::class, RoleDetachedEvent::class], CatatPerubahanPeran::class);
+
+        // Login kedua panel: 5 percobaan per menit per kombinasi surel + IP.
+        RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)
+            ->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
 
         $this->aturUrlSubpath();
     }
