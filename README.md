@@ -28,6 +28,26 @@ Pemeliharaan: bila container `puspresma-php` dibuat ulang dan nginx menjawab 502
 
 Antrean dan penjadwal berjalan sebagai service compose pusat `puspresma-horizon` (`php artisan horizon`) dan `puspresma-scheduler` (`schedule:work`). Setelah mengubah kode job: `cd ~/code && docker compose restart puspresma-horizon`. Dasbor Horizon: http://localhost:8032/horizon (hanya lingkungan local sampai F2.2).
 
+## Subpath produksi `/puspresma`
+
+Produksi: `https://supportfkip.unsil.ac.id/puspresma` (reverse proxy memotong awalan). Atur di `.env`: `APP_URL` dan `ASSET_URL` = URL tersebut, `SESSION_PATH=/puspresma`, `SESSION_COOKIE=puspresma_session`, `SESSION_SECURE_COOKIE=true`, `TRUSTED_PROXIES=<ip proxy>`. Bila `APP_URL` berpath, `AppServiceProvider` memaksa root URL (dan skema https); semua URL harus lewat `route()`/`url()`/`asset()` (diuji `tests/Arch/SubpathTest.php` dan `tests/Feature/SubpathTest.php`). Gateway lokal `:8080` tidak tersedia pada mesin ini; akses lokal langsung di `http://localhost:8032`, subpath diuji lewat konfigurasi override di test.
+
+Build aset dengan awalan (dijalankan di host; `public/build/` tidak di-commit): `ASSET_URL=https://supportfkip.unsil.ac.id/puspresma npm run build` sehingga `laravel-vite-plugin` menulis URL aset (termasuk `url()` di CSS) berawalan `/puspresma/build/`.
+
+```nginx
+location = /puspresma { return 301 /puspresma/; }
+location /puspresma/ {
+    proxy_pass http://127.0.0.1:8032/;          # garis miring akhir = awalan dipotong
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Prefix /puspresma;
+    client_max_body_size 20m;
+}
+```
+
+QR dan tautan tercetak memuat awalan `/puspresma`: tetapkan awalan final sebelum mencetak, jangan diubah setelah produksi.
+
 ## Pengujian
 
 Test memakai Pest 4 dan basis data MariaDB host terpisah `db_puspresma_testing` (cache `array`, antrean `sync`, sesi `array`; tidak menyentuh Redis). Buat sekali di MariaDB host (ganti `<rahasia>` dan sesuaikan host pengguna dengan subnet Docker):
