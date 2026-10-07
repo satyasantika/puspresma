@@ -27,3 +27,15 @@ Ditambahkan ke `~/code/docker-compose.yml` (di luar repo; pola `kerjasama-schedu
 ## K-07 — CI, deploy, dan berkas produksi
 
 `ci.yml` memakai MariaDB 10.11 (bukan MySQL 8.4) dan PHP 8.5 mengikuti perintah pemilik. `deploy.yml` mengikuti pola proyek sigap (`appleboy/ssh-action`, `~/docker-apps/deploy.sh puspresma`); repositori GitHub dan secret dibuat manusia (tidak ada remote pada sesi ini, tidak ada push). `Dockerfile`, `docker-compose.prod.yml`, dan `docker/` disalin dari pola surat sejak F1.8 agar CI/deploy konsisten; Gotenberg tidak dipakai, langkah `filament:upgrade` ditambahkan pada F2.1 saat Filament dipasang, dan daftar tabel `uji-pulih.sh` diperluas saat tabel domain ada.
+
+## K-08 — Pemisahan tugas super-admin pada verifikasi
+
+Super-admin menerima seluruh permission di seeder (PRD §3), tetapi `Gate::before` menolak tiga ability Policy `verifikasi`, `loloskanProdi`, dan `bukaVerifikasi` untuknya. Policy fase berikutnya wajib memakai nama ability tersebut (bukan `can('prestasi.verifikasi')` langsung) agar pengecualian berlaku, karena pemeriksaan permission spatie berjalan lebih dahulu daripada `Gate::before` aplikasi. Gerbang Horizon memakai peran `super-admin` (perintah pemilik), bukan permission `horizon.akses`; permission itu tetap dibuat untuk kelengkapan.
+
+## K-09 — Pengalihan panel sebelum Authenticate
+
+`ArahkanKePanelSesuaiPeran` didaftarkan lewat `prependToPriorityList` agar berjalan sebelum `Authenticate` Filament (yang menjawab 403 bagi pengguna tanpa akses panel). Pengalihan hanya untuk permintaan GET/HEAD. Tabel `notifications` (diperlukan `databaseNotifications()` panel) ditambahkan pada langkah F2.2 karena terlewat di F2.1.
+
+## K-10 — Retensi log aktivitas dan batas login
+
+Retensi log aktivitas `clean_after_days` = 730 hari (di activitylog v5 kuncinya `clean_after_days`, bukan `delete_records_older_than_days`); angka ini asumsi yang perlu ditetapkan fakultas. Limiter `login` (5/menit per surel+IP) diterapkan pada halaman masuk bersama kedua panel (`App\Filament\Pages\Auth\Masuk`) dan dibersihkan saat login berhasil; log `auth` hanya menyimpan surel, IP, dan user agent. Model `User` hanya mencatat `name`, `email`, `is_active`, dan peristiwa peran (`peran_ditambah`/`peran_dicabut`) lewat event spatie permission (`events_enabled` = true).

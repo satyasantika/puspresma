@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\ArahkanKePanelSesuaiPeran;
+use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -22,6 +24,9 @@ return Application::configure(basePath: dirname(__DIR__))
                 | Request::HEADER_X_FORWARDED_PROTO
                 | Request::HEADER_X_FORWARDED_PREFIX,
         );
+
+        // Pengalihan panel harus berjalan sebelum Authenticate Filament (yang menjawab 403).
+        $middleware->prependToPriorityList(AuthenticatesRequests::class, ArahkanKePanelSesuaiPeran::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
