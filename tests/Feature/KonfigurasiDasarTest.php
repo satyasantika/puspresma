@@ -1,45 +1,33 @@
 <?php
 
-namespace Tests\Feature;
-
 use Illuminate\Support\Facades\Validator;
-use Tests\TestCase;
 
-class KonfigurasiDasarTest extends TestCase
-{
-    public function test_memakai_zona_waktu_asia_jakarta(): void
-    {
-        $this->assertSame('Asia/Jakarta', config('app.timezone'));
-        $this->assertSame('Asia/Jakarta', now()->getTimezone()->getName());
-    }
+it('memakai zona waktu Asia/Jakarta', function () {
+    expect(config('app.timezone'))->toBe('Asia/Jakarta')
+        ->and(now()->getTimezone()->getName())->toBe('Asia/Jakarta');
+});
 
-    public function test_memakai_locale_indonesia(): void
-    {
-        $this->assertSame('id', config('app.locale'));
-        $this->assertSame('id_ID', config('app.faker_locale'));
-        $this->assertSame('07 Oktober 2026', now()->setDate(2026, 10, 7)->translatedFormat('d F Y'));
-    }
+it('memakai locale Indonesia', function () {
+    expect(config('app.locale'))->toBe('id')
+        ->and(config('app.faker_locale'))->toBe('id_ID')
+        ->and(now()->setDate(2026, 10, 7)->translatedFormat('d F Y'))->toBe('07 Oktober 2026');
+});
 
-    public function test_memuat_konfigurasi_puspresma(): void
-    {
-        $this->assertSame(10240, config('puspresma.impor.maks_kb'));
-        $this->assertSame(['xlsx', 'csv'], config('puspresma.impor.mimes'));
-        $this->assertSame('student.unsil.ac.id', config('puspresma.domain_mahasiswa'));
-        $this->assertSame('unsil.ac.id', config('puspresma.domain_pegawai'));
-        $this->assertSame('ekspor', config('puspresma.antrean.ekspor'));
-        $this->assertFalse(config('puspresma.google_login'));
-    }
+it('memuat konfigurasi puspresma', function () {
+    expect(config('puspresma.impor.maks_kb'))->toBe(10240)
+        ->and(config('puspresma.impor.mimes'))->toBe(['xlsx', 'csv'])
+        ->and(config('puspresma.domain_mahasiswa'))->toBe('student.unsil.ac.id')
+        ->and(config('puspresma.domain_pegawai'))->toBe('unsil.ac.id')
+        ->and(config('puspresma.antrean.ekspor'))->toBe('ekspor')
+        ->and(config('puspresma.google_login'))->toBeFalse();
+});
 
-    public function test_menyediakan_versi_aplikasi(): void
-    {
-        $this->assertIsString(config('app.version'));
-        $this->assertNotSame('', config('app.version'));
-    }
+it('menyediakan versi aplikasi', function () {
+    expect(config('app.version'))->toBeString()->not->toBeEmpty();
+});
 
-    public function test_pesan_validasi_berbahasa_indonesia(): void
-    {
-        $validator = Validator::make([], ['nama' => 'required']);
+it('menampilkan pesan validasi berbahasa Indonesia', function () {
+    $validator = Validator::make([], ['nama' => 'required']);
 
-        $this->assertSame('Nama wajib diisi.', $validator->errors()->first('nama'));
-    }
-}
+    expect($validator->errors()->first('nama'))->toBe('Nama wajib diisi.');
+});

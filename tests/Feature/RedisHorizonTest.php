@@ -1,80 +1,70 @@
 <?php
 
-namespace Tests\Feature;
-
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Queue;
-use Tests\TestCase;
 
-class RedisHorizonTest extends TestCase
+/**
+ * @return array<string, string>
+ */
+function envContoh(): array
 {
-    /**
-     * @return array<string, string>
-     */
-    private function envContoh(): array
-    {
-        $nilai = [];
+    $nilai = [];
 
-        foreach (file(base_path('.env.example'), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $baris) {
-            if ($baris[0] !== '#' && str_contains($baris, '=')) {
-                [$kunci, $isi] = explode('=', $baris, 2);
-                $nilai[$kunci] = $isi;
-            }
-        }
-
-        return $nilai;
-    }
-
-    public function test_env_contoh_memakai_redis_untuk_cache_sesi_dan_antrean(): void
-    {
-        $env = $this->envContoh();
-
-        $this->assertSame('redis', $env['CACHE_STORE']);
-        $this->assertSame('redis', $env['SESSION_DRIVER']);
-        $this->assertSame('redis', $env['QUEUE_CONNECTION']);
-        $this->assertSame('phpredis', $env['REDIS_CLIENT']);
-        $this->assertSame('puspresma_', $env['REDIS_PREFIX']);
-        $this->assertSame('40', $env['REDIS_DB']);
-        $this->assertSame('41', $env['REDIS_CACHE_DB']);
-        $this->assertSame('42', $env['REDIS_QUEUE_DB']);
-    }
-
-    public function test_blok_redis_terpisah_untuk_default_cache_dan_antrean(): void
-    {
-        $this->assertSame('cache', config('cache.stores.redis.connection'));
-        $this->assertSame('queue', config('queue.connections.redis.connection'));
-        $this->assertSame('41', (string) config('database.redis.cache.database'));
-        $this->assertSame('42', (string) config('database.redis.queue.database'));
-        $this->assertSame('40', (string) config('database.redis.default.database'));
-    }
-
-    public function test_horizon_memiliki_tiga_supervisor(): void
-    {
-        $defaults = config('horizon.defaults');
-
-        $this->assertSame(['supervisor-notifikasi', 'supervisor-umum', 'supervisor-berat'], array_keys($defaults));
-        $this->assertSame(['notifikasi'], $defaults['supervisor-notifikasi']['queue']);
-        $this->assertSame(['default', 'berkas'], $defaults['supervisor-umum']['queue']);
-        $this->assertSame(['impor', 'ekspor'], $defaults['supervisor-berat']['queue']);
-        $this->assertSame(600, $defaults['supervisor-berat']['timeout']);
-        $this->assertSame(512, $defaults['supervisor-berat']['memory']);
-
-        foreach (['production', 'local'] as $lingkungan) {
-            $this->assertSame(array_keys($defaults), array_keys(config("horizon.environments.$lingkungan")));
+    foreach (file(base_path('.env.example'), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $baris) {
+        if ($baris[0] !== '#' && str_contains($baris, '=')) {
+            [$kunci, $isi] = explode('=', $baris, 2);
+            $nilai[$kunci] = $isi;
         }
     }
 
-    public function test_job_dapat_didispatch_ke_antrean_ekspor(): void
-    {
-        Queue::fake();
-
-        JobUjiEkspor::dispatch();
-
-        Queue::assertPushedOn(config('puspresma.antrean.ekspor'), JobUjiEkspor::class);
-    }
+    return $nilai;
 }
+
+it('memakai redis untuk cache, sesi, dan antrean di env contoh', function () {
+    $env = envContoh();
+
+    expect($env['CACHE_STORE'])->toBe('redis')
+        ->and($env['SESSION_DRIVER'])->toBe('redis')
+        ->and($env['QUEUE_CONNECTION'])->toBe('redis')
+        ->and($env['REDIS_CLIENT'])->toBe('phpredis')
+        ->and($env['REDIS_PREFIX'])->toBe('puspresma_')
+        ->and($env['REDIS_DB'])->toBe('40')
+        ->and($env['REDIS_CACHE_DB'])->toBe('41')
+        ->and($env['REDIS_QUEUE_DB'])->toBe('42');
+});
+
+it('memisahkan blok redis default, cache, dan antrean', function () {
+    expect(config('cache.stores.redis.connection'))->toBe('cache')
+        ->and(config('queue.connections.redis.connection'))->toBe('queue')
+        ->and((string) config('database.redis.default.database'))->toBe('40')
+        ->and((string) config('database.redis.cache.database'))->toBe('41')
+        ->and((string) config('database.redis.queue.database'))->toBe('42');
+});
+
+it('menjalankan horizon dengan tiga supervisor', function () {
+    $defaults = config('horizon.defaults');
+
+    expect(array_keys($defaults))->toBe(['supervisor-notifikasi', 'supervisor-umum', 'supervisor-berat'])
+        ->and($defaults['supervisor-notifikasi']['queue'])->toBe(['notifikasi'])
+        ->and($defaults['supervisor-umum']['queue'])->toBe(['default', 'berkas'])
+        ->and($defaults['supervisor-berat']['queue'])->toBe(['impor', 'ekspor'])
+        ->and($defaults['supervisor-berat']['timeout'])->toBe(600)
+        ->and($defaults['supervisor-berat']['memory'])->toBe(512);
+
+    foreach (['production', 'local'] as $lingkungan) {
+        expect(array_keys(config("horizon.environments.$lingkungan")))->toBe(array_keys($defaults));
+    }
+});
+
+it('dapat mendispatch job ke antrean ekspor', function () {
+    Queue::fake();
+
+    JobUjiEkspor::dispatch();
+
+    Queue::assertPushedOn(config('puspresma.antrean.ekspor'), JobUjiEkspor::class);
+});
 
 class JobUjiEkspor implements ShouldQueue
 {
