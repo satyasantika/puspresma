@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -21,7 +23,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $app_authentication_secret
  * @property array<string>|null $app_authentication_recovery_codes
  */
-#[Fillable(['name', 'email', 'password', 'npm', 'nidn', 'nip', 'nomor_wa', 'notif_wa_aktif', 'is_active'])]
+#[Fillable(['name', 'email', 'password', 'npm', 'nidn', 'nip', 'prodi_id', 'google_id', 'nomor_wa', 'notif_wa_aktif', 'is_active'])]
 #[Hidden(['password', 'remember_token', 'app_authentication_secret', 'app_authentication_recovery_codes'])]
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery
 {
@@ -37,6 +39,24 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     protected function atributTercatat(): array
     {
         return ['name', 'email', 'is_active'];
+    }
+
+    /** @return BelongsTo<Prodi, $this> */
+    public function prodi(): BelongsTo
+    {
+        return $this->belongsTo(Prodi::class);
+    }
+
+    /** @return HasOne<Mahasiswa, $this> */
+    public function mahasiswa(): HasOne
+    {
+        return $this->hasOne(Mahasiswa::class);
+    }
+
+    /** @return HasOne<Dosen, $this> */
+    public function dosen(): HasOne
+    {
+        return $this->hasOne(Dosen::class);
     }
 
     public function wajibMfa(): bool

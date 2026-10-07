@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PeranDanIzinSeeder::class,
             SuperAdminSeeder::class,
+            ProdiSeeder::class,
         ]);
     }
 }
