@@ -27,7 +27,22 @@ class AppServiceProvider extends ServiceProvider
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 
-        if ($this->app->isProduction()) {
+        $this->aturUrlSubpath();
+    }
+
+    /**
+     * Aplikasi berjalan di bawah awalan path (mis. /puspresma); semua URL mengikuti APP_URL.
+     */
+    protected function aturUrlSubpath(): void
+    {
+        $url = (string) config('app.url');
+        $path = parse_url($url, PHP_URL_PATH);
+
+        if ($path !== null && $path !== '' && $path !== '/') {
+            URL::forceRootUrl($url);
+        }
+
+        if ($this->app->isProduction() || parse_url($url, PHP_URL_SCHEME) === 'https') {
             URL::forceScheme('https');
         }
     }
