@@ -9,10 +9,13 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      *
-     * Tanpa akun bawaan: pengguna pertama dibuat di F2 (super-admin lewat perintah, bukan kata sandi tetap).
+     * Tanpa kata sandi tetap: super-admin dibuat dari env SEED_SUPERADMIN_* dengan kata sandi acak.
      */
     public function run(): void
     {
-        //
+        $this->call([
+            PeranDanIzinSeeder::class,
+            SuperAdminSeeder::class,
+        ]);
     }
 }

@@ -49,4 +49,23 @@ return [
     */
 
     'google_login' => (bool) env('GOOGLE_LOGIN_ENABLED', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Akun super-admin awal (SuperAdminSeeder)
+    |--------------------------------------------------------------------------
+    */
+
+    'seed_superadmin' => [
+        'email' => env('SEED_SUPERADMIN_EMAIL'),
+        'name' => env('SEED_SUPERADMIN_NAME', 'Super Admin'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Peran yang wajib MFA aplikasi authenticator (TOTP)
+    |--------------------------------------------------------------------------
+    */
+
+    'peran_wajib_mfa' => ['super-admin', 'admin-fakultas'],
 ];
