@@ -29,6 +29,7 @@ class PortalPanelProvider extends PanelProvider
             ->path('portal')
             ->brandName('Puspresma FKIP Unsil')
             ->login(Masuk::class)
+            ->passwordReset()
             ->colors(['primary' => Color::Emerald])
             ->databaseNotifications()
             ->discoverResources(in: app_path('Filament/Portal/Resources'), for: 'App\\Filament\\Portal\\Resources')
