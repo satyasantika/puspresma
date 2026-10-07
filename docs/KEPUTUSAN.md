@@ -19,3 +19,7 @@ PHP 8.5 (perintah pemilik; `composer.json` `"php": "^8.5"`, CI dan Dockerfile pr
 ## K-05 — Redis
 
 Redis memakai container bersama `redis` (DB 40 default, 41 cache, 42 antrean; prefiks `puspresma_`). Kata sandi dibaca dari `.env` lokal. Test memakai driver array/sync dan tidak menyentuh Redis.
+
+## K-06 — Service Horizon dan scheduler di compose pusat
+
+Ditambahkan ke `~/code/docker-compose.yml` (di luar repo; pola `kerjasama-scheduler`): `puspresma-horizon` (`php artisan horizon`, `stop_grace_period: 60s`) dan `puspresma-scheduler` (`schedule:work`), memakai image PHP 8.5 dan kode yang sama. Cadangan berkas compose sebelum diubah disimpan agen di scratchpad sesi. Test tidak menyentuh Redis: `phpunit.xml` memaksa cache/sesi `array` dan antrean `sync`, sehingga pengaturan Redis diuji lewat `.env.example` dan konfigurasi koneksi (`RedisHorizonTest`).

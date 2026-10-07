@@ -26,4 +26,6 @@ Aplikasi: http://localhost:8032 (port dari compose pusat). Perintah PHP/Composer
 
 Pemeliharaan: bila container `puspresma-php` dibuat ulang dan nginx menjawab 502, jalankan `docker exec puspresma-nginx nginx -s reload`.
 
+Antrean dan penjadwal berjalan sebagai service compose pusat `puspresma-horizon` (`php artisan horizon`) dan `puspresma-scheduler` (`schedule:work`). Setelah mengubah kode job: `cd ~/code && docker compose restart puspresma-horizon`. Dasbor Horizon: http://localhost:8032/horizon (hanya lingkungan local sampai F2.2).
+
 Gerbang kualitas sebelum commit: `psp ./vendor/bin/pint --test && psp ./vendor/bin/phpstan analyse --memory-limit=1G && psp php artisan test`.
