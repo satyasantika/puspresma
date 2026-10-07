@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Listeners\CatatLoginTerakhir;
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
 
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
+
+        Event::listen(Login::class, CatatLoginTerakhir::class);
 
         $this->aturUrlSubpath();
     }
