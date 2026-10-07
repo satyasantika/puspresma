@@ -11,7 +11,12 @@ beforeEach(fn () => $this->seed(PeranDanIzinSeeder::class));
 
 function penggunaDenganPeran(string $peran): User
 {
-    return tap(User::factory()->create())->assignRole($peran);
+    $user = User::factory()->create()->assignRole($peran);
+
+    // Peran admin wajib MFA; akun uji dianggap sudah menyiapkannya.
+    $user->forceFill(['app_authentication_secret' => 'JBSWY3DPEHPK3PXP'])->save();
+
+    return $user;
 }
 
 it('membuat enam peran dan seluruh permission secara idempoten', function () {

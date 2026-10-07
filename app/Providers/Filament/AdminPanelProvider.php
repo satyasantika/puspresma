@@ -4,6 +4,8 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Masuk;
 use App\Http\Middleware\ArahkanKePanelSesuaiPeran;
+use App\Http\Middleware\WajibMfa;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -29,6 +31,11 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->brandName('Puspresma FKIP Unsil')
             ->login(Masuk::class)
+            ->passwordReset()
+            ->profile()
+            // MFA TOTP + kode pemulihan: wajib bagi peran di config puspresma.peran_wajib_mfa, opsional bagi peran lain (WajibMfa).
+            ->multiFactorAuthentication([AppAuthentication::make()->recoverable()], isRequired: true)
+            ->multiFactorAuthenticationRequiredMiddlewareName(WajibMfa::class)
             ->colors(['primary' => Color::Indigo])
             ->databaseNotifications()
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
