@@ -48,6 +48,7 @@ COPY . .
 COPY --from=assets /app/public/build ./public/build
 RUN composer dump-autoload --no-dev --optimize --classmap-authoritative --no-scripts \
     && php artisan package:discover --ansi \
+    && php artisan filament:upgrade \
     && rm -f /usr/bin/composer \
     && mkdir -p storage/framework/{cache,sessions,views} storage/app/tmp storage/logs bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
