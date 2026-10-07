@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Listeners\CatatAktivitasAuth;
 use App\Listeners\CatatLoginTerakhir;
 use App\Listeners\CatatPerubahanPeran;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
@@ -44,9 +45,14 @@ class AppServiceProvider extends ServiceProvider
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 
         // Super-admin lolos semua pemeriksaan KECUALI verifikasi prestasi (pemisahan tugas).
-        Gate::before(function ($user, string $ability) {
+        Gate::before(function ($user, string $ability, array $arguments = []) {
             if (! $user->hasRole('super-admin')) {
                 return null;
+            }
+
+            // Tidak ada yang boleh menghapus akunnya sendiri, termasuk super-admin.
+            if ($ability === 'delete' && ($arguments[0] ?? null) instanceof User && $arguments[0]->is($user)) {
+                return false;
             }
 
             return in_array($ability, self::ABILITY_VERIFIKASI, true) ? false : true;
