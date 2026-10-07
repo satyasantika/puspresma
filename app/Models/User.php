@@ -12,20 +12,27 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password', 'npm', 'nidn', 'nip', 'nomor_wa', 'notif_wa_aktif', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasUuids, Notifiable;
+    use HasFactory, HasRoles, HasUuids, Notifiable;
 
     protected $attributes = ['is_active' => true, 'notif_wa_aktif' => false];
 
-    /** Akses per panel dipersempit menurut peran di F2.2. */
+    /** Peran yang boleh membuka tiap panel Filament. */
+    public const PERAN_PANEL = [
+        'admin' => ['super-admin', 'admin-fakultas', 'admin-prodi', 'pimpinan'],
+        'portal' => ['mahasiswa', 'dosen'],
+    ];
+
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->is_active;
+        return $this->is_active
+            && $this->hasAnyRole(self::PERAN_PANEL[$panel->getId()] ?? []);
     }
 
     /**

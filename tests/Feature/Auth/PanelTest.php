@@ -2,6 +2,7 @@
 
 use App\Filament\Pages\Auth\Masuk;
 use App\Models\User;
+use Database\Seeders\PeranDanIzinSeeder;
 use Livewire\Livewire;
 
 it('menampilkan halaman masuk panel admin dan portal', function (string $path) {
@@ -22,8 +23,9 @@ it('menolak pengguna nonaktif dengan pesan jelas', function (string $panel) {
 })->with(['admin', 'portal']);
 
 it('mengisi last_login_at setelah login berhasil', function () {
-    Filament\Facades\Filament::setCurrentPanel('admin');
-    $user = User::factory()->create(['password' => 'rahasia-123']);
+    $this->seed(PeranDanIzinSeeder::class);
+    $user = User::factory()->create(['password' => 'rahasia-123'])->assignRole('mahasiswa');
+    Filament\Facades\Filament::setCurrentPanel('portal');
     expect($user->last_login_at)->toBeNull();
 
     Livewire::test(Masuk::class)
