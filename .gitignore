@@ -8,29 +8,12 @@
 /public/storage
 /storage/*.key
 /storage/app/tmp/*
-!/storage/app/tmp/.gitignore
-/storage/app/backup*
+!/storage/app/tmp/.gitkeep
 .phpunit.result.cache
-.phpunit.cache
 .env
 .env.*
 !.env.example
 !.env.production.example
-auth.json
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log
-/.idea
-/.vscode
-/.fleet
-/.nova
-/.zed
-/.phpactor.json
-/storage/pail
-.DS_Store
-Thumbs.db
-*.log
 
 # Data & cadangan (tidak boleh masuk repo)
 *.sql
@@ -38,10 +21,31 @@ Thumbs.db
 *.zip
 /*.xlsx
 /*.csv
+/storage/app/backup*
 
-# Bahan di luar repo aplikasi (konteks pengembangan, tidak dilacak)
+# Bahan lama di luar repo aplikasi
 /vibecoding/
-/docs/vibecoding/
 /CLAUDE.md
 /Permendikbudristek-No-46-Tahun-2023-PPKSP.pdf
-/_laravel/
+*.log
+.DS_Store
+.env.backup
+.env.production
+.phpactor.json
+/.codex
+/.cursor/
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+/public/fonts-manifest.dev.json
+/public/fonts/filament
+/storage/pail
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+Thumbs.db
+npm-debug.log
+yarn-error.log

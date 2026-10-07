@@ -1,12 +1,14 @@
 # Puspresma FKIP Unsil
 
 Puspresma (Pusat Prestasi Mahasiswa) FKIP Universitas Siliwangi mencatat prestasi akademik dan non-akademik mahasiswa
-(kompetisi dan rekognisi, tingkat lokal hingga internasional) sebagai bukti dukung akreditasi, laporan kinerja/IKU,
-bahan ekspor SIMKATMAWA, dan seleksi beasiswa. Bukti prestasi disimpan sebagai tautan (tanpa unggah berkas ke server).
+(kompetisi dan rekognisi; tingkat lokal, wilayah, nasional, internasional) sebagai bukti dukung akreditasi, laporan
+kinerja/IKU, bahan ekspor SIMKATMAWA, dan seleksi beasiswa. Bukti prestasi berupa tautan (tanpa unggah berkas ke server).
 
-## Stack
+Stack: Laravel 13, PHP 8.5, MariaDB, Redis 7, Filament 5, Livewire 4, Tailwind 4.
 
-Laravel 13, PHP 8.5, MariaDB, Redis 7, Filament 5, Livewire 4.
+## Dokumentasi
+
+Lihat `docs/` (keputusan teknis di `docs/KEPUTUSAN.md`).
 
 ## Memulai
 
