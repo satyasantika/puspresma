@@ -28,4 +28,18 @@ Pemeliharaan: bila container `puspresma-php` dibuat ulang dan nginx menjawab 502
 
 Antrean dan penjadwal berjalan sebagai service compose pusat `puspresma-horizon` (`php artisan horizon`) dan `puspresma-scheduler` (`schedule:work`). Setelah mengubah kode job: `cd ~/code && docker compose restart puspresma-horizon`. Dasbor Horizon: http://localhost:8032/horizon (hanya lingkungan local sampai F2.2).
 
+## Pengujian
+
+Test memakai Pest 4 dan basis data MariaDB host terpisah `db_puspresma_testing` (cache `array`, antrean `sync`, sesi `array`; tidak menyentuh Redis). Buat sekali di MariaDB host (ganti `<rahasia>` dan sesuaikan host pengguna dengan subnet Docker):
+
+```sql
+CREATE DATABASE db_puspresma CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE db_puspresma_testing CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON `db_puspresma%`.* TO 'app'@'172.%';
+```
+
+Perintah: `psp php artisan test` (atau `psp ./vendor/bin/pest`), `psp ./vendor/bin/phpstan analyse --memory-limit=1G` (Larastan level 6), `psp ./vendor/bin/pint --test`. Pintasan Composer: `composer test`, `composer lint`, `composer stan`, `composer cek`.
+
+Laravel Boost terpasang (`boost.json`, `.mcp.json` lokal memanggil `puspresma-php`); pedoman Boost berada di akhir `CLAUDE.md` lokal.
+
 Gerbang kualitas sebelum commit: `psp ./vendor/bin/pint --test && psp ./vendor/bin/phpstan analyse --memory-limit=1G && psp php artisan test`.
