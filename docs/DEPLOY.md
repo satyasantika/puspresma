@@ -8,16 +8,18 @@ Pola docker-apps: aplikasi berjalan di belakang reverse proxy fakultas pada `htt
 
 - `.github/workflows/ci.yml`: pada push ke `main` dan setiap pull request menjalankan Pint, Larastan level 6, dan Pest
   (MariaDB 10.11 dan Redis 7 sebagai service, PHP 8.5, Node 22).
-- `.github/workflows/deploy.yml`: pada push ke `main` masuk ke server lewat `appleboy/ssh-action` dan menjalankan
-  `~/docker-apps/deploy.sh puspresma`. Secret repositori yang harus diisi manusia: `SERVER_HOST`, `SERVER_USER`, `SSH_PRIVATE_KEY`.
-  Skrip `deploy.sh` (di server, bukan di repo ini) harus mengenali nama `puspresma`: tarik kode, build citra, `up -d`,
-  `migrate --force`, dan `optimize`.
+- Job `deploy` di `ci.yml` (`needs: uji`): hanya pada push ke `main` **setelah** Pint, Larastan, dan Pest hijau. Ia masuk ke server
+  lewat `appleboy/ssh-action`, lalu `git fetch` + `git reset --hard origin/main` di direktori aplikasi dan menjalankan
+  `bash scripts/deploy.sh`. Skrip rilis ikut ter-versioning di repo (tidak ada lagi `~/docker-apps/deploy.sh` di luar repo).
+  `concurrency: deploy-produksi` mencegah dua rilis saling menyalip.
+- Secret repositori (diisi manusia): `SERVER_HOST`, `SERVER_USER`, `SSH_PRIVATE_KEY`; opsional `DEPLOY_PATH` (bawaan `~/docker-apps/puspresma`).
+  Pengguna server harus ada di grup `docker`, dan kunci publik pasangannya ada di `authorized_keys`.
 - Proteksi branch `main` (wajib PR dan CI hijau) diatur manusia di pengaturan repositori.
 
 ## Langkah pertama kali (manual di server)
 
 ```bash
-git clone <repo> /opt/puspresma && cd /opt/puspresma
+git clone <repo> ~/docker-apps/puspresma && cd ~/docker-apps/puspresma
 cp .env.production.example .env && chmod 600 .env     # isi DB_PASSWORD, REDIS_PASSWORD, SMTP, TRUSTED_PROXIES
 APP_VERSION=$(git describe --tags --always) docker compose -f docker-compose.prod.yml build   # ASSET_URL wajib terisi; APP_VERSION tampil di footer dan /api/health
 docker compose -f docker-compose.prod.yml run --rm app php artisan key:generate --show   # salin ke APP_KEY dan SIMPAN cadangannya
@@ -36,3 +38,30 @@ Cadangan harian: `spatie/laravel-backup` lewat scheduler (`backup:run --only-db`
 - Volume `storage` hanya memuat sesi/log/cache dan `storage/app/tmp` (berkas sementara ≤ 24 jam); tidak ada berkas pengguna yang perlu dipertahankan.
 - Reverse proxy: blok `location /puspresma/` ada di `README.md`; `TRUSTED_PROXIES` diisi IP proxy (bukan `*`).
 
+
+## Rilis otomatis: `scripts/deploy.sh`
+
+Urutan: kunci (`flock`) → cadangan DB (`backup:run --only-db`; gagal = rilis dibatalkan) → build image bertag commit →
+`migrate --force` memakai image baru **sebelum** container diganti → `up -d` → health check `/api/health` di loopback
+(`HTTP_PORT`) → pangkas image lama (sisa 5). Migrasi karenanya harus kompatibel mundur.
+
+```bash
+bash scripts/deploy.sh                  # rilis commit yang sedang ter-checkout
+bash scripts/deploy.sh --list           # tag image tersedia
+bash scripts/deploy.sh --rollback <tag> # kembali ke image lama tanpa build (kode saja, bukan skema DB)
+```
+
+Rollback tidak membatalkan migrasi; bila rilis gagal sempat bermigrasi, pulihkan cadangan (`docs/PEMULIHAN.md`).
+Variabel opsional: `PUSPRESMA_LEWATI_CADANGAN=1` (server baru tanpa data), `PUSPRESMA_KEEP_IMAGE_TAGS`, `PUSPRESMA_CABANG`.
+
+### Cadangan jalur tarik (cron) bila GitHub tidak dapat menjangkau server
+
+Bila SSH dari GitHub Actions tidak mungkin (mis. server di balik NAT kampus), server menarik sendiri. `--tarik` melakukan
+`git fetch` lalu merilis **hanya bila** `origin/main` punya commit baru. Pasang manual di server (tidak dipasang otomatis);
+gunakan salah satu jalur, jangan keduanya:
+
+```cron
+*/5 * * * * cd ~/docker-apps/puspresma && bash scripts/deploy.sh --tarik >> /var/log/puspresma-deploy.log 2>&1
+```
+
+Jalur tarik tidak menunggu CI; lindungi `main` dengan aturan branch (wajib PR + CI hijau) agar hanya kode teruji yang masuk.
