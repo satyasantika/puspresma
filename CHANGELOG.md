@@ -4,6 +4,21 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ## [Belum dirilis]
 
+## [0.4.0] - 2026-10-10
+
+Fase 4: pengajuan prestasi & bukti.
+
+### Ditambahkan
+- Tabel `prestasi`, `prestasi_anggota`, `prestasi_anggota_eksternal`, `riwayat_status_prestasi` (UUIDv7, FULLTEXT nama kegiatan + penyelenggara), enum status/bentuk/bidang/moda/peran/konfirmasi pembimbing, model, factory, `NormalisasiTeks` dan scope `melibatkanProdi`/`milikMahasiswa`.
+- Portal mahasiswa "Prestasi Saya": wizard 4 langkah (kegiatan, capaian & tingkat dengan validasi kondisional nasional/internasional, tim & pembimbing, tautan bukti), peringatan BR-22, Action `SimpanPrestasi`, `PrestasiPolicy`.
+- Tim lintas prodi (kredit penuh), anggota luar FKIP, dosen pembimbing (`SimpanAnggotaTim`, event `AnggotaTimDitambahkan`).
+- Tautan bukti tanpa unggah ke server (`SimpanTautanBukti`/`UbahTautanBukti`/`HapusTautanBukti`/`SinkronTautanBukti`, maks 10, `tampil_publik` hanya foto), `TautanBerkasPolicy` lengkap, petunjuk berbagi (BR-31), pratinjau Drive di halaman lihat.
+- `TransisiStatus` (lock Redis + `lockForUpdate`, tabel transisi BR-07, catatan ≥ 10 karakter BR-08, riwayat, event `StatusPrestasiBerubah`), `AjukanPrestasi` (kelengkapan BR-04, nomor `PRS-YYYY-NNNNN` ber-lock, status konfirmasi pembimbing) dan `TarikKembaliPrestasi`; aksi Ajukan/Tarik Kembali dan riwayat status di portal.
+- Uji arsitektur: status prestasi hanya diubah di `app/Actions/Prestasi`; uji alur end-to-end pengajuan.
+
+### Diubah
+- `TautanBerkasPolicy` mengikuti matriks PRD (pimpinan tidak membuka tautan bukti; K-14).
+
 ## [0.3.0] - 2026-10-10
 
 Fase 3: data master, impor, tautan berkas & login Google.
