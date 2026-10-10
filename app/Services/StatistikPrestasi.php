@@ -121,6 +121,56 @@ class StatistikPrestasi
         });
     }
 
+    /**
+     * Matriks akreditasi (LAP-03): jumlah prestasi per tingkat × bidang × tahun (TS-2..TS) untuk prodi terpilih.
+     *
+     * @return array<string, array<string, array<int, int>>> kode tingkat => bidang => tahun => jumlah
+     */
+    public function matriksAkreditasi(int $tahunAkhir): array
+    {
+        return $this->cache("akreditasi:{$tahunAkhir}", function () use ($tahunAkhir): array {
+            $hasil = [];
+            DB::table('prestasi')->join('tingkat', 'tingkat.id', '=', 'prestasi.tingkat_id')
+                ->where('prestasi.status', 'terverifikasi')->whereNull('prestasi.deleted_at')
+                ->whereBetween('prestasi.tahun', [$tahunAkhir - 2, $tahunAkhir])
+                ->when($this->prodiId, fn (Builder $q) => $q->whereExists($this->anggotaProdi()))
+                ->selectRaw('tingkat.kode as tingkat, prestasi.bidang, prestasi.tahun, COUNT(*) as jumlah')
+                ->groupBy('tingkat.kode', 'prestasi.bidang', 'prestasi.tahun')->get()
+                ->each(function (object $b) use (&$hasil): void {
+                    $hasil[$b->tingkat][$b->bidang][(int) $b->tahun] = (int) $b->jumlah;
+                });
+
+            return $hasil;
+        });
+    }
+
+    /**
+     * Mahasiswa UNIK yang memenuhi IKU (LAP-04): total fakultas dan per prodi anggota.
+     *
+     * @return array{total: int, per_prodi: array<string, int>}
+     */
+    public function ikuMahasiswa(int $tahun, int $urutanTingkatMinimal, bool $hanyaJuara, ?string $jenisId = null): array
+    {
+        return $this->cache("iku:{$tahun}:{$urutanTingkatMinimal}:".(int) $hanyaJuara.':'.($jenisId ?? 'semua'), function () use ($tahun, $urutanTingkatMinimal, $hanyaJuara, $jenisId): array {
+            $dasar = fn () => DB::table('prestasi_anggota')
+                ->join('prestasi', 'prestasi.id', '=', 'prestasi_anggota.prestasi_id')
+                ->join('tingkat', 'tingkat.id', '=', 'prestasi.tingkat_id')
+                ->join('capaian', 'capaian.id', '=', 'prestasi.capaian_id')
+                ->where('prestasi.status', 'terverifikasi')->whereNull('prestasi.deleted_at')->where('prestasi.tahun', $tahun)
+                ->where('tingkat.urutan', '>=', $urutanTingkatMinimal)
+                ->when($hanyaJuara, fn (Builder $q) => $q->where('capaian.is_juara', true))
+                ->when($jenisId, fn (Builder $q) => $q->where('prestasi.jenis_kegiatan_id', $jenisId));
+
+            return [
+                'total' => (int) $dasar()->distinct()->count('prestasi_anggota.mahasiswa_id'),
+                'per_prodi' => $dasar()->join('prodi', 'prodi.id', '=', 'prestasi_anggota.prodi_id')
+                    ->groupBy('prodi.id', 'prodi.nama')->orderBy('prodi.nama')
+                    ->selectRaw('prodi.nama as label, COUNT(DISTINCT prestasi_anggota.mahasiswa_id) as jumlah')
+                    ->pluck('jumlah', 'label')->map(fn ($n) => (int) $n)->all(),
+            ];
+        });
+    }
+
     /** Mahasiswa unik berprestasi (kredit penuh setiap anggota). */
     private function mahasiswaUnik(): int
     {

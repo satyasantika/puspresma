@@ -34,6 +34,23 @@ abstract class LaporanEkspor
     abstract public function baris(array $filter, User $pengguna): Generator;
 
     /**
+     * Lembar (sheet/bagian) laporan; bawaan satu lembar dari header()/baris(). Laporan multi-lembar menimpa method ini.
+     *
+     * @param  array<string, mixed>  $filter
+     * @return list<array{nama: string, header: list<string>, baris: iterable<int, list<string|int|float|null>>}>
+     */
+    public function lembar(array $filter, User $pengguna): array
+    {
+        return [['nama' => mb_substr($this->judul(), 0, 31), 'header' => $this->header($pengguna), 'baris' => $this->baris($filter, $pengguna)]];
+    }
+
+    /** Catatan kaki pada PDF. */
+    public function catatanKaki(): ?string
+    {
+        return null;
+    }
+
+    /**
      * Format yang didukung laporan.
      *
      * @return list<string>

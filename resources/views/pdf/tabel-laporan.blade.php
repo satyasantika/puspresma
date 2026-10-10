@@ -22,14 +22,19 @@
     </div>
     <h2>{{ $judul }}</h2>
     <p>Filter: {{ $filterTeks }}</p>
-    <table>
-        <thead><tr>@foreach ($header as $h)<th>{{ $h }}</th>@endforeach</tr></thead>
-        <tbody>
-            @foreach ($baris as $isi)
-                <tr>@foreach ($isi as $sel)<td>{{ $sel }}</td>@endforeach</tr>
-            @endforeach
-        </tbody>
-    </table>
+    @foreach ($lembar as $bagian)
+        @if (count($lembar) > 1)
+            <h2>{{ $bagian['nama'] }}</h2>
+        @endif
+        <table>
+            <thead><tr>@foreach ($bagian['header'] as $h)<th>{{ $h }}</th>@endforeach</tr></thead>
+            <tbody>
+                @foreach ($bagian['baris'] as $isi)
+                    <tr>@foreach ($isi as $sel)<td>{{ $sel }}</td>@endforeach</tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endforeach
     <p class="kecil">Dicetak {{ $tanggalCetak }} oleh {{ $dicetakOleh }}. @isset($catatanKaki){{ $catatanKaki }}@endisset</p>
 </body>
 </html>

@@ -6,12 +6,13 @@ use App\Models\User;
 use App\Services\Pengaturan;
 use Database\Seeders\PengaturanSeeder;
 use Database\Seeders\PeranDanIzinSeeder;
+use Database\Seeders\TingkatSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
 beforeEach(function () {
-    $this->seed([PeranDanIzinSeeder::class, PengaturanSeeder::class]);
+    $this->seed([PeranDanIzinSeeder::class, PengaturanSeeder::class, TingkatSeeder::class]);
     Filament::setCurrentPanel('admin');
 });
 

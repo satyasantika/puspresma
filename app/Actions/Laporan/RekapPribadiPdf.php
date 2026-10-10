@@ -31,8 +31,7 @@ class RekapPribadiPdf
 
         $pdf = Pdf::loadView('pdf.tabel-laporan', [
             'judul' => "Rekap Prestasi — {$pengguna->mahasiswa->nama} ({$pengguna->mahasiswa->npm})",
-            'header' => ['No. Registrasi', 'Kegiatan', 'Penyelenggara', 'Tingkat', 'Capaian', 'Tanggal Selesai'],
-            'baris' => $baris,
+            'lembar' => [['nama' => 'Rekap', 'header' => ['No. Registrasi', 'Kegiatan', 'Penyelenggara', 'Tingkat', 'Capaian', 'Tanggal Selesai'], 'baris' => $baris]],
             'filterTeks' => 'Prestasi terverifikasi milik sendiri',
             'dicetakOleh' => $pengguna->name,
             'tanggalCetak' => now()->translatedFormat('d F Y H:i'),

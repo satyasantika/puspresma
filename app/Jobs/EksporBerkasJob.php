@@ -46,10 +46,10 @@ class EksporBerkasJob implements ShouldQueue
             $disk->makeDirectory("ekspor/{$berkas->user_id}");
 
             if ($berkas->format === 'pdf') {
-                $disk->put($path, PenulisBerkas::pdf($laporan, $pengguna, $filter, $laporan->header($pengguna), $laporan->baris($filter, $pengguna)));
+                $disk->put($path, PenulisBerkas::pdf($laporan, $pengguna, $filter, $laporan->lembar($filter, $pengguna)));
                 $jumlah = $berkas->jumlah_baris;
             } else {
-                $jumlah = PenulisBerkas::tabel($disk->path($path), $berkas->format, $laporan->header($pengguna), $laporan->baris($filter, $pengguna));
+                $jumlah = PenulisBerkas::buku($disk->path($path), $berkas->format, $laporan->lembar($filter, $pengguna));
             }
 
             $berkas->update(['status' => StatusBerkasEkspor::Siap, 'path' => $path, 'jumlah_baris' => $jumlah, 'kedaluwarsa_at' => now()->addHours(24)]);

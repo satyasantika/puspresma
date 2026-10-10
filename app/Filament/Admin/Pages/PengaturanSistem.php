@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Models\Tingkat;
 use App\Services\Pengaturan;
 use BackedEnum;
 use Database\Seeders\PengaturanSeeder;
@@ -81,6 +82,12 @@ class PengaturanSistem extends Page
                     ->numeric()->integer()->minValue(1)->required(),
                 TextInput::make('awal_tahun_akademik_bulan')->label('Bulan awal tahun akademik (1–12)')
                     ->numeric()->integer()->minValue(1)->maxValue(12)->required()->helperText('Perlu verifikasi.'),
+            ]),
+            Section::make('Laporan IKU')->columns(2)->schema([
+                Select::make('iku_tingkat_minimal')->label('Tingkat minimal IKU')
+                    ->options(fn () => Tingkat::orderBy('urutan')->pluck('nama', 'kode')->all())
+                    ->helperText('Definisi IKU perlu verifikasi.'),
+                Toggle::make('iku_hanya_juara')->label('Hanya capaian juara')->helperText('Definisi IKU perlu verifikasi.'),
             ]),
             Section::make('WhatsApp')->schema([
                 Toggle::make('wa_aktif')->label('Notifikasi WhatsApp aktif'),
