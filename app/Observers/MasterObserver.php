@@ -32,10 +32,16 @@ class MasterObserver
         match (true) {
             $model instanceof JenisKegiatan => $this->buangJenisKegiatan($model),
             $model instanceof KategoriLomba => Cache::forget('master:kategori-lomba'),
-            $model instanceof Tingkat => Cache::forget('master:tingkat'),
+            $model instanceof Tingkat => $this->buangTingkat(),
             $model instanceof Capaian => $this->buangCapaian($model),
             default => null,
         };
+    }
+
+    private function buangTingkat(): void
+    {
+        Cache::forget('master:tingkat');
+        Cache::forget('master:tingkat-kode');
     }
 
     private function buangJenisKegiatan(JenisKegiatan $jenis): void
