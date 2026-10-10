@@ -30,6 +30,10 @@ Pemeliharaan: bila container `puspresma-php` dibuat ulang dan nginx menjawab 502
 
 Antrean dan penjadwal berjalan sebagai service compose pusat `puspresma-horizon` (`php artisan horizon`) dan `puspresma-scheduler` (`schedule:work`). Setelah mengubah kode job: `cd ~/code && docker compose restart puspresma-horizon`. Dasbor Horizon: http://localhost:8032/horizon (hanya lingkungan local sampai F2.2).
 
+## Penjadwal
+
+Service `puspresma-scheduler` menjalankan `php artisan schedule:work` (lock Redis, `onOneServer` + `withoutOverlapping`). Jadwal: `horizon:snapshot` tiap 5 menit; `puspresma:arsipkan-kompetisi` 00:30; `puspresma:bersihkan-tmp` tiap jam; `puspresma:periksa-tautan` Minggu 02:00; pengingat tenggat kompetisi 07:00; `puspresma:ringkasan-antrean` Senin–Jumat 07:30; `puspresma:pengingat-pembimbing` Senin 08:00; `activitylog:clean` dan `queue:prune-failed --hours=720` tiap tanggal 1. Lihat daftar lengkap dengan `psp php artisan schedule:list`, jalankan satu tugas dengan `psp php artisan schedule:test`, dan pantau log penjadwal dengan `docker compose logs -f puspresma-scheduler`.
+
 ## Subpath produksi `/puspresma`
 
 Produksi: `https://supportfkip.unsil.ac.id/puspresma` (reverse proxy memotong awalan). Atur di `.env`: `APP_URL` dan `ASSET_URL` = URL tersebut, `SESSION_PATH=/puspresma`, `SESSION_COOKIE=puspresma_session`, `SESSION_SECURE_COOKIE=true`, `TRUSTED_PROXIES=<ip proxy>`. Bila `APP_URL` berpath, `AppServiceProvider` memaksa root URL (dan skema https); semua URL harus lewat `route()`/`url()`/`asset()` (diuji `tests/Arch/SubpathTest.php` dan `tests/Feature/SubpathTest.php`). Gateway lokal `:8080` tidak tersedia pada mesin ini; akses lokal langsung di `http://localhost:8032`, subpath diuji lewat konfigurasi override di test.
