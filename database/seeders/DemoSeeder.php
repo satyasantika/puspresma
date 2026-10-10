@@ -27,7 +27,7 @@ class DemoSeeder extends Seeder
     {
         $this->call([PeranDanIzinSeeder::class, JenisKegiatanSeeder::class, KategoriLombaSeeder::class, TingkatSeeder::class, CapaianSeeder::class, PengaturanSeeder::class]);
 
-        $jumlah = (int) env('DEMO_PRESTASI', 60);
+        $jumlah = (int) config('puspresma.demo_prestasi');
         $prodi = collect(range(1, 3))->map(fn ($i) => Prodi::firstOrCreate(['kode' => "DEMO-{$i}"], ['nama' => "Pendidikan Demo {$i}", 'kode_pddikti' => "9900{$i}"]));
         $mahasiswa = Mahasiswa::factory()->count(200)->sequence(fn ($s) => ['prodi_id' => $prodi[$s->index % 3]->id])->create();
         Dosen::factory()->count(20)->sequence(fn ($s) => ['prodi_id' => $prodi[$s->index % 3]->id])->create();
