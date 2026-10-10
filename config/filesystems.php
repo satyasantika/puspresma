@@ -38,6 +38,15 @@ return [
             'report' => false,
         ],
 
+        // Berkas sementara (impor Excel, galat impor, ekspor besar): dihapus segera/≤ 24 jam, tidak pernah publik.
+        'tmp' => [
+            'driver' => 'local',
+            'root' => storage_path('app/tmp'),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
