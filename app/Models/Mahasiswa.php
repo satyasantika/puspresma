@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property StatusMahasiswa $status_mahasiswa
+ */
 #[Fillable(['npm', 'nama', 'prodi_id', 'angkatan', 'email', 'nomor_hp', 'status_mahasiswa', 'user_id', 'kode_eksternal'])]
 class Mahasiswa extends Model
 {

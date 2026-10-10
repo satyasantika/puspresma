@@ -15,6 +15,8 @@ use App\Models\User;
 use App\Policies\MasterPolicy;
 use App\Services\Berkas\TautanEksternal;
 use Carbon\Carbon;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
@@ -93,6 +95,14 @@ class AppServiceProvider extends ServiceProvider
         // Login kedua panel: 5 percobaan per menit per kombinasi surel + IP.
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)
             ->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
+
+        RateLimiter::for('google-callback', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
+
+        // Tombol "Masuk dengan Google" di halaman masuk kedua panel, hanya bila fitur aktif.
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+            fn () => config('puspresma.google_login') ? view('auth.tombol-google') : '',
+        );
 
         RateLimiter::for('simpan-tautan', fn (Request $request) => Limit::perHour(60)->by($request->user()?->getAuthIdentifier() ?: $request->ip()));
         RateLimiter::for('buka-tautan', fn (Request $request) => Limit::perHour(120)->by($request->user()?->getAuthIdentifier() ?: $request->ip()));
