@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\StatusKonfirmasiPembimbing;
 use App\Enums\StatusPrestasi;
 use App\Models\Prestasi;
 use App\Models\User;
@@ -72,6 +73,14 @@ class PrestasiPolicy
 
         return in_array($prestasi->status, [StatusPrestasi::Diajukan, StatusPrestasi::LolosProdi], true)
             && $pelaku->can('prestasi.buat-atas-nama');
+    }
+
+    /** Hanya dosen yang ditunjuk, selama permintaan konfirmasi masih menunggu (BR-11). */
+    public function jawabPembimbing(User $pelaku, Prestasi $prestasi): bool
+    {
+        return $pelaku->can('pembimbing.konfirmasi')
+            && $this->pembimbing($pelaku, $prestasi)
+            && $prestasi->status_konfirmasi_pembimbing === StatusKonfirmasiPembimbing::Menunggu;
     }
 
     /** Tahap 1: admin-prodi dari prodi pengaju, hanya bila tahap prodi aktif dan status diajukan (BR-09, BR-15). */

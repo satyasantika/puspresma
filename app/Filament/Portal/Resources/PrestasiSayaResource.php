@@ -32,6 +32,12 @@ class PrestasiSayaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'nama_kegiatan';
 
+    /** Menu hanya untuk mahasiswa (dosen memakai resource bimbingan). */
+    public static function canViewAny(): bool
+    {
+        return (bool) auth()->user()?->can('prestasi.buat-milik') && parent::canViewAny();
+    }
+
     public static function form(Schema $schema): Schema
     {
         return PrestasiForm::configure($schema);
