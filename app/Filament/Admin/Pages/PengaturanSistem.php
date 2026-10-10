@@ -89,6 +89,10 @@ class PengaturanSistem extends Page
                     ->helperText('Definisi IKU perlu verifikasi.'),
                 Toggle::make('iku_hanya_juara')->label('Hanya capaian juara')->helperText('Definisi IKU perlu verifikasi.'),
             ]),
+            Section::make('Surat keterangan')->schema([
+                TextInput::make('format_nomor_surat_prestasi')->label('Format nomor surat prestasi')->required()->maxLength(100)
+                    ->helperText('Gunakan {urut} dan {tahun}. Format perlu ditetapkan bagian tata usaha.'),
+            ]),
             Section::make('WhatsApp')->schema([
                 Toggle::make('wa_aktif')->label('Notifikasi WhatsApp aktif'),
             ]),
