@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             KategoriLombaSeeder::class,
             TingkatSeeder::class,
             CapaianSeeder::class,
+            PengaturanSeeder::class,
         ]);
     }
 }
