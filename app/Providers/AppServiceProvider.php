@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\PenyimpananBerkas;
 use App\Listeners\CatatAktivitasAuth;
 use App\Listeners\CatatLoginTerakhir;
 use App\Listeners\CatatPerubahanPeran;
@@ -12,18 +13,21 @@ use App\Models\Prodi;
 use App\Models\Tingkat;
 use App\Models\User;
 use App\Policies\MasterPolicy;
+use App\Services\Berkas\TautanEksternal;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use RuntimeException;
 use Spatie\Permission\Events\RoleAttachedEvent;
 use Spatie\Permission\Events\RoleDetachedEvent;
 
@@ -37,7 +41,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(PenyimpananBerkas::class, function (): PenyimpananBerkas {
+            $mode = (string) config('berkas.mode');
+
+            return match ($mode) {
+                'tautan' => new TautanEksternal,
+                default => throw new RuntimeException("Mode berkas '{$mode}' belum didukung."),
+            };
+        });
     }
 
     /**
@@ -68,6 +79,13 @@ class AppServiceProvider extends ServiceProvider
             Gate::policy($model, MasterPolicy::class);
         }
 
+        // Alias pemilik polimorfik tautan_berkas (docs/KEPUTUSAN.md K-11: morphMap, bukan enforceMorphMap, agar subjek activitylog tetap berjalan).
+        // @phpstan-ignore argument.type (kelas model dibuat pada fase berikutnya)
+        Relation::morphMap([
+            'prestasi' => 'App\\Models\\Prestasi', // model dibuat di F4.1
+            'kompetisi' => 'App\\Models\\Kompetisi', // model dibuat di F6.1
+        ]);
+
         Event::listen(Login::class, CatatLoginTerakhir::class);
         Event::listen([Login::class, Failed::class, Logout::class], CatatAktivitasAuth::class);
         Event::listen([RoleAttachedEvent::class, RoleDetachedEvent::class], CatatPerubahanPeran::class);
@@ -75,6 +93,9 @@ class AppServiceProvider extends ServiceProvider
         // Login kedua panel: 5 percobaan per menit per kombinasi surel + IP.
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)
             ->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
+
+        RateLimiter::for('simpan-tautan', fn (Request $request) => Limit::perHour(60)->by($request->user()?->getAuthIdentifier() ?: $request->ip()));
+        RateLimiter::for('buka-tautan', fn (Request $request) => Limit::perHour(120)->by($request->user()?->getAuthIdentifier() ?: $request->ip()));
 
         $this->aturUrlSubpath();
     }
