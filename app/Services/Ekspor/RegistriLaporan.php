@@ -15,6 +15,7 @@ class RegistriLaporan
         'katalog' => RekapKatalogLaporan::class,
         'akreditasi' => AkreditasiLaporan::class,
         'iku' => IkuLaporan::class,
+        'simkatmawa' => SimkatmawaLaporan::class,
     ];
 
     public static function buat(string $jenis): LaporanEkspor

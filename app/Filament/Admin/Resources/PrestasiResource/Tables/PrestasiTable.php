@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\PrestasiResource\Tables;
 
+use App\Actions\Simkatmawa\TandaiDilaporkanSimkatmawa;
 use App\Enums\StatusPrestasi;
 use App\Models\Capaian;
 use App\Models\KandidatDuplikat;
@@ -11,13 +12,20 @@ use App\Models\TautanBerkas;
 use App\Models\Tingkat;
 use App\Services\OpsiMaster;
 use App\Services\PeringatanPrestasi;
+use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Textarea;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class PrestasiTable
 {
@@ -65,6 +73,8 @@ class PrestasiTable
                 TextColumn::make('status')->label('Status')->badge()
                     ->formatStateUsing(fn (?StatusPrestasi $state) => $state?->label())
                     ->color(fn (?StatusPrestasi $state) => $state?->warna()),
+                IconColumn::make('dilaporkan_simkatmawa_at')->label('SIMKATMAWA')->boolean()
+                    ->state(fn (Prestasi $record): bool => $record->dilaporkan_simkatmawa_at !== null)->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('peringatan')->label('')
                     ->state(fn (Prestasi $record): bool => PeringatanPrestasi::untuk($record) !== [])
                     ->icon(fn (bool $state): ?string => $state ? 'heroicon-o-exclamation-triangle' : null)->color('warning')
@@ -77,10 +87,42 @@ class PrestasiTable
                 SelectFilter::make('tingkat_id')->label('Tingkat')->options(fn () => Tingkat::orderBy('urutan')->pluck('nama', 'id')->all()),
                 SelectFilter::make('capaian_id')->label('Capaian')->options(fn () => Capaian::orderBy('nama')->pluck('nama', 'id')->all()),
                 SelectFilter::make('status')->label('Status')->options(collect(StatusPrestasi::cases())->mapWithKeys(fn ($s) => [$s->value => $s->label()])),
+                SelectFilter::make('dilaporkan')->label('Dilaporkan SIMKATMAWA')->options(['ya' => 'Sudah dilaporkan', 'belum' => 'Belum dilaporkan'])
+                    ->query(fn (Builder $query, array $data): Builder => match ($data['value'] ?? null) {
+                        'ya' => $query->whereNotNull('prestasi.dilaporkan_simkatmawa_at'),
+                        'belum' => $query->whereNull('prestasi.dilaporkan_simkatmawa_at'),
+                        default => $query,
+                    }),
                 Filter::make('ada_duplikat')->label('Ada duplikat')->toggle()
                     ->query(fn (Builder $query): Builder => $query->whereHas('kandidatDuplikat', fn ($q) => $q->where('status_tinjau', 'belum_ditinjau'))),
             ])
-            ->recordActions([ViewAction::make()->label('Periksa')]);
+            ->recordActions([
+                ViewAction::make()->label('Periksa'),
+                Action::make('batalkanSimkatmawa')->label('Batalkan penandaan')->icon('heroicon-o-x-mark')->color('gray')
+                    ->visible(fn (Prestasi $record): bool => $record->dilaporkan_simkatmawa_at !== null && (bool) auth()->user()?->can('tandaiSimkatmawa', $record))
+                    ->schema([Textarea::make('catatan')->label('Catatan (min. 10 karakter)')->required()->minLength(10)])
+                    ->action(function (Prestasi $record, array $data): void {
+                        app(TandaiDilaporkanSimkatmawa::class)->batalkan($record, auth()->user(), (string) $data['catatan']);
+                        Notification::make()->title('Penandaan dibatalkan')->success()->send();
+                    }),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('tandaiSimkatmawa')->label('Tandai dilaporkan SIMKATMAWA')->icon('heroicon-o-flag')
+                        ->visible(fn (): bool => (bool) auth()->user()?->can('simkatmawa.ekspor'))
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records): void {
+                            try {
+                                $jumlah = app(TandaiDilaporkanSimkatmawa::class)->jalankan($records, auth()->user());
+                            } catch (AuthorizationException $e) {
+                                Notification::make()->title('Hanya prestasi terverifikasi yang dapat ditandai')->danger()->send();
+
+                                return;
+                            }
+                            Notification::make()->title("{$jumlah} prestasi ditandai dilaporkan")->success()->send();
+                        }),
+                ]),
+            ]);
     }
 
     /**
