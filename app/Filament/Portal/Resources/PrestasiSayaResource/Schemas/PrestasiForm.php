@@ -6,13 +6,17 @@ use App\Actions\Prestasi\SimpanPrestasi;
 use App\Enums\BentukPartisipasi;
 use App\Enums\BidangPrestasi;
 use App\Enums\ModaKegiatan;
+use App\Models\Dosen;
+use App\Models\Mahasiswa;
 use App\Services\OpsiMaster;
 use App\Services\Pengaturan;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -101,7 +105,40 @@ class PrestasiForm
     private static function langkahTim(): Step
     {
         return Step::make('Tim & Pembimbing')->schema([
-            Text::make('Anggota tim dan dosen pembimbing diisi pada langkah berikutnya.'),
+            Section::make('Anggota FKIP')
+                ->description('Setiap anggota FKIP mendapat kredit penuh. Anggota dapat berasal dari prodi lain. Pengaju otomatis menjadi anggota.')
+                ->visible(fn (Get $get): bool => $get('bentuk') === 'kelompok')
+                ->schema([
+                    Repeater::make('anggota_internal')->label('Anggota FKIP')->addActionLabel('Tambah anggota')->defaultItems(0)
+                        ->columns(2)->schema([
+                            Select::make('mahasiswa_id')->label('Mahasiswa')->searchable()->required()->distinct()
+                                ->getSearchResultsUsing(fn (string $search): array => self::cariMahasiswa($search))
+                                ->getOptionLabelUsing(fn ($value): ?string => self::labelMahasiswa((string) $value))
+                                ->helperText('Ketik minimal 2 karakter NPM atau nama.'),
+                            Select::make('peran')->label('Peran')->options(['anggota' => 'Anggota', 'ketua' => 'Ketua'])->default('anggota')->required(),
+                        ]),
+                ]),
+            Section::make('Anggota luar FKIP')
+                ->description('Dicatat tetapi tidak dihitung dalam statistik FKIP.')
+                ->visible(fn (Get $get): bool => $get('bentuk') === 'kelompok')
+                ->schema([
+                    Repeater::make('anggota_eksternal')->label('Anggota luar FKIP')->addActionLabel('Tambah anggota luar')->defaultItems(0)
+                        ->columns(2)->schema([
+                            TextInput::make('nama')->label('Nama')->required()->maxLength(150),
+                            TextInput::make('nomor_induk')->label('Nomor induk')->maxLength(30),
+                            TextInput::make('institusi')->label('Institusi')->required()->maxLength(150),
+                            TextInput::make('program_studi')->label('Program studi')->maxLength(150),
+                        ]),
+                ]),
+            Section::make('Dosen pembimbing')->columns(2)->schema([
+                Select::make('dosen_pembimbing_id')->label('Dosen pembimbing')->searchable()
+                    ->getSearchResultsUsing(fn (string $search): array => self::cariDosen($search))
+                    ->getOptionLabelUsing(fn ($value): ?string => self::labelDosen((string) $value))
+                    ->helperText('Ketik minimal 2 karakter NIDN atau nama. Dosen akan diminta mengonfirmasi.'),
+                TextInput::make('nama_pembimbing_lain')->label('Atau nama pembimbing lain')->maxLength(150)
+                    ->helperText('Pembimbing di luar daftar tidak dapat dikonfirmasi lewat sistem.')
+                    ->visible(fn (Get $get): bool => blank($get('dosen_pembimbing_id'))),
+            ]),
         ]);
     }
 
@@ -110,6 +147,47 @@ class PrestasiForm
         return Step::make('Tautan Bukti & Publikasi')->schema([
             Text::make('Tautan bukti diisi pada langkah berikutnya.'),
         ]);
+    }
+
+    /** @return array<string, string> */
+    private static function cariMahasiswa(string $kata): array
+    {
+        if (mb_strlen(trim($kata)) < 2) {
+            return [];
+        }
+
+        return Mahasiswa::query()->with('prodi')
+            ->whereIn('status_mahasiswa', ['aktif', 'cuti'])
+            ->where(fn ($q) => $q->where('npm', 'like', "{$kata}%")->orWhere('nama', 'like', "%{$kata}%"))
+            ->orderBy('nama')->limit(20)->get()
+            ->mapWithKeys(fn (Mahasiswa $m) => [$m->id => "{$m->npm} — {$m->nama} ({$m->prodi?->nama})"])->all();
+    }
+
+    private static function labelMahasiswa(string $id): ?string
+    {
+        $m = Mahasiswa::with('prodi')->find($id);
+
+        return $m === null ? null : "{$m->npm} — {$m->nama} ({$m->prodi?->nama})";
+    }
+
+    /** @return array<string, string> */
+    private static function cariDosen(string $kata): array
+    {
+        if (mb_strlen(trim($kata)) < 2) {
+            return [];
+        }
+
+        return Dosen::query()
+            ->where(fn ($q) => $q->where('nidn', 'like', "{$kata}%")->orWhere('nama', 'like', "%{$kata}%"))
+            ->orderBy('nama')->limit(20)->get()
+            ->mapWithKeys(fn (Dosen $d) => [$d->id => trim(($d->nidn ? "{$d->nidn} — " : '').$d->nama_lengkap)])->all();
+    }
+
+    private static function labelDosen(string $id): ?string
+    {
+        $d = Dosen::find($id);
+
+        return $d === null ? null : trim(($d->nidn ? "{$d->nidn} — " : '').$d->nama_lengkap);
     }
 
     private static function kodeTingkat(Get $get): ?string
