@@ -4,6 +4,12 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ## [Belum dirilis]
 
+### Ditambahkan
+- Rilis otomatis: `scripts/deploy.sh` (cadangan DB, build bertag commit, migrasi dengan image baru, health check, rollback, mode `--tarik` untuk cron) dan job `deploy` di `ci.yml` yang menunggu uji hijau.
+
+### Diubah
+- `deploy.yml` terpisah dihapus (berjalan paralel dengan CI sehingga kode gagal uji tetap terdeploy); skrip rilis kini ada di repo, bukan di `~/docker-apps/deploy.sh`.
+
 ## [1.0.0] - 2026-10-10
 
 Rilis produksi pertama. Fase 9: pengerasan dan rilis.
