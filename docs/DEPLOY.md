@@ -27,7 +27,7 @@ docker compose -f docker-compose.prod.yml exec app php artisan optimize
 ```
 
 Basis data: MariaDB 10.11 native di host (`db_puspresma`, pengguna khusus). Blok reverse proxy ada di `README.md`.
-Cadangan harian dan uji pulih: `docker/backup/backup.sh` dan `uji-pulih.sh` (profil compose `backup`, dipanggil cron host).
+Cadangan harian: `spatie/laravel-backup` lewat scheduler (`backup:run --only-db` 01:00; terenkripsi) — lihat `docs/PEMULIHAN.md`. `docker/backup/backup.sh` (mysqldump) tetap tersedia sebagai cadangan kedua di host.
 
 ## Migrasi, kesehatan, dan volume
 
