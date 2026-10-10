@@ -182,6 +182,9 @@ class PrestasiForm
                     .'<li>Gunakan foto tanpa data lokasi (EXIF); sistem tidak dapat membuangnya dari berkas di Drive.</li>'
                     .'</ul>'
                 ))->info()->columnSpanFull(),
+            Toggle::make('setuju_publikasi_saya')->label('Saya menyetujui nama dan prestasi ini tampil di galeri publik')
+                ->helperText('Opt-in dan dapat ditarik kapan saja di menu Persetujuan Publikasi. Tanpa persetujuan pengaju, prestasi tidak tampil di galeri.')
+                ->visible(fn (): bool => (bool) auth()->user()?->can('prestasi.buat-milik'))->columnSpanFull(),
             Repeater::make('tautan_bukti')->label('Tautan bukti')->addActionLabel('Tambah tautan')->defaultItems(0)
                 ->maxItems(SimpanTautanBukti::MAKS_PER_PRESTASI)->columns(2)->schema([
                     Hidden::make('id'),

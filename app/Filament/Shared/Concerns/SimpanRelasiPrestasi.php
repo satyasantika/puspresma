@@ -3,9 +3,11 @@
 namespace App\Filament\Shared\Concerns;
 
 use App\Actions\Bukti\SinkronTautanBukti;
+use App\Actions\Galeri\UbahPersetujuanPublikasi;
 use App\Actions\Prestasi\SimpanAnggotaTim;
 use App\Actions\Prestasi\SimpanPrestasi;
 use App\Models\Prestasi;
+use App\Models\PrestasiAnggota;
 use Illuminate\Support\Facades\DB;
 
 /** Menyimpan data inti beserta tim (dan bukti, F4.4) dalam satu transaksi; UI hanya memanggil Action. */
@@ -31,9 +33,29 @@ trait SimpanRelasiPrestasi
             );
 
             app(SinkronTautanBukti::class)->jalankan($prestasi, $data['tautan_bukti'] ?? [], $pelaku);
+            $this->simpanPersetujuan($prestasi, $data);
 
             return $prestasi;
         });
+    }
+
+    /**
+     * Persetujuan publikasi milik pengguna sendiri (diabaikan bila pengguna bukan anggota, mis. admin atas nama).
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function simpanPersetujuan(Prestasi $prestasi, array $data): void
+    {
+        $pelaku = auth()->user();
+        $pelaku->loadMissing('mahasiswa');
+        if (! array_key_exists('setuju_publikasi_saya', $data) || $pelaku->mahasiswa === null) {
+            return;
+        }
+
+        $baris = PrestasiAnggota::where('prestasi_id', $prestasi->id)->where('mahasiswa_id', $pelaku->mahasiswa->id)->first();
+        if ($baris !== null) {
+            app(UbahPersetujuanPublikasi::class)->jalankan($baris, $pelaku, (bool) $data['setuju_publikasi_saya']);
+        }
     }
 
     /**
@@ -49,6 +71,9 @@ trait SimpanRelasiPrestasi
         $data['anggota_eksternal'] = $prestasi->anggotaEksternal()->get()
             ->map(fn ($e) => $e->only(['nama', 'nomor_induk', 'institusi', 'program_studi']))->all();
 
+        $saya = auth()->user()?->loadMissing('mahasiswa')->mahasiswa;
+        $data['setuju_publikasi_saya'] = $saya !== null
+            && $prestasi->anggota()->where('mahasiswa_id', $saya->id)->where('setuju_publikasi', true)->exists();
         $data['tautan_bukti'] = $prestasi->tautanBukti()->get()->map(fn ($t) => [
             'id' => $t->id,
             'jenis' => $t->jenis->value,

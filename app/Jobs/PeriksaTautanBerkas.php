@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\JenisTautan;
 use App\Enums\StatusCekTautan;
 use App\Events\TautanBerkasTidakDapatDiakses;
 use App\Models\TautanBerkas;
@@ -14,6 +15,7 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -51,6 +53,11 @@ class PeriksaTautanBerkas implements ShouldBeUnique, ShouldQueue
         $baru = $this->dapatDiakses($tautan->url) ? StatusCekTautan::DapatDiakses : StatusCekTautan::TidakDapatDiakses;
 
         $tautan->forceFill(['status_cek' => $baru, 'dicek_pada' => now()])->saveQuietly();
+
+        // Foto yang tidak lagi dapat diakses (atau baru dapat diakses) memengaruhi galeri publik.
+        if ($sebelumnya !== $baru && $tautan->jenis === JenisTautan::FotoPenyerahan) {
+            Cache::increment('galeri:versi');
+        }
 
         if ($sebelumnya === StatusCekTautan::DapatDiakses && $baru === StatusCekTautan::TidakDapatDiakses) {
             TautanBerkasTidakDapatDiakses::dispatch($tautan);
