@@ -3,12 +3,20 @@
 namespace App\Providers;
 
 use App\Contracts\PenyimpananBerkas;
+use App\Events\AnggotaTimDitambahkan;
+use App\Events\KandidatDuplikatDitemukan;
+use App\Events\KompetisiDiterbitkan;
+use App\Events\PembimbingMenjawab;
 use App\Events\StatusPrestasiBerubah;
+use App\Events\TautanBerkasTidakDapatDiakses;
+use App\Jobs\KirimKompetisiBaruTerbit;
 use App\Listeners\CatatAktivitasAuth;
 use App\Listeners\CatatLoginTerakhir;
 use App\Listeners\CatatPerubahanPeran;
 use App\Listeners\DeteksiDuplikatSaatDiajukan;
 use App\Listeners\HitungPoinSaatTerverifikasi;
+use App\Listeners\KirimNotifikasiLainnya;
+use App\Listeners\KirimNotifikasiStatusPrestasi;
 use App\Models\Capaian;
 use App\Models\JenisKegiatan;
 use App\Models\KategoriLomba;
@@ -94,6 +102,12 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(StatusPrestasiBerubah::class, DeteksiDuplikatSaatDiajukan::class);
         Event::listen(StatusPrestasiBerubah::class, HitungPoinSaatTerverifikasi::class);
+        Event::listen(StatusPrestasiBerubah::class, KirimNotifikasiStatusPrestasi::class);
+        Event::listen(TautanBerkasTidakDapatDiakses::class, [KirimNotifikasiLainnya::class, 'tautanTidakDapatDiakses']);
+        Event::listen(AnggotaTimDitambahkan::class, [KirimNotifikasiLainnya::class, 'anggotaDitambahkan']);
+        Event::listen(KandidatDuplikatDitemukan::class, [KirimNotifikasiLainnya::class, 'kandidatDuplikat']);
+        Event::listen(PembimbingMenjawab::class, [KirimNotifikasiLainnya::class, 'pembimbingMenjawab']);
+        Event::listen(KompetisiDiterbitkan::class, fn (KompetisiDiterbitkan $e) => KirimKompetisiBaruTerbit::dispatch($e->kompetisi));
         Event::listen(Login::class, CatatLoginTerakhir::class);
         Event::listen([Login::class, Failed::class, Logout::class], CatatAktivitasAuth::class);
         Event::listen([RoleAttachedEvent::class, RoleDetachedEvent::class], CatatPerubahanPeran::class);

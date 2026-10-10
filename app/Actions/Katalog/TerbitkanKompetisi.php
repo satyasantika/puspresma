@@ -3,6 +3,7 @@
 namespace App\Actions\Katalog;
 
 use App\Enums\StatusKompetisi;
+use App\Events\KompetisiDiterbitkan;
 use App\Models\Kompetisi;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
@@ -24,6 +25,7 @@ class TerbitkanKompetisi
         }
 
         $kompetisi->update(['status' => StatusKompetisi::Terbit, 'diterbitkan_at' => now()]);
+        KompetisiDiterbitkan::dispatch($kompetisi);
 
         return $kompetisi;
     }
