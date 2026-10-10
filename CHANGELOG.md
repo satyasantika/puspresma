@@ -4,6 +4,24 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ## [Belum dirilis]
 
+## [0.3.0] - 2026-10-10
+
+Fase 3: data master, impor, tautan berkas & login Google.
+
+### Ditambahkan
+- Master akademik: `prodi`, `mahasiswa`, `dosen` (UUIDv7, soft delete, activitylog; `nomor_hp` tidak dicatat nilainya), `users.prodi_id`, `ProdiSeeder` dari CSV (contoh bertanda CONTOH) dan `ProdiScope` untuk membatasi admin-prodi ke prodinya.
+- Master klasifikasi prestasi: jenis kegiatan, kategori lomba, tingkat, capaian (kolom `kode_simkatmawa`), seeder idempoten dan `OpsiMaster` ber-cache yang dibuang `MasterObserver`.
+- Resource Filament grup Master (`MasterPolicy`; Mahasiswa/Dosen dengan cakupan prodi, kolom surel hanya untuk `master.kelola`, aksi "Buat akun").
+- Impor mahasiswa dan dosen dari XLSX/CSV lewat antrean `impor` (lock, upsert per 500 baris, berkas galat ≤ 24 jam, berkas sumber selalu dihapus), riwayat impor dan notifikasi `ImporSelesai`.
+- Pengaturan sistem berbasis kunci-nilai (`App\Services\Pengaturan`, cache, activitylog lama → baru) dan halaman Pengaturan Sistem.
+- Bobot poin (`bobot_poin`, DECIMAL) per jenis × tingkat × capaian dengan masa berlaku, `PenghitungPoin`, Resource Bobot Poin dan halaman Matriks Bobot Poin, `BobotPoinContohSeeder` manual.
+- Fondasi tautan berkas tanpa unggahan ke server: `tautan_berkas`, `TautanBerkasValid`, `PenyimpananBerkas`/`TautanEksternal`, job `PeriksaTautanBerkas`, route `tautan.buka` (Policy + activitylog), komponen Blade `tautan-berkas` dan `pratinjau-drive`, uji arsitektur "tanpa unggahan selain impor".
+- Login Google akun kampus (opsional, `GOOGLE_LOGIN_ENABLED`): hanya domain kampus dan data yang ada di master, tanpa registrasi mandiri; peran wajib MFA ditolak.
+
+### Diubah
+- Rute bernama `login` (`/masuk`) mengalihkan tamu ke halaman masuk panel.
+- Alias morph `prestasi` dan `kompetisi` memakai `morphMap` (lihat K-11 di `docs/KEPUTUSAN.md`).
+
 ## [0.2.0] - 2026-10-08
 
 Fase 2: autentikasi, peran & audit.
