@@ -1,24 +1,40 @@
 <!doctype html>
 <html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Panduan Pimpinan · Panduan Puspresma FKIP Unsil</title><style>
-:root{--ink:#1e293b;--muted:#475569;--garis:#e2e8f0;--aksen:#3730a3;--latar:#f8fafc}
-*{box-sizing:border-box}body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--latar)}
-header,main,footer{max-width:60rem;margin:0 auto;padding:1rem}header{border-bottom:1px solid var(--garis)}
-a{color:var(--aksen)}h1{font-size:1.75rem;margin:.5rem 0}h2{font-size:1.25rem;margin-top:2rem}
-nav.peran{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}nav.peran a{padding:.25rem .75rem;border:1px solid var(--garis);border-radius:.375rem;background:#fff;text-decoration:none}
-nav.peran a[aria-current]{background:var(--aksen);color:#fff;border-color:var(--aksen)}
-ol.langkah{padding-left:1.25rem}ol.langkah li{margin:1.5rem 0}figure{margin:.75rem 0}figure img{max-width:100%;height:auto;border:1px solid var(--garis);border-radius:.5rem;background:#fff}
-figure.ponsel img{max-width:16rem}figcaption{font-size:.875rem;color:var(--muted)}dt{font-weight:600;margin-top:.75rem}dd{margin:0 0 .5rem}
-.kartu{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr))}.kartu a{display:block;padding:1rem;background:#fff;border:1px solid var(--garis);border-radius:.5rem;text-decoration:none}
-footer{color:var(--muted);font-size:.875rem;border-top:1px solid var(--garis)}
-@media print{header nav,.kartu a{border:0}body{background:#fff}figure img{max-width:70%}a{color:inherit}}</style></head>
-<body><header><strong>Panduan Pengguna Puspresma FKIP Unsil</strong>
-<nav class="peran" aria-label="Panduan per peran"><a href="index.html">Beranda panduan</a><a href="mahasiswa.html">Mahasiswa</a><a href="dosen.html">Dosen Pembimbing</a><a href="admin-prodi.html">Admin Prodi</a><a href="admin-fakultas.html">Admin Fakultas</a><a href="pimpinan.html" aria-current="page">Pimpinan</a><a href="super-admin.html">Super Admin</a></nav></header>
+<meta name="theme-color" content="#312e81"><title>Panduan Pimpinan · Panduan Puspresma FKIP Unsil</title><style>
+:root{--ink:#1e293b;--muted:#475569;--garis:#e2e8f0;--aksen:#3730a3;--aksen2:#312e81;--dalam:#1e1b4b;--emas:#fbbf24;--latar:#f8fafc}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font:16px/1.65 'Instrument Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--ink);background:var(--latar)}
+a{color:var(--aksen)}a:focus-visible,button:focus-visible{outline:3px solid var(--emas);outline-offset:2px}
+.atas{background:linear-gradient(150deg,#1e1b4b 0%,#312e81 55%,#4338ca 100%);color:#fff}
+.atas .dalam{max-width:60rem;margin:0 auto;padding:1rem 1rem 1.5rem}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1.25rem}.merek{display:inline-flex;align-items:center;gap:.65rem;color:#fff;text-decoration:none;font-weight:700}
+.merek small{display:block;font-weight:500;font-size:.72rem;color:#c7d2fe}.bar .kanan{margin-inline-start:auto;display:flex;gap:1rem;font-size:.9rem}.bar .kanan a{color:#e0e7ff;text-decoration:none}.bar .kanan a:hover{color:#fff;text-decoration:underline}
+.atas h1{margin:1.25rem 0 .25rem;font-size:clamp(1.6rem,4vw,2.25rem);line-height:1.2;letter-spacing:-.02em}.atas p{margin:0;color:#c7d2fe;max-width:40rem}
+nav.peran{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.25rem 0 0}nav.peran a{padding:.3rem .85rem;border:1px solid rgba(255,255,255,.28);border-radius:999px;color:#e0e7ff;text-decoration:none;font-size:.9rem}
+nav.peran a:hover{background:rgba(255,255,255,.12)}nav.peran a[aria-current]{background:var(--emas);color:var(--dalam);border-color:var(--emas);font-weight:600}
+main,footer{max-width:60rem;margin:0 auto;padding:1rem}main{padding-bottom:2rem}
+h2{font-size:1.3rem;margin:2.25rem 0 .5rem;color:var(--dalam);letter-spacing:-.01em}
+.tombol{display:inline-block;margin-top:.5rem;padding:.6rem 1.1rem;border-radius:.55rem;background:var(--aksen);color:#fff;text-decoration:none;font-weight:600}.tombol:hover{background:var(--aksen2)}
+ol.langkah{list-style:none;counter-reset:l;padding:0;margin:1rem 0}ol.langkah>li{counter-increment:l;position:relative;margin:1rem 0;padding:1.1rem 1.1rem 1.1rem 3.6rem;background:#fff;border:1px solid var(--garis);border-radius:1rem;box-shadow:0 1px 2px rgba(15,23,42,.05)}
+ol.langkah>li::before{content:counter(l);position:absolute;left:1rem;top:1.05rem;display:grid;place-items:center;width:1.85rem;height:1.85rem;border-radius:50%;background:var(--aksen);color:#fff;font-weight:700;font-size:.85rem}
+figure{margin:.85rem 0 0}figure img{max-width:100%;height:auto;border:1px solid var(--garis);border-radius:.6rem;background:#fff}figure.ponsel img{max-width:15rem}figcaption{font-size:.85rem;color:var(--muted);margin-top:.25rem}
+dl{margin:0}dt{font-weight:600;margin-top:1rem;color:var(--dalam)}dd{margin:.15rem 0 0;color:var(--muted)}
+.kartu{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));margin-top:1rem}
+.kartu a{display:block;height:100%;padding:1.1rem;background:#fff;border:1px solid var(--garis);border-radius:1rem;text-decoration:none;color:var(--ink);box-shadow:0 1px 2px rgba(15,23,42,.05);transition:box-shadow .15s,border-color .15s}
+.kartu a:hover{border-color:#a5b4fc;box-shadow:0 6px 18px -8px rgba(55,48,163,.35)}.kartu strong{display:block;color:var(--dalam);font-size:1.05rem}.kartu span{display:block;margin-top:.35rem;color:var(--muted);font-size:.92rem}
+.kartu em{display:inline-block;margin-top:.7rem;font-style:normal;font-weight:600;font-size:.9rem;color:var(--aksen)}
+footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--garis);margin-top:1rem}
+@media print{.atas{background:#fff;color:#000}.atas p,.merek small,.bar .kanan a,nav.peran a{color:#000}.atas nav,.bar .kanan{display:none}body{background:#fff}ol.langkah>li{box-shadow:none;break-inside:avoid}figure img{max-width:70%}}</style></head>
+<body><header class="atas"><div class="dalam">
+<div class="bar"><a class="merek" href="../" aria-label="Puspresma FKIP Unsil, ke beranda"><svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true"><rect width="48" height="48" rx="12" fill="#fbbf24"/><path d="M15 12h18v7c0 6-4 10-9 10s-9-4-9-10v-7Zm-5 2h5v3c0 2 1 3 3 3v2c-5 0-8-3-8-7v-1Zm28 0h5v1c0 4-3 7-8 7v-2c2 0 3-1 3-3v-3ZM21 30h6v4h5v3H16v-3h5v-4Z" fill="#1e1b4b"/></svg><span>Puspresma<small>FKIP Universitas Siliwangi</small></span></a>
+<div class="kanan"><a href="../">← Beranda</a><a href="../galeri">Galeri prestasi</a><a href="../kompetisi">Kompetisi</a></div></div>
+<h1>Panduan Pimpinan</h1><p>Memantau kinerja prestasi fakultas lewat dasbor dan laporan (akses baca).</p>
+<nav class="peran" aria-label="Panduan per peran"><a href="index.html">Semua panduan</a><a href="mahasiswa.html">Mahasiswa</a><a href="dosen.html">Dosen Pembimbing</a><a href="admin-prodi.html">Admin Prodi</a><a href="admin-fakultas.html">Admin Fakultas</a><a href="pimpinan.html" aria-current="page">Pimpinan</a></nav>
+</div></header>
 <main>
-<h1>Panduan Pimpinan</h1>
 <h2>Tujuan</h2><p>Memantau kinerja prestasi fakultas lewat dasbor dan laporan (akses baca).</p>
-<h2>Cara masuk</h2><p>Masuk di panel Admin dengan akun pimpinan.</p>
+<h2>Cara masuk</h2><p>Masuk di panel Admin dengan akun pimpinan.</p><a class="tombol" href="../admin">Buka Panel Admin</a>
 <h2>Langkah-langkah</h2><ol class="langkah"><li><strong>Dasbor.</strong> Statistik prestasi fakultas dengan filter tahun dan prodi.<figure><img src="img/pimpinan/01-dasbor.png" alt="Tangkapan layar: Dasbor" loading="lazy"><figcaption>Dasbor</figcaption></figure></li>
-<li><strong>Laporan.</strong> Rekap prestasi, akreditasi, dan IKU dalam bentuk Excel.<figure><img src="img/pimpinan/02-laporan.png" alt="Tangkapan layar: Laporan" loading="lazy"><figcaption>Laporan</figcaption></figure></li></ol>
-<h2>Tanya-jawab</h2><dl><dt>Angka fakultas berbeda dengan jumlah per prodi.</dt><dd>Total fakultas menghitung prestasi unik, sedangkan prestasi tim lintas prodi dihitung di setiap prodi anggota.</dd></dl></main>
+<li><strong>Laporan.</strong> Rekap prestasi, akreditasi, dan IKU dalam bentuk Excel.<figure><img src="img/pimpinan/02-laporan.png" alt="Tangkapan layar: Laporan" loading="lazy"><figcaption>Laporan</figcaption></figure></li>
+<li><strong>Profil dan kata sandi.</strong> Ubah nama dan nomor WhatsApp, atau ganti kata sandi (minimal 12 karakter, huruf dan angka). Begitu kata sandi diganti, semua perangkat lain otomatis keluar. Surel tidak dapat diubah di sini.<figure><img src="img/pimpinan/03-profil.png" alt="Tangkapan layar: Profil dan kata sandi" loading="lazy"><figcaption>Profil dan kata sandi</figcaption></figure><figure class="ponsel"><img src="img/pimpinan/03-profil-ponsel.png" alt="Tampilan ponsel: Profil dan kata sandi" loading="lazy"><figcaption>Tampilan di ponsel</figcaption></figure></li></ol>
+<h2>Tanya-jawab</h2><dl><dt>Angka fakultas berbeda dengan jumlah per prodi.</dt><dd>Total fakultas menghitung prestasi unik, sedangkan prestasi tim lintas prodi dihitung di setiap prodi anggota.</dd><dt>Saya diarahkan ke halaman profil dan diminta mengganti kata sandi.</dt><dd>Administrator mewajibkan penggantian kata sandi untuk akun Anda. Isi kata sandi saat ini dan kata sandi baru; setelah itu semua menu terbuka kembali.</dd><dt>Saya lupa kata sandi.</dt><dd>Pilih Lupa kata sandi di halaman masuk; tautan atur ulang dikirim ke surel akun Anda.</dd></dl></main>
 <footer>Diperbarui 10 Oktober 2026 · Aplikasi versi 1.0.0 · Butuh bantuan? Hubungi admin fakultas FKIP Unsil.</footer></body></html>

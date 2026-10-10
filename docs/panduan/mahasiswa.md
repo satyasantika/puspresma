@@ -35,6 +35,14 @@ Prestasi terverifikasi baru tampil di galeri publik bila Anda setuju. Buka **Per
 - **Surat Keterangan Saya**: untuk prestasi terverifikasi, ajukan surat ber-QR yang dapat diperiksa di halaman verifikasi.
 - **Preferensi Notifikasi**: atur surel dan WhatsApp.
 
+## Profil dan kata sandi
+1. Buka menu profil (ikon pengguna di pojok kanan atas, lalu **Profil**).
+2. Ubah nama dan nomor WhatsApp. Surel tertaut ke data induk kampus dan tidak dapat diubah di sini.
+3. Untuk mengganti kata sandi, isi kata sandi saat ini lalu kata sandi baru (minimal 12 karakter, memuat huruf dan angka).
+4. Setelah kata sandi diganti, **semua perangkat lain otomatis keluar**; sesi Anda saat ini tetap masuk.
+5. Bila administrator mewajibkan penggantian, Anda diarahkan ke halaman ini lebih dulu dan menu lain terbuka setelah kata sandi diganti.
+6. Lupa kata sandi? Pilih **Lupa kata sandi** di halaman masuk; tautan atur ulang dikirim ke surel akun Anda.
+
 ## Tanya-jawab
 - *Tautan saya ditolak sistem.* Pastikan `https`, berkas Drive (bukan folder) dan bukan tautan pendek.
 - *Prestasi saya ditandai duplikat.* Admin akan meninjau; tidak perlu mengajukan ulang.
