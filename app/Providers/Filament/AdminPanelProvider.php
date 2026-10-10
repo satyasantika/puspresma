@@ -6,6 +6,7 @@ use App\Filament\Admin\Pages\Dashboard;
 use App\Filament\Pages\Auth\Masuk;
 use App\Http\Middleware\ArahkanKePanelSesuaiPeran;
 use App\Http\Middleware\WajibMfa;
+use Filament\Actions\Action;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -38,6 +39,10 @@ class AdminPanelProvider extends PanelProvider
             ->multiFactorAuthenticationRequiredMiddlewareName(WajibMfa::class)
             ->colors(['primary' => Color::Indigo])
             ->databaseNotifications()
+            ->userMenuItems([
+                Action::make('bantuan')->label('Bantuan')->icon('heroicon-o-question-mark-circle')
+                    ->url(fn (): string => route('bantuan.index')),
+            ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
