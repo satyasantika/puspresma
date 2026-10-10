@@ -4,6 +4,16 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ## [Belum dirilis]
 
+## [0.7.0] - 2026-10-10
+
+Fase 7: notifikasi & penjadwal.
+
+### Ditambahkan
+- Notifikasi (selalu `ShouldQueue`, antrean `notifikasi`, `afterCommit`): prestasi diajukan/perlu perbaikan/terverifikasi/ditolak, permintaan konfirmasi dan penyangkalan pembimbing, kandidat duplikat, anggota tim ditambahkan, kompetisi baru terbit (per chunk 200), tautan bukti tidak dapat diakses (BR-30), berkas ekspor siap; listener per peristiwa dengan penerima yang tepat dan anggota tanpa akun dilewati (tercatat di log).
+- Kanal WhatsApp Fonnte (`FonnteClient`, job `KirimPesanWhatsApp` terpisah dengan 3× percobaan, token tidak pernah dicatat), trait `BisaWhatsApp`, normalisasi nomor 08xx → 62xx, halaman Preferensi Notifikasi (portal dan admin) dengan pesan uji dibatasi 3/jam.
+- Penjadwal: arsip kompetisi, pengingat tenggat H-3/H-1 (tanpa ganda), ringkasan antrean verifikasi, pengingat pembimbing, pembersihan berkas sementara > 24 jam, pemeriksaan ulang mingguan semua tautan (berprioritas, berjeda), `horizon:snapshot`, `activitylog:clean`, `queue:prune-failed`; dokumentasi di README.
+- Uji arsitektur: setiap Notification mengantre.
+
 ## [0.6.0] - 2026-10-10
 
 Fase 6: katalog kompetisi & galeri publik.
