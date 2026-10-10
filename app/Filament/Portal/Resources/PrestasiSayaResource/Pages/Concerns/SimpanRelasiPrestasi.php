@@ -2,6 +2,7 @@
 
 namespace App\Filament\Portal\Resources\PrestasiSayaResource\Pages\Concerns;
 
+use App\Actions\Bukti\SinkronTautanBukti;
 use App\Actions\Prestasi\SimpanAnggotaTim;
 use App\Actions\Prestasi\SimpanPrestasi;
 use App\Models\Prestasi;
@@ -29,6 +30,8 @@ trait SimpanRelasiPrestasi
                 $pelaku,
             );
 
+            app(SinkronTautanBukti::class)->jalankan($prestasi, $data['tautan_bukti'] ?? [], $pelaku);
+
             return $prestasi;
         });
     }
@@ -45,6 +48,15 @@ trait SimpanRelasiPrestasi
             ->map(fn ($a) => ['mahasiswa_id' => $a->mahasiswa_id, 'peran' => $a->peran->value])->all();
         $data['anggota_eksternal'] = $prestasi->anggotaEksternal()->get()
             ->map(fn ($e) => $e->only(['nama', 'nomor_induk', 'institusi', 'program_studi']))->all();
+
+        $data['tautan_bukti'] = $prestasi->tautanBukti()->get()->map(fn ($t) => [
+            'id' => $t->id,
+            'jenis' => $t->jenis->value,
+            'url' => $t->url,
+            'label' => $t->label,
+            'tampil_publik' => $t->tampil_publik,
+            'status_cek' => $t->status_cek->label(),
+        ])->all();
 
         return $data;
     }
