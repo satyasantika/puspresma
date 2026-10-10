@@ -18,6 +18,7 @@ tests
 vibecoding
 *.pdf
 .phpunit.result.cache
-docs
+docs/*
+!docs/panduan
 CLAUDE.md
 AGENTS.md

@@ -4,6 +4,17 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ## [Belum dirilis]
 
+### Ditambahkan
+- Panduan pengguna per peran (`docs/panduan/*.md`) dirender di `/bantuan/{peran}`; menu **Bantuan** di kedua panel (F9.5).
+- Backup harian database terenkripsi (`spatie/laravel-backup`), jadwal, dan `docs/PEMULIHAN.md` (F9.4).
+- Dockerfile/compose produksi: `APP_VERSION`, `RUN_MIGRATIONS` opt-in, healthcheck `/api/health`, `icons:cache` (F9.3).
+
+### Diubah
+- Optimasi kueri antrean admin dan Prestasi Saya (37/40 → ≤ 15 kueri), dijaga `JumlahKueriTest` (F9.2).
+
+### Diperbaiki
+- Tidak ada temuan UAT yang diserahkan penguji manusia pada F9.5; daftar temuan masih kosong. Temuan yang masuk kelak dicatat di sini beserta test regresinya.
+
 ## [0.8.0] - 2026-10-10
 
 Fase 8: laporan, dasbor & ekspor.

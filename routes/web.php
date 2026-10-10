@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BantuanController;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\BukaTautanController;
 use App\Http\Controllers\GoogleAuthController;
@@ -37,6 +38,12 @@ Route::get('/tautan/{tautanBerkas}/buka', BukaTautanController::class)
 Route::get('/ekspor/{berkasEkspor}/unduh', UnduhBerkasEksporController::class)
     ->middleware(['auth', 'throttle:buka-tautan'])
     ->name('ekspor.unduh');
+
+// Panduan pengguna per peran (menu "Bantuan" di panel admin dan portal).
+Route::middleware('auth')->prefix('bantuan')->group(function () {
+    Route::get('/', [BantuanController::class, 'index'])->name('bantuan.index');
+    Route::get('/{peran}', [BantuanController::class, 'show'])->name('bantuan.show');
+});
 
 Route::get('/verifikasi/{id}', VerifikasiSuratController::class)->middleware('throttle:verifikasi-surat')->name('verifikasi.surat');
 

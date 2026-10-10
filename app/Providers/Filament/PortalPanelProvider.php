@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Masuk;
 use App\Http\Middleware\ArahkanKePanelSesuaiPeran;
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -32,6 +33,10 @@ class PortalPanelProvider extends PanelProvider
             ->passwordReset()
             ->colors(['primary' => Color::Emerald])
             ->databaseNotifications()
+            ->userMenuItems([
+                Action::make('bantuan')->label('Bantuan')->icon('heroicon-o-question-mark-circle')
+                    ->url(fn (): string => route('bantuan.index')),
+            ])
             ->discoverResources(in: app_path('Filament/Portal/Resources'), for: 'App\\Filament\\Portal\\Resources')
             ->discoverPages(in: app_path('Filament/Portal/Pages'), for: 'App\\Filament\\Portal\\Pages')
             ->pages([
