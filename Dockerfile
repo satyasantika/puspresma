@@ -8,7 +8,7 @@ ARG PHP_VERSION=8.5
 FROM php:${PHP_VERSION}-fpm-bookworm AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        libpng-dev libjpeg-dev libfreetype6-dev libicu-dev libzip-dev libonig-dev libxml2-dev unzip \
+        mariadb-client libpng-dev libjpeg-dev libfreetype6-dev libicu-dev libzip-dev libonig-dev libxml2-dev unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" pdo_mysql mbstring exif pcntl bcmath gd zip intl \
     # PHP 8.5+ menyertakan opcache bawaan; versi lebih lama memasangnya sebagai ekstensi terpisah

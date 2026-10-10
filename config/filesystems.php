@@ -47,6 +47,15 @@ return [
             'report' => false,
         ],
 
+        // Arsip backup basis data: volume terpisah dari storage aplikasi (BACKUP_PATH); ganti BACKUP_DISK=s3 untuk S3/MinIO.
+        'backup' => [
+            'driver' => 'local',
+            'root' => env('BACKUP_PATH', storage_path('app/backup')),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

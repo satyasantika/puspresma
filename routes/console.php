@@ -28,3 +28,8 @@ Schedule::command('puspresma:ringkasan-antrean')->weekdays()->at('07:30')->onOne
 Schedule::command('puspresma:pengingat-pembimbing')->weeklyOn(1, '08:00')->onOneServer()->withoutOverlapping();
 Schedule::command('activitylog:clean')->monthlyOn(1, '03:00')->onOneServer()->withoutOverlapping();
 Schedule::command('queue:prune-failed --hours=720')->monthlyOn(1, '03:30')->onOneServer()->withoutOverlapping();
+
+// Backup basis data (F9.4): bukti berupa tautan Drive, jadi hanya DB yang dicadangkan.
+Schedule::command('backup:run --only-db')->dailyAt('01:00')->onOneServer()->withoutOverlapping();
+Schedule::command('backup:clean')->dailyAt('01:30')->onOneServer()->withoutOverlapping();
+Schedule::command('backup:monitor')->dailyAt('09:00')->onOneServer()->withoutOverlapping();
