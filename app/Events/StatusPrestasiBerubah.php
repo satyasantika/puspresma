@@ -4,10 +4,11 @@ namespace App\Events;
 
 use App\Enums\StatusPrestasi;
 use App\Models\Prestasi;
+use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 
 /** Status prestasi berubah (listener: duplikat F5.2, notifikasi F7.1, cache galeri/statistik). */
-class StatusPrestasiBerubah
+class StatusPrestasiBerubah implements ShouldDispatchAfterCommit
 {
     use Dispatchable;
 

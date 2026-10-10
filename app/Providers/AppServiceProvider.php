@@ -36,7 +36,7 @@ use Spatie\Permission\Events\RoleDetachedEvent;
 class AppServiceProvider extends ServiceProvider
 {
     /** Ability Policy verifikasi prestasi yang selalu ditolak bagi super-admin (pemisahan tugas). */
-    public const ABILITY_VERIFIKASI = ['verifikasi', 'loloskanProdi', 'bukaVerifikasi'];
+    public const ABILITY_VERIFIKASI = ['verifikasi', 'loloskanProdi', 'bukaVerifikasi', 'kembalikan', 'tolak', 'gantiTautan'];
 
     /**
      * Register any application services.
