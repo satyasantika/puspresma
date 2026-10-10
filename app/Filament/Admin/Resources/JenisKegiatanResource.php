@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Filament\Admin\Resources;
+
+use App\Filament\Admin\Resources\JenisKegiatanResource\Pages\ManageJenisKegiatan;
+use App\Filament\Admin\Support\TabelMaster;
+use App\Models\JenisKegiatan;
+use BackedEnum;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
+
+/** Master jenis kegiatan; otorisasi lewat App\Policies\MasterPolicy. */
+class JenisKegiatanResource extends Resource
+{
+    protected static ?string $model = JenisKegiatan::class;
+
+    protected static ?string $slug = 'jenis-kegiatan';
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Trophy;
+
+    protected static ?string $modelLabel = 'jenis kegiatan';
+
+    protected static ?string $pluralModelLabel = 'Jenis Kegiatan';
+
+    protected static ?string $navigationLabel = 'Jenis Kegiatan';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Master';
+
+    protected static ?string $recordTitleAttribute = 'nama';
+
+    /** Menu Master hanya untuk pengelola master; peran lain tetap bisa membuka (baca saja) lewat URL. */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return (bool) auth()->user()?->can('master.kelola');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withoutGlobalScopes([SoftDeletingScope::class]);
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema->components([
+            TextInput::make('kode')->label('Kode')->required()->maxLength(30)
+                ->unique(ignoreRecord: true),
+            TextInput::make('nama')->label('Nama')->required()->maxLength(100),
+            Textarea::make('deskripsi')->label('Deskripsi')->rows(2)->columnSpanFull(),
+            TextInput::make('kode_simkatmawa')->label('Kode SIMKATMAWA')->maxLength(50)->helperText(TabelMaster::CATATAN_SIMKATMAWA),
+            Toggle::make('wajib_penyelenggara')->label('Wajib isi penyelenggara')->default(true),
+            TextInput::make('urutan')->label('Urutan')->numeric()->integer()->default(0),
+            Toggle::make('is_active')->label('Aktif')->default(true),
+        ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return TabelMaster::lengkapi($table
+            ->defaultSort('urutan')
+            ->columns([
+                TextColumn::make('urutan')->label('#')->sortable(),
+                TextColumn::make('kode')->label('Kode')->searchable(),
+                TextColumn::make('nama')->label('Nama')->searchable(),
+                TextColumn::make('kode_simkatmawa')->label('Kode SIMKATMAWA')->placeholder('—'),
+                IconColumn::make('is_active')->label('Aktif')->boolean(),
+            ]));
+    }
+
+    public static function getPages(): array
+    {
+        return ['index' => ManageJenisKegiatan::route('/')];
+    }
+}
