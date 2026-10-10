@@ -5,7 +5,13 @@ namespace App\Providers;
 use App\Listeners\CatatAktivitasAuth;
 use App\Listeners\CatatLoginTerakhir;
 use App\Listeners\CatatPerubahanPeran;
+use App\Models\Capaian;
+use App\Models\JenisKegiatan;
+use App\Models\KategoriLomba;
+use App\Models\Prodi;
+use App\Models\Tingkat;
 use App\Models\User;
+use App\Policies\MasterPolicy;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
@@ -57,6 +63,10 @@ class AppServiceProvider extends ServiceProvider
 
             return in_array($ability, self::ABILITY_VERIFIKASI, true) ? false : true;
         });
+
+        foreach ([Prodi::class, JenisKegiatan::class, KategoriLomba::class, Tingkat::class, Capaian::class] as $model) {
+            Gate::policy($model, MasterPolicy::class);
+        }
 
         Event::listen(Login::class, CatatLoginTerakhir::class);
         Event::listen([Login::class, Failed::class, Logout::class], CatatAktivitasAuth::class);
