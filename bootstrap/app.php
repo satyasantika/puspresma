@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\ArahkanKePanelSesuaiPeran;
+use App\Http\Middleware\HeaderKeamanan;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
                 | Request::HEADER_X_FORWARDED_PROTO
                 | Request::HEADER_X_FORWARDED_PREFIX,
         );
+
+        // Header keamanan pada semua respons (CSP, nosniff, frame, referrer, HSTS di produksi).
+        $middleware->append(HeaderKeamanan::class);
 
         // Pengalihan panel harus berjalan sebelum Authenticate Filament (yang menjawab 403).
         $middleware->prependToPriorityList(AuthenticatesRequests::class, ArahkanKePanelSesuaiPeran::class);

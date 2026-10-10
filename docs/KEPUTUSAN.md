@@ -55,3 +55,7 @@ Tabel `riwayat_impor` (03-SKEMA 3.22) ditambah kolom `pesan` (TEXT, nullable) un
 ## K-14 — Akses tautan bukti: pimpinan tidak termasuk
 
 Prompt F4.4 menyebut `admin-fakultas/pimpinan` boleh melihat tautan bukti, sedangkan matriks PRD §3.2 menandai `bukti` untuk pimpinan sebagai "—" dan BR-26 membatasi data pribadi. `TautanBerkasPolicy` mengikuti PRD: anggota, dosen pembimbing (bimbingan), admin-fakultas (`prestasi.verifikasi`/`prestasi.buat-atas-nama`), dan admin-prodi yang prodinya terlibat. Pimpinan tetap melihat prestasi (daftar/agregat) tetapi tidak membuka tautan bukti. Ubah di `TautanBerkasPolicy::view` bila fakultas memutuskan lain.
+
+## K-15 — Content-Security-Policy
+
+`HeaderKeamanan` (middleware global) memasang nosniff, `X-Frame-Options: SAMEORIGIN`, Referrer-Policy, Permissions-Policy, HSTS (hanya `production`), dan CSP: `default-src 'self'`; `img-src 'self' data: https://lh3.googleusercontent.com`; `frame-src https://drive.google.com https://docs.google.com`; `style-src` menambah `'unsafe-inline'` dan fonts.bunny.net; `script-src 'self' 'unsafe-inline' 'unsafe-eval'` (Livewire/Alpine/Filament tidak mendukung nonce tanpa konfigurasi tambahan; jangan diperketat tanpa menguji seluruh panel). CSP dilewati di lingkungan `local` agar server dev Vite berfungsi. Bila panel tampil rusak di staging, periksa konsol browser untuk pelanggaran CSP dan longgarkan direktif seperlunya.
