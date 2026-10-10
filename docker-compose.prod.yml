@@ -24,6 +24,10 @@ services:
       target: app
       args:
         ASSET_URL: ${ASSET_URL:-https://supportfkip.unsil.ac.id/puspresma}
+        APP_VERSION: ${APP_VERSION:-0.0.0}   # build: APP_VERSION=$(git describe --tags) docker compose ... build
+    environment:
+      PHP_MEMORY_LIMIT: 512M
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-false}   # hanya container app yang boleh bermigrasi
     healthcheck:
       test: ["CMD-SHELL", "php -r 'exit(file_exists(\"/var/www/html/vendor/autoload.php\") ? 0 : 1);'"]
       interval: 30s
@@ -43,7 +47,7 @@ services:
     ports: ["127.0.0.1:${HTTP_PORT:-8032}:80"]
     networks: [internal]
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/up || exit 1"]
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1/api/health | grep -q \"ok\" || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3

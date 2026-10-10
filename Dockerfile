@@ -42,6 +42,8 @@ RUN npm run build
 
 # ---- aplikasi ------------------------------------------------------------------------------------------------------------
 FROM base AS app
+ARG APP_VERSION=0.0.0
+ENV APP_VERSION=${APP_VERSION}
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY --from=vendor /var/www/html/vendor ./vendor
 COPY . .

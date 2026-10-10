@@ -19,7 +19,7 @@ Pola docker-apps: aplikasi berjalan di belakang reverse proxy fakultas pada `htt
 ```bash
 git clone <repo> /opt/puspresma && cd /opt/puspresma
 cp .env.production.example .env && chmod 600 .env     # isi DB_PASSWORD, REDIS_PASSWORD, SMTP, TRUSTED_PROXIES
-docker compose -f docker-compose.prod.yml build        # ASSET_URL wajib terisi (aset berawalan /puspresma/)
+APP_VERSION=$(git describe --tags --always) docker compose -f docker-compose.prod.yml build   # ASSET_URL wajib terisi; APP_VERSION tampil di footer dan /api/health
 docker compose -f docker-compose.prod.yml run --rm app php artisan key:generate --show   # salin ke APP_KEY dan SIMPAN cadangannya
 docker compose -f docker-compose.prod.yml up -d
 docker compose -f docker-compose.prod.yml exec app php artisan migrate --force
@@ -28,4 +28,11 @@ docker compose -f docker-compose.prod.yml exec app php artisan optimize
 
 Basis data: MariaDB 10.11 native di host (`db_puspresma`, pengguna khusus). Blok reverse proxy ada di `README.md`.
 Cadangan harian dan uji pulih: `docker/backup/backup.sh` dan `uji-pulih.sh` (profil compose `backup`, dipanggil cron host).
-Dokumen ini dilengkapi pada fase pengerasan (F9).
+
+## Migrasi, kesehatan, dan volume
+
+- Migrasi otomatis hanya bila `RUN_MIGRATIONS=true` (container `app`); default `false`. Entrypoint menunggu DB, lalu menjalankan `optimize`, `filament:optimize`, dan `icons:cache` (`storage:link` tidak diperlukan: tidak ada berkas publik di server).
+- Healthcheck nginx memakai `/api/health` (`status: ok`). Redis dan MySQL tidak membuka port keluar.
+- Volume `storage` hanya memuat sesi/log/cache dan `storage/app/tmp` (berkas sementara ≤ 24 jam); tidak ada berkas pengguna yang perlu dipertahankan.
+- Reverse proxy: blok `location /puspresma/` ada di `README.md`; `TRUSTED_PROXIES` diisi IP proxy (bukan `*`).
+
