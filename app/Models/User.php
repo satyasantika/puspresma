@@ -61,6 +61,11 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     public function wajibMfa(): bool
     {
+        // Akun demo panduan (PanduanSeeder) hanya ada di lokal dan tidak memakai MFA agar tangkapan layar otomatis dapat login.
+        if (app()->environment('local') && str_starts_with((string) $this->email, 'panduan.') && str_ends_with((string) $this->email, '@contoh.test')) {
+            return false;
+        }
+
         return $this->hasAnyRole(config('puspresma.peran_wajib_mfa'));
     }
 

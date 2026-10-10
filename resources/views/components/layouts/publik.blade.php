@@ -19,6 +19,7 @@
                 <a href="{{ route('galeri.index') }}" class="text-slate-700 underline-offset-4 hover:underline focus-visible:underline">Galeri Prestasi</a>
             @endif
             <a href="{{ route('kompetisi.index') }}" class="text-slate-700 underline-offset-4 hover:underline focus-visible:underline">Kompetisi</a>
+            <a href="{{ asset('panduan/index.html') }}" class="text-slate-700 underline-offset-4 hover:underline focus-visible:underline">Panduan Pengguna</a>
             <a href="{{ route('login') }}" class="ms-auto text-slate-700 underline-offset-4 hover:underline focus-visible:underline">Masuk</a>
         </nav>
     </header>

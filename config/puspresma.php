@@ -45,6 +45,7 @@ return [
 
     /** Jumlah prestasi yang dibuat DemoSeeder (lokal/uji kinerja saja). */
     'demo_prestasi' => (int) env('DEMO_PRESTASI', 60),
+    'panduan_password' => env('PANDUAN_PASSWORD'),
 
     /*
     |--------------------------------------------------------------------------

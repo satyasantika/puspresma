@@ -36,6 +36,8 @@ class PortalPanelProvider extends PanelProvider
             ->userMenuItems([
                 Action::make('bantuan')->label('Bantuan')->icon('heroicon-o-question-mark-circle')
                     ->url(fn (): string => route('bantuan.index')),
+                Action::make('panduan')->label('Panduan bergambar')->icon('heroicon-o-book-open')
+                    ->url(fn (): string => asset('panduan/index.html'), shouldOpenInNewTab: true),
             ])
             ->discoverResources(in: app_path('Filament/Portal/Resources'), for: 'App\\Filament\\Portal\\Resources')
             ->discoverPages(in: app_path('Filament/Portal/Pages'), for: 'App\\Filament\\Portal\\Pages')

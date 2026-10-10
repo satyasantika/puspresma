@@ -42,6 +42,8 @@ class AdminPanelProvider extends PanelProvider
             ->userMenuItems([
                 Action::make('bantuan')->label('Bantuan')->icon('heroicon-o-question-mark-circle')
                     ->url(fn (): string => route('bantuan.index')),
+                Action::make('panduan')->label('Panduan bergambar')->icon('heroicon-o-book-open')
+                    ->url(fn (): string => asset('panduan/index.html'), shouldOpenInNewTab: true),
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')

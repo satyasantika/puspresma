@@ -1,0 +1,44 @@
+{
+  "mahasiswa": { "panel": "portal", "langkah": [
+    { "nama": "01-masuk", "url": "portal/login", "anon": true, "judul": "Halaman masuk", "ket": "Masuk dengan email kampus dan kata sandi. Akun dibuat admin; tidak ada pendaftaran mandiri." },
+    { "nama": "02-beranda", "url": "portal", "judul": "Beranda portal", "ket": "Ringkasan prestasi Anda dan menu di sisi kiri." },
+    { "nama": "03-prestasi-saya", "url": "portal/prestasi-saya", "ponsel": true, "judul": "Daftar Prestasi Saya", "ket": "Semua prestasi beserta statusnya: draf, diajukan, perlu perbaikan, terverifikasi, atau ditolak." },
+    { "nama": "04-buat-prestasi", "url": "portal/prestasi-saya/create", "ponsel": true, "judul": "Formulir prestasi", "ket": "Isi data kegiatan, anggota tim, dan tautan bukti Google Drive (bukan unggah berkas). Simpan sebagai draf lalu ajukan." },
+    { "nama": "05-persetujuan-publikasi", "url": "portal/persetujuan-publikasi", "judul": "Persetujuan publikasi", "ket": "Setujui atau tarik persetujuan agar prestasi terverifikasi tampil di galeri publik." },
+    { "nama": "06-katalog-kompetisi", "url": "portal/katalog-kompetisi", "judul": "Katalog kompetisi", "ket": "Cari lomba dan tandai minat untuk pengingat tenggat." },
+    { "nama": "07-poin-saya", "url": "portal/poin-saya", "judul": "Poin saya", "ket": "Poin dari prestasi terverifikasi (bila fitur poin aktif)." },
+    { "nama": "08-surat-saya", "url": "portal/surat-saya", "judul": "Surat keterangan", "ket": "Ajukan Surat Keterangan Prestasi ber-QR untuk prestasi terverifikasi." }
+  ]},
+  "dosen": { "panel": "portal", "langkah": [
+    { "nama": "01-masuk", "url": "portal/login", "anon": true, "judul": "Halaman masuk", "ket": "Masuk dengan akun kampus dosen." },
+    { "nama": "02-konfirmasi", "url": "portal/konfirmasi-pembimbing", "judul": "Konfirmasi pembimbing", "ket": "Daftar prestasi yang menunggu konfirmasi Anda. Pilih Konfirmasi atau Sangkal (dengan alasan)." },
+    { "nama": "03-bimbingan", "url": "portal/prestasi-bimbingan", "judul": "Prestasi bimbingan", "ket": "Semua prestasi mahasiswa bimbingan beserta statusnya." }
+  ]},
+  "admin-prodi": { "panel": "admin", "langkah": [
+    { "nama": "01-masuk", "url": "admin/login", "anon": true, "judul": "Halaman masuk", "ket": "Masuk di panel admin dengan akun admin prodi." },
+    { "nama": "02-dasbor", "url": "admin", "judul": "Dasbor prodi", "ket": "Statistik prodi Anda; gunakan filter tahun." },
+    { "nama": "03-antrean", "url": "admin/prestasi", "judul": "Antrean verifikasi tahap 1", "ket": "Prestasi yang melibatkan prodi Anda. Klik Periksa untuk meloloskan, mengembalikan, atau menolak." },
+    { "nama": "04-laporan", "url": "admin/laporan", "judul": "Laporan akreditasi", "ket": "Pilih laporan Akreditasi dan prodi, lalu ekspor." }
+  ]},
+  "admin-fakultas": { "panel": "admin", "langkah": [
+    { "nama": "01-dasbor", "url": "admin", "judul": "Dasbor fakultas", "ket": "Ringkasan seluruh fakultas dan kartu antrean." },
+    { "nama": "02-antrean", "url": "admin/prestasi", "judul": "Antrean verifikasi", "ket": "Periksa prestasi, buka setiap tautan bukti (wajib), lalu verifikasi atau kembalikan dengan catatan." },
+    { "nama": "03-duplikat", "url": "admin/kandidat-duplikat", "judul": "Kandidat duplikat", "ket": "Tinjau pasangan prestasi yang mirip; kandidat belum ditinjau memblokir verifikasi." },
+    { "nama": "04-impor", "url": "admin/impor-mahasiswa", "judul": "Impor mahasiswa", "ket": "Impor Excel/CSV master mahasiswa (upsert berdasarkan NPM)." },
+    { "nama": "05-katalog", "url": "admin/kompetisi", "judul": "Katalog kompetisi", "ket": "Kelola informasi lomba; yang lewat tenggat diarsipkan otomatis." },
+    { "nama": "06-galeri", "url": "admin/moderasi-galeri", "judul": "Moderasi galeri", "ket": "Sembunyikan prestasi dari galeri publik bila perlu." },
+    { "nama": "07-simkatmawa", "url": "admin/ekspor-simkatmawa", "judul": "Ekspor SIMKATMAWA", "ket": "Unduh kolom terpetakan dan tandai prestasi dilaporkan." },
+    { "nama": "08-surat", "url": "admin/surat-keterangan-prestasi", "judul": "Surat keterangan", "ket": "Terbitkan dan cetak surat ber-QR." },
+    { "nama": "09-pengaturan", "url": "admin/pengaturan", "judul": "Pengaturan sistem", "ket": "Ambang, tahap verifikasi prodi, dan mode poin." },
+    { "nama": "10-bobot-poin", "url": "admin/matriks-bobot-poin", "judul": "Matriks bobot poin", "ket": "Atur bobot jenis × tingkat × capaian yang berlaku per tanggal." }
+  ]},
+  "pimpinan": { "panel": "admin", "langkah": [
+    { "nama": "01-dasbor", "url": "admin", "judul": "Dasbor", "ket": "Statistik prestasi fakultas dengan filter tahun dan prodi." },
+    { "nama": "02-laporan", "url": "admin/laporan", "judul": "Laporan", "ket": "Rekap prestasi, akreditasi, dan IKU dalam bentuk Excel." }
+  ]},
+  "super-admin": { "panel": "admin", "langkah": [
+    { "nama": "01-pengguna", "url": "admin/pengguna", "judul": "Pengguna dan peran", "ket": "Buat akun, tetapkan peran dan prodi, nonaktifkan akun yang tidak dipakai." },
+    { "nama": "02-log", "url": "admin/log-aktivitas", "judul": "Log aktivitas", "ket": "Jejak audit: pembukaan tautan, transisi status, dan perubahan data." },
+    { "nama": "03-berkas-ekspor", "url": "admin/berkas-ekspor", "judul": "Berkas ekspor", "ket": "Hasil ekspor besar dari antrean (tersedia ≤ 24 jam)." }
+  ]}
+}
