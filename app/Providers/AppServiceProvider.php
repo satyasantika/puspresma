@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Contracts\PenyimpananBerkas;
+use App\Events\StatusPrestasiBerubah;
 use App\Listeners\CatatAktivitasAuth;
 use App\Listeners\CatatLoginTerakhir;
 use App\Listeners\CatatPerubahanPeran;
+use App\Listeners\DeteksiDuplikatSaatDiajukan;
 use App\Models\Capaian;
 use App\Models\JenisKegiatan;
 use App\Models\KategoriLomba;
@@ -36,7 +38,7 @@ use Spatie\Permission\Events\RoleDetachedEvent;
 class AppServiceProvider extends ServiceProvider
 {
     /** Ability Policy verifikasi prestasi yang selalu ditolak bagi super-admin (pemisahan tugas). */
-    public const ABILITY_VERIFIKASI = ['verifikasi', 'loloskanProdi', 'bukaVerifikasi', 'kembalikan', 'tolak', 'gantiTautan'];
+    public const ABILITY_VERIFIKASI = ['verifikasi', 'loloskanProdi', 'bukaVerifikasi', 'kembalikan', 'tolak', 'gantiTautan', 'tinjauDuplikat'];
 
     /**
      * Register any application services.
@@ -88,6 +90,7 @@ class AppServiceProvider extends ServiceProvider
             'kompetisi' => 'App\\Models\\Kompetisi', // model dibuat di F6.1
         ]);
 
+        Event::listen(StatusPrestasiBerubah::class, DeteksiDuplikatSaatDiajukan::class);
         Event::listen(Login::class, CatatLoginTerakhir::class);
         Event::listen([Login::class, Failed::class, Logout::class], CatatAktivitasAuth::class);
         Event::listen([RoleAttachedEvent::class, RoleDetachedEvent::class], CatatPerubahanPeran::class);
