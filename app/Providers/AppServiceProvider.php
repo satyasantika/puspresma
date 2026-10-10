@@ -8,6 +8,7 @@ use App\Listeners\CatatAktivitasAuth;
 use App\Listeners\CatatLoginTerakhir;
 use App\Listeners\CatatPerubahanPeran;
 use App\Listeners\DeteksiDuplikatSaatDiajukan;
+use App\Listeners\HitungPoinSaatTerverifikasi;
 use App\Models\Capaian;
 use App\Models\JenisKegiatan;
 use App\Models\KategoriLomba;
@@ -91,6 +92,7 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         Event::listen(StatusPrestasiBerubah::class, DeteksiDuplikatSaatDiajukan::class);
+        Event::listen(StatusPrestasiBerubah::class, HitungPoinSaatTerverifikasi::class);
         Event::listen(Login::class, CatatLoginTerakhir::class);
         Event::listen([Login::class, Failed::class, Logout::class], CatatAktivitasAuth::class);
         Event::listen([RoleAttachedEvent::class, RoleDetachedEvent::class], CatatPerubahanPeran::class);
