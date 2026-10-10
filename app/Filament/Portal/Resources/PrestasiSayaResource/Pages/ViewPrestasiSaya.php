@@ -4,7 +4,7 @@ namespace App\Filament\Portal\Resources\PrestasiSayaResource\Pages;
 
 use App\Filament\Portal\Resources\PrestasiSayaResource;
 use App\Filament\Portal\Resources\PrestasiSayaResource\Actions\AksiPrestasi;
-use App\Filament\Portal\Resources\PrestasiSayaResource\Pages\Concerns\SimpanRelasiPrestasi;
+use App\Filament\Shared\Concerns\SimpanRelasiPrestasi;
 use App\Models\Prestasi;
 use App\Models\RiwayatStatusPrestasi;
 use App\Models\TautanBerkas;

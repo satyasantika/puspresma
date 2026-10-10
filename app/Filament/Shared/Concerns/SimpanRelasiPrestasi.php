@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Portal\Resources\PrestasiSayaResource\Pages\Concerns;
+namespace App\Filament\Shared\Concerns;
 
 use App\Actions\Bukti\SinkronTautanBukti;
 use App\Actions\Prestasi\SimpanAnggotaTim;
