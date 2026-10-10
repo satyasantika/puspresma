@@ -11,6 +11,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Model;
 use SensitiveParameter;
 
@@ -18,6 +19,22 @@ use SensitiveParameter;
 class EditProfil extends EditProfile
 {
     private bool $baruGantiSandi = false;
+
+    /** Tampil di dalam panel (dengan menu), bukan kartu sempit, agar formulir dua kolom terbaca. */
+    public static function isSimple(): bool
+    {
+        return false;
+    }
+
+    public function defaultForm(Schema $schema): Schema
+    {
+        return parent::defaultForm($schema)->inlineLabel(false);
+    }
+
+    public function getMaxContentWidth(): Width
+    {
+        return Width::FiveExtraLarge;
+    }
 
     public function form(Schema $schema): Schema
     {

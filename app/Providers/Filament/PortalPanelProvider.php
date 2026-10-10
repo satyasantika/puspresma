@@ -34,7 +34,7 @@ class PortalPanelProvider extends PanelProvider
             ->login(Masuk::class)
             ->passwordReset()
             ->profile(EditProfil::class)
-            ->colors(['primary' => Color::Emerald])
+            ->colors(['primary' => Color::Indigo])
             ->databaseNotifications()
             ->userMenuItems([
                 Action::make('bantuan')->label('Bantuan')->icon('heroicon-o-question-mark-circle')
