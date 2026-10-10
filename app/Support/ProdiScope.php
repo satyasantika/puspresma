@@ -26,6 +26,6 @@ class ProdiScope
             return $query->whereRaw('1 = 0');
         }
 
-        return $query->where($query->qualifyColumn($kolom), $user->prodi_id);
+        return $query->where(str_contains($kolom, '.') ? $kolom : $query->qualifyColumn($kolom), $user->prodi_id);
     }
 }

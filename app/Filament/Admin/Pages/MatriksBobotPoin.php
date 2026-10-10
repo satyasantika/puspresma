@@ -2,11 +2,13 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Actions\Poin\HitungUlangPoinMassal;
 use App\Actions\Poin\SimpanMatriksBobot;
 use App\Models\BobotPoin;
 use App\Services\OpsiMaster;
 use BackedEnum;
 use Carbon\CarbonImmutable;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -91,6 +93,20 @@ class MatriksBobotPoin extends Page
         foreach (BobotPoin::where('jenis_kegiatan_id', $jenis)->whereNull('berlaku_sampai')->get() as $bobot) {
             $this->matriks[$bobot->capaian_id][$bobot->tingkat_id] = (string) $bobot->poin;
         }
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('hitungUlang')->label('Hitung ulang poin')->icon('heroicon-o-arrow-path')->color('warning')
+                ->visible(fn (): bool => (bool) auth()->user()?->can('poin.hitung-ulang'))
+                ->requiresConfirmation()
+                ->modalDescription('Poin seluruh prestasi terverifikasi dihitung ulang sesuai bobot dan mode saat ini. Tindakan tercatat di audit.')
+                ->action(function (): void {
+                    $jumlah = app(HitungUlangPoinMassal::class)->jalankan(auth()->user());
+                    Notification::make()->title("{$jumlah} prestasi dihitung ulang")->success()->send();
+                }),
+        ];
     }
 
     public function simpan(): void
