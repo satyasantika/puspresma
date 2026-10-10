@@ -41,4 +41,10 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    // Endpoint dan format respons Fonnte perlu diverifikasi di dokumentasi resminya.
+    'fonnte' => [
+        'url' => env('FONNTE_URL', 'https://api.fonnte.com/send'),
+        'token' => env('FONNTE_TOKEN'),
+    ],
+
 ];
