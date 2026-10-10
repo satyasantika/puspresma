@@ -4,6 +4,7 @@ use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\BukaTautanController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\KebijakanGaleriController;
+use App\Http\Controllers\UnduhBerkasEksporController;
 use App\Livewire\Publik\DetailKompetisi;
 use App\Livewire\Publik\DetailPrestasiPublik;
 use App\Livewire\Publik\GaleriPrestasi;
@@ -31,6 +32,10 @@ Route::get('/masuk', fn () => redirect()->route('filament.admin.auth.login'))->n
 Route::get('/tautan/{tautanBerkas}/buka', BukaTautanController::class)
     ->middleware(['auth', 'throttle:buka-tautan'])
     ->name('tautan.buka');
+
+Route::get('/ekspor/{berkasEkspor}/unduh', UnduhBerkasEksporController::class)
+    ->middleware(['auth', 'throttle:buka-tautan'])
+    ->name('ekspor.unduh');
 
 // Login Google akun kampus (opsional; 404 bila GOOGLE_LOGIN_ENABLED=false, BR-20).
 Route::middleware(['guest', 'throttle:google-callback'])->prefix('auth/google')->group(function () {
