@@ -43,7 +43,7 @@ class RekapKatalogLaporan extends LaporanEkspor
 
     public function baris(array $filter, User $pengguna): Generator
     {
-        foreach ($this->query($filter)->withCount(['minat', 'prestasi'])->lazyById(500, 'id') as $k) {
+        foreach ($this->query($filter)->reorder()->withCount(['minat', 'prestasi'])->lazyById((int) config('puspresma.ekspor.chunk', 500), 'id') as $k) {
             /** @var Kompetisi $k */
             yield [$k->judul, $k->penyelenggara, $k->status->label(), $k->diterbitkan_at?->toDateString(), $k->tenggat_pendaftaran->toDateTimeString(), $k->minat_count, $k->prestasi_count];
         }

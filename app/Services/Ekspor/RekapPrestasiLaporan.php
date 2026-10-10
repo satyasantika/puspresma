@@ -41,7 +41,7 @@ class RekapPrestasiLaporan extends LaporanEkspor
             $with[] = 'snapshotTautan';
         }
 
-        foreach (QueryPrestasiLaporan::bangun($filter, $pengguna)->with($with)->lazyById(500, 'prestasi.id', 'id') as $p) {
+        foreach (QueryPrestasiLaporan::iterasi(QueryPrestasiLaporan::bangun($filter, $pengguna), $with) as $p) {
             /** @var Prestasi $p */
             yield [
                 $p->nomor_registrasi, $p->nama_kegiatan, $p->penyelenggara, $p->jenisKegiatan->nama, $p->bidang->label(), $p->kategoriLomba?->nama,

@@ -46,7 +46,7 @@ class RekapAnggotaLaporan extends LaporanEkspor
         $kontak = $pengguna->can('master.kelola');
 
         /** @var Prestasi $p */
-        foreach (QueryPrestasiLaporan::bangun($filter, $pengguna)->with(['tingkat', 'capaian', 'anggota.mahasiswa', 'anggota.prodi'])->lazyById(500, 'prestasi.id', 'id') as $p) {
+        foreach (QueryPrestasiLaporan::iterasi(QueryPrestasiLaporan::bangun($filter, $pengguna), ['tingkat', 'capaian', 'anggota.mahasiswa', 'anggota.prodi']) as $p) {
             foreach ($p->anggota as $a) {
                 if ($prodi !== null && $a->prodi_id !== $prodi) {
                     continue;

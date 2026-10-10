@@ -5,6 +5,7 @@ namespace App\Services\Ekspor;
 use App\Models\Prestasi;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\LazyCollection;
 
 /** Kueri prestasi bersama untuk laporan: cakupan peran (BR-15), status (BR-24), dan filter. */
 class QueryPrestasiLaporan
@@ -37,5 +38,18 @@ class QueryPrestasiLaporan
             ->when($filter['tingkat_id'] ?? null, fn (Builder $q, $v) => $q->where('prestasi.tingkat_id', $v))
             ->when($filter['capaian_id'] ?? null, fn (Builder $q, $v) => $q->where('prestasi.capaian_id', $v))
             ->orderByDesc('prestasi.tanggal_selesai')->orderBy('prestasi.id');
+    }
+
+    /**
+     * Iterasi aman memori untuk ekspor. Urutan kueri dasar (tanggal) dibuang karena lazyById menomori halaman dengan id;
+     * mempertahankan urutan lain membuat baris terlewat di antara potongan.
+     *
+     * @param  Builder<Prestasi>  $query
+     * @param  list<string>  $with
+     * @return LazyCollection<int, Prestasi>
+     */
+    public static function iterasi(Builder $query, array $with): LazyCollection
+    {
+        return $query->reorder()->with($with)->lazyById((int) config('puspresma.ekspor.chunk', 500), 'prestasi.id', 'id');
     }
 }

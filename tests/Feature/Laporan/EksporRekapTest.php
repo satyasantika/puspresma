@@ -189,3 +189,18 @@ it('menghasilkan PDF rekap pribadi yang hanya memuat prestasi terverifikasi mili
     expect(substr($isi, 0, 4))->toBe('%PDF');
     expect(fn () => app(RekapPribadiPdf::class)->stream($this->fakultas))->toThrow(AuthorizationException::class);
 });
+
+it('tidak melewatkan baris saat ekspor dipotong per chunk walau urutan tanggal berbeda dari urutan id', function () {
+    config(['puspresma.ekspor.chunk' => 2]);
+    foreach (range(1, 7) as $i) {
+        Prestasi::factory()->terverifikasi()->for(Mahasiswa::factory()->for($this->prodiA, 'prodi'), 'pengaju')->create([
+            'nama_kegiatan' => "Prestasi Potongan {$i}", 'tanggal_mulai' => now()->subDays($i * 5)->toDateString(), 'tanggal_selesai' => now()->subDays($i * 5)->toDateString(),
+        ]);
+    }
+
+    foreach (['rekap_prestasi', 'rekap_anggota', 'simkatmawa'] as $jenis) {
+        $respons = app(EksporService::class)->minta(RegistriLaporan::buat($jenis), 'xlsx', [], $this->fakultas);
+        $baris = ($this->baca)($respons);
+        expect(count(array_unique(array_column($baris, $jenis === 'simkatmawa' ? 'Nama Kegiatan' : 'Kegiatan'))))->toBe(9);
+    }
+});
