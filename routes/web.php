@@ -5,6 +5,7 @@ use App\Http\Controllers\BukaTautanController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\KebijakanGaleriController;
 use App\Http\Controllers\UnduhBerkasEksporController;
+use App\Http\Controllers\VerifikasiSuratController;
 use App\Livewire\Publik\DetailKompetisi;
 use App\Livewire\Publik\DetailPrestasiPublik;
 use App\Livewire\Publik\GaleriPrestasi;
@@ -36,6 +37,8 @@ Route::get('/tautan/{tautanBerkas}/buka', BukaTautanController::class)
 Route::get('/ekspor/{berkasEkspor}/unduh', UnduhBerkasEksporController::class)
     ->middleware(['auth', 'throttle:buka-tautan'])
     ->name('ekspor.unduh');
+
+Route::get('/verifikasi/{id}', VerifikasiSuratController::class)->middleware('throttle:verifikasi-surat')->name('verifikasi.surat');
 
 // Login Google akun kampus (opsional; 404 bila GOOGLE_LOGIN_ENABLED=false, BR-20).
 Route::middleware(['guest', 'throttle:google-callback'])->prefix('auth/google')->group(function () {

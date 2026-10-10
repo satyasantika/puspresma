@@ -27,6 +27,7 @@ class PengaturanSeeder extends Seeder
             ['kunci' => 'awal_tahun_akademik_bulan', 'nilai' => '8', 'tipe' => 'int', 'grup' => 'validasi', 'keterangan' => 'Bulan awal tahun akademik 1–12 (perlu verifikasi).'],
             ['kunci' => 'iku_tingkat_minimal', 'nilai' => 'nasional', 'tipe' => 'string', 'grup' => 'laporan', 'keterangan' => 'Tingkat minimal pemenuh IKU mahasiswa berprestasi (lokal/wilayah/nasional/internasional); definisi IKU perlu verifikasi.'],
             ['kunci' => 'iku_hanya_juara', 'nilai' => '1', 'tipe' => 'bool', 'grup' => 'laporan', 'keterangan' => 'Hanya capaian juara yang dihitung pada IKU; definisi IKU perlu verifikasi.'],
+            ['kunci' => 'format_nomor_surat_prestasi', 'nilai' => '{urut}/PRS/FKIP/{tahun}', 'tipe' => 'string', 'grup' => 'surat', 'keterangan' => 'Format nomor surat keterangan prestasi; placeholder {urut} dan {tahun}. Format perlu ditetapkan bagian tata usaha.'],
             ['kunci' => 'wa_aktif', 'nilai' => '0', 'tipe' => 'bool', 'grup' => 'whatsapp', 'keterangan' => 'Aktifkan pengiriman notifikasi WhatsApp (Fonnte).'],
             ['kunci' => 'teks_persetujuan_publikasi', 'nilai' => self::TEKS_PERSETUJUAN, 'tipe' => 'string', 'grup' => 'galeri', 'keterangan' => 'Teks persetujuan publikasi (ditinjau bagian hukum).'],
         ];

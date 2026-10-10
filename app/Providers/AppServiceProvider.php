@@ -116,6 +116,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)
             ->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
 
+        RateLimiter::for('verifikasi-surat', fn (Request $request) => Limit::perMinute(30)->by($request->ip()));
         RateLimiter::for('galeri', fn (Request $request) => Limit::perMinute(60)->by($request->ip()));
         RateLimiter::for('katalog-publik', fn (Request $request) => Limit::perMinute(60)->by($request->ip()));
         RateLimiter::for('google-callback', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
