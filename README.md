@@ -70,6 +70,22 @@ Laravel Boost terpasang (`boost.json`, `.mcp.json` lokal memanggil `puspresma-ph
 
 Gerbang kualitas sebelum commit: `psp ./vendor/bin/pint --test && psp ./vendor/bin/phpstan analyse --memory-limit=1G && psp php artisan test`.
 
+## Memperbarui panduan
+
+Panduan pengguna HTML per peran ada di `public/panduan/` (tampil di `/panduan/index.html`, ditautkan dari landing page dan menu pengguna kedua panel).
+Panduan Markdown di `docs/panduan/` dirender di dalam aplikasi pada `/bantuan` (menu **Bantuan**).
+
+Tangkapan layar dibuat otomatis (hanya lokal): isi `PANDUAN_PASSWORD` di `.env`, pastikan `php artisan filament:assets` sudah dijalankan, lalu:
+
+```bash
+psp php artisan migrate:fresh --seeder=PanduanSeeder    # akun demo panduan.<peran>@contoh.test + data rekaan
+composer panduan                                         # (host) seeder + Playwright + HTML; atau jalankan manual:
+PANDUAN_PASSWORD=... node tests/panduan/tangkap.mjs [peran]   # butuh paket `playwright` (PLAYWRIGHT_PATH bila di luar proyek)
+node tests/panduan/bangun-html.mjs                       # menyusun ulang public/panduan/*.html dari alur.json + peran.json
+```
+
+Alur layar per peran ada di `tests/panduan/alur.json`; teks peran di `tests/panduan/peran.json`. Jika Chromium di kontainer Playwright crash (SIGTRAP di sebagian host WSL), jalankan skrip langsung di host.
+
 ## Optimasi produksi
 
 Jalankan setelah setiap deploy:

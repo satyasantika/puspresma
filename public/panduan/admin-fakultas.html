@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panduan Admin Fakultas · Panduan Puspresma FKIP Unsil</title><style>
+:root{--ink:#1e293b;--muted:#475569;--garis:#e2e8f0;--aksen:#3730a3;--latar:#f8fafc}
+*{box-sizing:border-box}body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--latar)}
+header,main,footer{max-width:60rem;margin:0 auto;padding:1rem}header{border-bottom:1px solid var(--garis)}
+a{color:var(--aksen)}h1{font-size:1.75rem;margin:.5rem 0}h2{font-size:1.25rem;margin-top:2rem}
+nav.peran{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}nav.peran a{padding:.25rem .75rem;border:1px solid var(--garis);border-radius:.375rem;background:#fff;text-decoration:none}
+nav.peran a[aria-current]{background:var(--aksen);color:#fff;border-color:var(--aksen)}
+ol.langkah{padding-left:1.25rem}ol.langkah li{margin:1.5rem 0}figure{margin:.75rem 0}figure img{max-width:100%;height:auto;border:1px solid var(--garis);border-radius:.5rem;background:#fff}
+figure.ponsel img{max-width:16rem}figcaption{font-size:.875rem;color:var(--muted)}dt{font-weight:600;margin-top:.75rem}dd{margin:0 0 .5rem}
+.kartu{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr))}.kartu a{display:block;padding:1rem;background:#fff;border:1px solid var(--garis);border-radius:.5rem;text-decoration:none}
+footer{color:var(--muted);font-size:.875rem;border-top:1px solid var(--garis)}
+@media print{header nav,.kartu a{border:0}body{background:#fff}figure img{max-width:70%}a{color:inherit}}</style></head>
+<body><header><strong>Panduan Pengguna Puspresma FKIP Unsil</strong>
+<nav class="peran" aria-label="Panduan per peran"><a href="index.html">Beranda panduan</a><a href="mahasiswa.html">Mahasiswa</a><a href="dosen.html">Dosen Pembimbing</a><a href="admin-prodi.html">Admin Prodi</a><a href="admin-fakultas.html" aria-current="page">Admin Fakultas</a><a href="pimpinan.html">Pimpinan</a><a href="super-admin.html">Super Admin</a></nav></header>
+<main>
+<h1>Panduan Admin Fakultas</h1>
+<h2>Tujuan</h2><p>Memegang verifikasi akhir, meninjau duplikat, mengelola impor, katalog, galeri, SIMKATMAWA, surat keterangan, pengaturan, dan bobot poin.</p>
+<h2>Cara masuk</h2><p>Masuk di panel Admin. Peran ini wajib mengaktifkan autentikasi dua langkah (aplikasi authenticator) pada login pertama.</p>
+<h2>Langkah-langkah</h2><ol class="langkah"><li><strong>Dasbor fakultas.</strong> Ringkasan seluruh fakultas dan kartu antrean.<figure><img src="img/admin-fakultas/01-dasbor.png" alt="Tangkapan layar: Dasbor fakultas" loading="lazy"><figcaption>Dasbor fakultas</figcaption></figure></li>
+<li><strong>Antrean verifikasi.</strong> Periksa prestasi, buka setiap tautan bukti (wajib), lalu verifikasi atau kembalikan dengan catatan.<figure><img src="img/admin-fakultas/02-antrean.png" alt="Tangkapan layar: Antrean verifikasi" loading="lazy"><figcaption>Antrean verifikasi</figcaption></figure></li>
+<li><strong>Kandidat duplikat.</strong> Tinjau pasangan prestasi yang mirip; kandidat belum ditinjau memblokir verifikasi.<figure><img src="img/admin-fakultas/03-duplikat.png" alt="Tangkapan layar: Kandidat duplikat" loading="lazy"><figcaption>Kandidat duplikat</figcaption></figure></li>
+<li><strong>Impor mahasiswa.</strong> Impor Excel/CSV master mahasiswa (upsert berdasarkan NPM).<figure><img src="img/admin-fakultas/04-impor.png" alt="Tangkapan layar: Impor mahasiswa" loading="lazy"><figcaption>Impor mahasiswa</figcaption></figure></li>
+<li><strong>Katalog kompetisi.</strong> Kelola informasi lomba; yang lewat tenggat diarsipkan otomatis.<figure><img src="img/admin-fakultas/05-katalog.png" alt="Tangkapan layar: Katalog kompetisi" loading="lazy"><figcaption>Katalog kompetisi</figcaption></figure></li>
+<li><strong>Moderasi galeri.</strong> Sembunyikan prestasi dari galeri publik bila perlu.<figure><img src="img/admin-fakultas/06-galeri.png" alt="Tangkapan layar: Moderasi galeri" loading="lazy"><figcaption>Moderasi galeri</figcaption></figure></li>
+<li><strong>Ekspor SIMKATMAWA.</strong> Unduh kolom terpetakan dan tandai prestasi dilaporkan.<figure><img src="img/admin-fakultas/07-simkatmawa.png" alt="Tangkapan layar: Ekspor SIMKATMAWA" loading="lazy"><figcaption>Ekspor SIMKATMAWA</figcaption></figure></li>
+<li><strong>Surat keterangan.</strong> Terbitkan dan cetak surat ber-QR.<figure><img src="img/admin-fakultas/08-surat.png" alt="Tangkapan layar: Surat keterangan" loading="lazy"><figcaption>Surat keterangan</figcaption></figure></li>
+<li><strong>Pengaturan sistem.</strong> Ambang, tahap verifikasi prodi, dan mode poin.<figure><img src="img/admin-fakultas/09-pengaturan.png" alt="Tangkapan layar: Pengaturan sistem" loading="lazy"><figcaption>Pengaturan sistem</figcaption></figure></li>
+<li><strong>Matriks bobot poin.</strong> Atur bobot jenis × tingkat × capaian yang berlaku per tanggal.<figure><img src="img/admin-fakultas/10-bobot-poin.png" alt="Tangkapan layar: Matriks bobot poin" loading="lazy"><figcaption>Matriks bobot poin</figcaption></figure></li></ol>
+<h2>Tanya-jawab</h2><dl><dt>Tombol verifikasi nonaktif.</dt><dd>Periksa kandidat duplikat yang belum ditinjau, tautan yang belum dibuka, atau konfirmasi pembimbing yang disangkal.</dd><dt>Mengganti tautan setelah terverifikasi?</dt><dd>Hanya admin fakultas dengan catatan; URL lama dan baru dicatat.</dd></dl></main>
+<footer>Diperbarui 10 Oktober 2026 · Aplikasi versi 1.0.0 · Butuh bantuan? Hubungi admin fakultas FKIP Unsil.</footer></body></html>

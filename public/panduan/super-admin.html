@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panduan Super Admin · Panduan Puspresma FKIP Unsil</title><style>
+:root{--ink:#1e293b;--muted:#475569;--garis:#e2e8f0;--aksen:#3730a3;--latar:#f8fafc}
+*{box-sizing:border-box}body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--latar)}
+header,main,footer{max-width:60rem;margin:0 auto;padding:1rem}header{border-bottom:1px solid var(--garis)}
+a{color:var(--aksen)}h1{font-size:1.75rem;margin:.5rem 0}h2{font-size:1.25rem;margin-top:2rem}
+nav.peran{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}nav.peran a{padding:.25rem .75rem;border:1px solid var(--garis);border-radius:.375rem;background:#fff;text-decoration:none}
+nav.peran a[aria-current]{background:var(--aksen);color:#fff;border-color:var(--aksen)}
+ol.langkah{padding-left:1.25rem}ol.langkah li{margin:1.5rem 0}figure{margin:.75rem 0}figure img{max-width:100%;height:auto;border:1px solid var(--garis);border-radius:.5rem;background:#fff}
+figure.ponsel img{max-width:16rem}figcaption{font-size:.875rem;color:var(--muted)}dt{font-weight:600;margin-top:.75rem}dd{margin:0 0 .5rem}
+.kartu{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr))}.kartu a{display:block;padding:1rem;background:#fff;border:1px solid var(--garis);border-radius:.5rem;text-decoration:none}
+footer{color:var(--muted);font-size:.875rem;border-top:1px solid var(--garis)}
+@media print{header nav,.kartu a{border:0}body{background:#fff}figure img{max-width:70%}a{color:inherit}}</style></head>
+<body><header><strong>Panduan Pengguna Puspresma FKIP Unsil</strong>
+<nav class="peran" aria-label="Panduan per peran"><a href="index.html">Beranda panduan</a><a href="mahasiswa.html">Mahasiswa</a><a href="dosen.html">Dosen Pembimbing</a><a href="admin-prodi.html">Admin Prodi</a><a href="admin-fakultas.html">Admin Fakultas</a><a href="pimpinan.html">Pimpinan</a><a href="super-admin.html" aria-current="page">Super Admin</a></nav></header>
+<main>
+<h1>Panduan Super Admin</h1>
+<h2>Tujuan</h2><p>Mengelola pengguna, peran, MFA, antrean, dan backup. Super-admin tidak memverifikasi prestasi (pemisahan tugas).</p>
+<h2>Cara masuk</h2><p>Masuk di panel Admin; wajib autentikasi dua langkah.</p>
+<h2>Langkah-langkah</h2><ol class="langkah"><li><strong>Pengguna dan peran.</strong> Buat akun, tetapkan peran dan prodi, nonaktifkan akun yang tidak dipakai.<figure><img src="img/super-admin/01-pengguna.png" alt="Tangkapan layar: Pengguna dan peran" loading="lazy"><figcaption>Pengguna dan peran</figcaption></figure></li>
+<li><strong>Log aktivitas.</strong> Jejak audit: pembukaan tautan, transisi status, dan perubahan data.<figure><img src="img/super-admin/02-log.png" alt="Tangkapan layar: Log aktivitas" loading="lazy"><figcaption>Log aktivitas</figcaption></figure></li>
+<li><strong>Berkas ekspor.</strong> Hasil ekspor besar dari antrean (tersedia ≤ 24 jam).<figure><img src="img/super-admin/03-berkas-ekspor.png" alt="Tangkapan layar: Berkas ekspor" loading="lazy"><figcaption>Berkas ekspor</figcaption></figure></li></ol>
+<h2>Tanya-jawab</h2><dl><dt>Notifikasi backup tidak masuk.</dt><dd>Pastikan akun super-admin memiliki surel dan SMTP terisi.</dd><dt>Di mana prosedur pulih?</dt><dd>Lihat docs/PEMULIHAN.md di repositori.</dd></dl></main>
+<footer>Diperbarui 10 Oktober 2026 · Aplikasi versi 1.0.0 · Butuh bantuan? Hubungi admin fakultas FKIP Unsil.</footer></body></html>
