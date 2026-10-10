@@ -7,6 +7,7 @@ use App\Enums\BidangPrestasi;
 use App\Enums\ModaKegiatan;
 use App\Enums\StatusKonfirmasiPembimbing;
 use App\Enums\StatusPrestasi;
+use App\Enums\StatusTinjauDuplikat;
 use App\Models\Concerns\TercatatAktivitas;
 use App\Services\NormalisasiTeks;
 use Database\Factories\PrestasiFactory;
@@ -198,11 +199,16 @@ class Prestasi extends Model
         return $this->hasMany(SnapshotTautanVerifikasi::class)->orderBy('created_at');
     }
 
+    /** @return HasMany<KandidatDuplikat, $this> */
+    public function kandidatDuplikat(): HasMany
+    {
+        return $this->hasMany(KandidatDuplikat::class);
+    }
+
     /** Ada kandidat duplikat yang belum ditinjau; memblokir verifikasi (BR-10). */
     public function adaKandidatDuplikatTerbuka(): bool
     {
-        // TODO F5.2: periksa kandidat_duplikat berstatus belum_ditinjau.
-        return false;
+        return $this->kandidatDuplikat()->where('status_tinjau', StatusTinjauDuplikat::BelumDitinjau->value)->exists();
     }
 
     /** @return HasMany<RiwayatStatusPrestasi, $this> */
