@@ -98,6 +98,18 @@ class Prestasi extends Model
     }
 
     /**
+     * Setara SQL dari tampilDiGaleri() tanpa pemeriksaan pengaturan global galeri_aktif (BR-16).
+     *
+     * @param  Builder<static>  $query
+     */
+    public function scopeTampilDiGaleri(Builder $query): void
+    {
+        $query->where($query->qualifyColumn('status'), StatusPrestasi::Terverifikasi->value)
+            ->where($query->qualifyColumn('disembunyikan_dari_galeri'), false)
+            ->whereHas('anggota', fn (Builder $q) => $q->where('is_pengaju', true)->where('setuju_publikasi', true));
+    }
+
+    /**
      * Prestasi yang memiliki minimal satu anggota dari prodi tersebut (BR-15).
      *
      * @param  Builder<static>  $query
