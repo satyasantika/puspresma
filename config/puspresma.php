@@ -50,6 +50,12 @@ return [
 
     'google_login' => (bool) env('GOOGLE_LOGIN_ENABLED', false),
 
+    /**
+     * Pola NPM dari bagian lokal surel mahasiswa (cadangan bila surel belum tercatat di master).
+     * Grup 1 = NPM. Pola ini perlu diverifikasi terhadap format surel kampus.
+     */
+    'google_npm_pola' => env('GOOGLE_NPM_POLA', '/^(\\d{8,20})$/'),
+
     /*
     |--------------------------------------------------------------------------
     | Akun super-admin awal (SuperAdminSeeder)
