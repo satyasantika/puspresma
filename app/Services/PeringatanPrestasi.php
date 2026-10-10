@@ -14,15 +14,15 @@ class PeringatanPrestasi
         $prestasi->loadMissing('tingkat');
         $hasil = [];
 
-        $adaDuplikat = $prestasi->getAttributes()['ada_duplikat'] ?? null;
-        if ($adaDuplikat === null ? $prestasi->adaKandidatDuplikatTerbuka() : (bool) $adaDuplikat) {
+        // Penanda dari subquery tabel (null = tidak ada); tanpa itu, jatuh ke kueri per record.
+        $atribut = $prestasi->getAttributes();
+        if (array_key_exists('ada_duplikat', $atribut) ? (bool) $atribut['ada_duplikat'] : $prestasi->adaKandidatDuplikatTerbuka()) {
             $hasil[] = 'Ada kandidat duplikat yang belum ditinjau.';
         }
 
-        $bermasalah = $prestasi->getAttributes()['tautan_bermasalah'] ?? null;
-        if ($bermasalah === null
-            ? $prestasi->tautanBukti()->where('status_cek', 'tidak_dapat_diakses')->exists()
-            : (bool) $bermasalah) {
+        if (array_key_exists('tautan_bermasalah', $atribut)
+            ? (bool) $atribut['tautan_bermasalah']
+            : $prestasi->tautanBukti()->where('status_cek', 'tidak_dapat_diakses')->exists()) {
             $hasil[] = 'Ada tautan bukti yang tidak dapat diakses (mungkin dibagikan terbatas).';
         }
 

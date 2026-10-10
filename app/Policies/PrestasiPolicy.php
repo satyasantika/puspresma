@@ -35,7 +35,9 @@ class PrestasiPolicy
 
         return $pelaku->can('prestasi.lihat-prodi')
             && $pelaku->prodi_id !== null
-            && $prestasi->anggota()->where('prodi_id', $pelaku->prodi_id)->exists();
+            && ($prestasi->relationLoaded('anggota')
+                ? $prestasi->anggota->contains('prodi_id', $pelaku->prodi_id)
+                : $prestasi->anggota()->where('prodi_id', $pelaku->prodi_id)->exists());
     }
 
     public function create(User $pelaku): bool
@@ -171,8 +173,14 @@ class PrestasiPolicy
     {
         $pelaku->loadMissing('mahasiswa');
 
-        return $pelaku->mahasiswa !== null
-            && $prestasi->anggota()->where('mahasiswa_id', $pelaku->mahasiswa->id)->exists();
+        if ($pelaku->mahasiswa === null) {
+            return false;
+        }
+
+        // Pakai relasi yang sudah dimuat (tabel) agar tidak ada kueri per baris.
+        return $prestasi->relationLoaded('anggota')
+            ? $prestasi->anggota->contains('mahasiswa_id', $pelaku->mahasiswa->id)
+            : $prestasi->anggota()->where('mahasiswa_id', $pelaku->mahasiswa->id)->exists();
     }
 
     public function pembimbing(User $pelaku, Prestasi $prestasi): bool

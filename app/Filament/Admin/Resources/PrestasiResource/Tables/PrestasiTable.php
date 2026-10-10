@@ -26,6 +26,7 @@ use Filament\Tables\Table;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class PrestasiTable
 {
@@ -54,7 +55,7 @@ class PrestasiTable
                             ->where('status_cek', 'tidak_dapat_diakses')->limit(1),
                         'tautan_bermasalah',
                     )
-                    ->with(['pengaju', 'prodi', 'tingkat', 'capaian']);
+                    ->with(['pengaju', 'prodi', 'tingkat', 'capaian', 'anggota']);
             })
             ->defaultSort('diajukan_at', 'desc')
             ->columns([
@@ -81,11 +82,11 @@ class PrestasiTable
                     ->tooltip(fn (Prestasi $record): ?string => implode(' ', PeringatanPrestasi::untuk($record)) ?: null),
             ])
             ->filters([
-                SelectFilter::make('prodi_id')->label('Prodi')->options(fn () => Prodi::orderBy('nama')->pluck('nama', 'id')->all()),
+                SelectFilter::make('prodi_id')->label('Prodi')->options(fn () => Cache::remember('opsi:filter-prodi', 300, fn () => Prodi::orderBy('nama')->pluck('nama', 'id')->all())),
                 SelectFilter::make('tahun')->label('Tahun')->options(fn () => Prestasi::query()->distinct()->orderByDesc('tahun')->pluck('tahun', 'tahun')->all()),
                 SelectFilter::make('jenis_kegiatan_id')->label('Jenis')->options(fn () => app(OpsiMaster::class)->jenisKegiatan()),
-                SelectFilter::make('tingkat_id')->label('Tingkat')->options(fn () => Tingkat::orderBy('urutan')->pluck('nama', 'id')->all()),
-                SelectFilter::make('capaian_id')->label('Capaian')->options(fn () => Capaian::orderBy('nama')->pluck('nama', 'id')->all()),
+                SelectFilter::make('tingkat_id')->label('Tingkat')->options(fn () => Cache::remember('opsi:filter-tingkat', 300, fn () => Tingkat::orderBy('urutan')->pluck('nama', 'id')->all())),
+                SelectFilter::make('capaian_id')->label('Capaian')->options(fn () => Cache::remember('opsi:filter-capaian', 300, fn () => Capaian::orderBy('nama')->pluck('nama', 'id')->all())),
                 SelectFilter::make('status')->label('Status')->options(collect(StatusPrestasi::cases())->mapWithKeys(fn ($s) => [$s->value => $s->label()])),
                 SelectFilter::make('dilaporkan')->label('Dilaporkan SIMKATMAWA')->options(['ya' => 'Sudah dilaporkan', 'belum' => 'Belum dilaporkan'])
                     ->query(fn (Builder $query, array $data): Builder => match ($data['value'] ?? null) {
