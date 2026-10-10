@@ -4,6 +4,20 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ## [Belum dirilis]
 
+## [0.5.0] - 2026-10-10
+
+Fase 5: verifikasi, duplikat, pembimbing & poin.
+
+### Ditambahkan
+- Action verifikasi (`LoloskanTahapProdi`, `KembalikanUntukPerbaikan`, `TolakPrestasi`, `VerifikasiPrestasi`, `BukaVerifikasiPrestasi`) di atas `TransisiStatus`, `PrestasiPolicy` lengkap (tahap prodi opsional BR-09, cakupan prodi BR-15, super-admin ditolak pada seluruh ability verifikasi) dan `snapshot_tautan_verifikasi` yang tidak dapat diubah (BR-28/29).
+- Deteksi duplikat (`DeteksiDuplikatService`, job `DeteksiDuplikatPrestasi`, `kandidat_duplikat`, `TinjauKandidatDuplikat`) yang memblokir verifikasi sampai ditinjau (BR-10).
+- Panel admin: antrean prestasi dengan tab, ikon peringatan, pratinjau tautan bukti, relation manager (kandidat duplikat, riwayat, snapshot), aksi verifikasi, ganti tautan prestasi terverifikasi (BR-30), input atas nama mahasiswa dan daftar global kandidat duplikat.
+- Konfirmasi dosen pembimbing (`KonfirmasiPembimbingan`/`SangkalPembimbingan`, resource Konfirmasi Pembimbing dan Prestasi Bimbingan dengan badge).
+- Poin prestasi: `HitungPoinPrestasi` (snapshot bcmath, mode penuh/dibagi), hitung ulang massal, Poin Saya (per tahun dan tahun akademik), Peringkat Poin admin.
+
+### Diubah
+- Event `StatusPrestasiBerubah` dikirim setelah commit; ability `kembalikan`, `tolak`, `gantiTautan`, `tinjauDuplikat` ikut dikecualikan bagi super-admin.
+
 ## [0.4.0] - 2026-10-10
 
 Fase 4: pengajuan prestasi & bukti.
