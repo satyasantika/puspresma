@@ -18,6 +18,10 @@ class GantiSandi
 {
     public function jalankan(User $user, #[SensitiveParameter] string $sandiLama, #[SensitiveParameter] string $sandiBaru): void
     {
+        if (session()->has('impersonator_id')) {
+            throw ValidationException::withMessages(['sandi_lama' => 'Kata sandi tidak dapat diganti selama sesi "masuk sebagai".']);
+        }
+
         if (! Hash::check($sandiLama, $user->getAuthPassword())) {
             throw ValidationException::withMessages(['sandi_lama' => 'Kata sandi saat ini tidak sesuai.']);
         }

@@ -4,6 +4,7 @@ use App\Http\Controllers\BantuanController;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\BukaTautanController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\ImpersonasiController;
 use App\Http\Controllers\KebijakanGaleriController;
 use App\Http\Controllers\UnduhBerkasEksporController;
 use App\Http\Controllers\VerifikasiSuratController;
@@ -43,6 +44,12 @@ Route::get('/ekspor/{berkasEkspor}/unduh', UnduhBerkasEksporController::class)
 Route::middleware('auth')->prefix('bantuan')->group(function () {
     Route::get('/', [BantuanController::class, 'index'])->name('bantuan.index');
     Route::get('/{peran}', [BantuanController::class, 'show'])->name('bantuan.show');
+});
+
+// "Masuk sebagai" (darurat, super-admin). Mulai lewat tautan bertanda tangan; akhiri lewat POST dari banner.
+Route::middleware('auth')->group(function () {
+    Route::get('/impersonasi/{pengguna}', [ImpersonasiController::class, 'mulai'])->middleware(['signed', 'throttle:10,1'])->name('impersonasi.mulai');
+    Route::post('/impersonasi-akhiri', [ImpersonasiController::class, 'akhiri'])->name('impersonasi.akhiri');
 });
 
 Route::get('/verifikasi/{id}', VerifikasiSuratController::class)->middleware('throttle:verifikasi-surat')->name('verifikasi.surat');

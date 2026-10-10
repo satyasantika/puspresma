@@ -6,6 +6,7 @@ use App\Actions\Pengguna\HapusPengguna;
 use App\Actions\Pengguna\ResetMfaPengguna;
 use App\Actions\Pengguna\SimpanPengguna;
 use App\Actions\Pengguna\WajibkanGantiSandi;
+use App\Filament\Admin\Resources\UserResource\Actions\AksiMasukSebagai;
 use App\Models\User;
 use Database\Seeders\PeranDanIzinSeeder;
 use Filament\Actions\Action;
@@ -62,6 +63,7 @@ class UsersTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                AksiMasukSebagai::buat(),
                 Action::make('resetMfa')->label('Reset MFA')->icon('heroicon-o-key')->color('warning')
                     ->visible(fn (User $record): bool => (bool) auth()->user()?->can('resetMfa', $record))
                     ->requiresConfirmation()

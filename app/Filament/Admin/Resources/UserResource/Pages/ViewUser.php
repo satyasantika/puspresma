@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\UserResource\Pages;
 
 use App\Filament\Admin\Resources\UserResource;
+use App\Filament\Admin\Resources\UserResource\Actions\AksiMasukSebagai;
 use App\Models\User;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
@@ -22,6 +23,6 @@ class ViewUser extends ViewRecord
 
     protected function getHeaderActions(): array
     {
-        return [EditAction::make()];
+        return [AksiMasukSebagai::buat(), EditAction::make()];
     }
 }

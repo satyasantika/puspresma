@@ -18,7 +18,7 @@ class WajibGantiSandi
     {
         $user = Filament::auth()->user();
 
-        if (! $user instanceof User || ! $user->wajib_ganti_sandi || $this->diizinkan($request)) {
+        if (! $user instanceof User || ! $user->wajib_ganti_sandi || session()->has('impersonator_id') || $this->diizinkan($request)) {
             return $next($request);
         }
 
