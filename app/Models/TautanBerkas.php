@@ -7,9 +7,11 @@ use App\Enums\PenyediaTautan;
 use App\Enums\StatusCekTautan;
 use App\Models\Concerns\TercatatAktivitas;
 use App\Observers\TautanBerkasObserver;
+use Database\Factories\TautanBerkasFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -29,7 +31,8 @@ use Illuminate\Support\Carbon;
 #[ObservedBy(TautanBerkasObserver::class)]
 class TautanBerkas extends Model
 {
-    use HasUuids, SoftDeletes, TercatatAktivitas;
+    /** @use HasFactory<TautanBerkasFactory> */
+    use HasFactory, HasUuids, SoftDeletes, TercatatAktivitas;
 
     protected $table = 'tautan_berkas';
 

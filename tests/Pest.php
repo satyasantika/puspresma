@@ -8,5 +8,9 @@ pest()->extend(TestCase::class)->beforeEach(fn () => $this->withoutVite())->in('
 pest()->extend(TestCase::class)->in('Arch');
 pest()->extend(PHPUnit\Framework\TestCase::class)->in('Unit');
 
-// Test fitur di folder bertabel (Auth, Master, Impor, Pengaturan, Poin, Berkas) memakai basis data uji yang selalu bersih.
-pest()->use(RefreshDatabase::class)->in('Feature/Auth', 'Feature/Master', 'Feature/Impor', 'Feature/Pengaturan', 'Feature/Poin', 'Feature/Berkas');
+// Test fitur di folder bertabel (semua folder domain di bawah) memakai basis data uji yang selalu bersih.
+pest()->use(RefreshDatabase::class)->in(
+    'Feature/Auth', 'Feature/Master', 'Feature/Impor', 'Feature/Pengaturan', 'Feature/Poin', 'Feature/Berkas',
+    'Feature/Prestasi', 'Feature/Verifikasi', 'Feature/Alur', 'Feature/Katalog', 'Feature/Galeri',
+    'Feature/Notifikasi', 'Feature/Jadwal', 'Feature/Laporan', 'Feature/Surat', 'Feature/Keamanan',
+);
