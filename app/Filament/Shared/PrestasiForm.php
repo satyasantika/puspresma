@@ -8,6 +8,7 @@ use App\Enums\BentukPartisipasi;
 use App\Enums\BidangPrestasi;
 use App\Enums\ModaKegiatan;
 use App\Models\Dosen;
+use App\Models\Kompetisi;
 use App\Models\Mahasiswa;
 use App\Rules\TautanBerkasValid;
 use App\Services\OpsiMaster;
@@ -53,6 +54,21 @@ class PrestasiForm
                 ->getSearchResultsUsing(fn (string $search): array => self::cariMahasiswa($search))
                 ->getOptionLabelUsing(fn ($value): ?string => self::labelMahasiswa((string) $value))
                 ->helperText('Prestasi dicatat atas nama mahasiswa ini; ia menjadi anggota dan pengaju.'),
+            Select::make('kompetisi_id')->label('Dari katalog (opsional)')->searchable()->columnSpanFull()
+                ->options(fn (): array => self::opsiKatalog())->live()
+                ->afterStateUpdated(function (?string $state, Set $set): void {
+                    $kompetisi = $state ? Kompetisi::find($state) : null;
+                    if ($kompetisi === null) {
+                        return;
+                    }
+                    $set('nama_kegiatan', $kompetisi->judul);
+                    $set('penyelenggara', $kompetisi->penyelenggara);
+                    $set('jenis_kegiatan_id', $kompetisi->jenis_kegiatan_id);
+                    $set('kategori_lomba_id', $kompetisi->kategori_lomba_id);
+                    $set('tingkat_id', $kompetisi->tingkat_id);
+                    $set('url_kegiatan', $kompetisi->url_pendaftaran);
+                })
+                ->helperText('Mengisi nama kegiatan, penyelenggara, jenis, kategori, tingkat, dan tautan dari katalog.'),
             Select::make('jenis_kegiatan_id')->label('Jenis kegiatan')
                 ->options(fn () => app(OpsiMaster::class)->jenisKegiatan())->required()->live()
                 ->afterStateUpdated(function (Set $set): void {
@@ -183,6 +199,18 @@ class PrestasiForm
                         : 'Pemeriksaan keteraksesan dijalankan setelah disimpan.')->color('gray')->columnSpanFull(),
                 ]),
         ]);
+    }
+
+    /**
+     * Kompetisi terbit/diarsipkan dalam 2 tahun terakhir untuk prapengisian.
+     *
+     * @return array<string, string>
+     */
+    private static function opsiKatalog(): array
+    {
+        return Kompetisi::query()->whereIn('status', ['terbit', 'diarsipkan'])
+            ->where('tenggat_pendaftaran', '>=', now()->subYears(2))
+            ->orderByDesc('tenggat_pendaftaran')->limit(100)->pluck('judul', 'id')->all();
     }
 
     /** @return array<string, string> */

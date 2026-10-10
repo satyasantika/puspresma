@@ -32,7 +32,7 @@ class SimpanPrestasi
         'jenis_kegiatan_id', 'bidang', 'kategori_lomba_id', 'nama_kegiatan', 'judul_karya', 'penyelenggara', 'url_kegiatan',
         'tanggal_mulai', 'tanggal_selesai', 'moda', 'lokasi', 'negara_penyelenggara', 'deskripsi', 'tingkat_id', 'capaian_id',
         'capaian_keterangan', 'bentuk', 'jumlah_peserta', 'jumlah_pt_peserta', 'jumlah_negara_peserta', 'negara_peserta',
-        'nomor_sertifikat',
+        'nomor_sertifikat', 'kompetisi_id',
     ];
 
     public function __construct(private readonly OpsiMaster $opsi) {}
@@ -113,6 +113,7 @@ class SimpanPrestasi
             'jumlah_negara_peserta' => [Rule::requiredIf($kodeTingkat === 'internasional'), 'nullable', 'integer', 'min:1'],
             'negara_peserta' => [Rule::requiredIf($kodeTingkat === 'internasional'), 'nullable', 'string', 'max:2000'],
             'nomor_sertifikat' => ['nullable', 'string', 'max:100'],
+            'kompetisi_id' => ['nullable', 'exists:kompetisi,id'],
         ], [], self::atribut());
 
         $nilai = collect($validator->validate())->only(self::KOLOM)
