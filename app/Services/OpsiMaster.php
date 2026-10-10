@@ -53,4 +53,11 @@ class OpsiMaster
         return Cache::rememberForever("master:capaian:{$jenisId}",
             fn () => Capaian::query()->aktif()->where('jenis_kegiatan_id', $jenisId)->terurut()->pluck('nama', 'id')->all());
     }
+
+    /** Kode tingkat berdasarkan id (mis. nasional/internasional) untuk validasi kondisional. */
+    public function kodeTingkat(string $tingkatId): ?string
+    {
+        return Cache::rememberForever('master:tingkat-kode',
+            fn () => Tingkat::query()->pluck('kode', 'id')->all())[$tingkatId] ?? null;
+    }
 }
