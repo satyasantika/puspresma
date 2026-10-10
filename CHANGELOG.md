@@ -4,7 +4,11 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ## [Belum dirilis]
 
-### Ditambahkan
+## [1.0.0] - 2026-10-10
+
+Rilis produksi pertama. Fase 9: pengerasan dan rilis.
+
+### Ditambahkan (Fase 9)
 - Panduan pengguna per peran (`docs/panduan/*.md`) dirender di `/bantuan/{peran}`; menu **Bantuan** di kedua panel (F9.5).
 - Backup harian database terenkripsi (`spatie/laravel-backup`), jadwal, dan `docs/PEMULIHAN.md` (F9.4).
 - Dockerfile/compose produksi: `APP_VERSION`, `RUN_MIGRATIONS` opt-in, healthcheck `/api/health`, `icons:cache` (F9.3).
@@ -14,6 +18,34 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ### Diperbaiki
 - Tidak ada temuan UAT yang diserahkan penguji manusia pada F9.5; daftar temuan masih kosong. Temuan yang masuk kelak dicatat di sini beserta test regresinya.
+
+### Tambahan Fase 9
+- Header keamanan (CSP kecuali lokal, HSTS hanya produksi), matriks otorisasi per peran, uji XSS, dan uji arsitektur (F9.1).
+- Halaman panduan HTML per peran dengan tangkapan layar Playwright di `public/panduan/` (ditautkan dari landing page dan menu pengguna), `PanduanSeeder` (hanya lokal), skrip `tests/panduan/` dan `composer panduan` (F9.6).
+
+### Ringkasan fitur v1.0.0
+- Pengajuan prestasi individu/tim lintas prodi dengan tautan bukti Google Drive (tanpa unggah berkas), daftar putih domain, pemeriksaan keteraksesan, dan snapshot URL saat terverifikasi.
+- Verifikasi bertahap (prodi opsional, fakultas), transisi status tunggal berkunci, catatan wajib, riwayat dan log aktivitas, deteksi duplikat, konfirmasi dosen pembimbing.
+- Poin opsional (bobot per tanggal, DECIMAL, mode penuh/dibagi), katalog kompetisi publik dengan pengarsipan otomatis, galeri publik berbasis persetujuan (UU PDP).
+- Dasbor statistik, laporan Excel (rekap, anggota, poin, katalog, akreditasi, IKU), ekspor SIMKATMAWA dengan penandaan, Surat Keterangan Prestasi ber-QR.
+- Notifikasi surel/WhatsApp lewat antrean, penjadwal (arsip kompetisi, pemeriksaan tautan mingguan, pengingat), impor Excel/CSV master, login Google opsional (domain kampus), MFA untuk super-admin dan admin-fakultas.
+- Docker produksi, backup harian database terenkripsi, panduan pengguna per peran.
+
+### Perlu verifikasi (masih terbuka)
+Nilai berikut sengaja dibuat dapat dikonfigurasi dan **tidak** dianggap final:
+- Format SIMKATMAWA: pemetaan kolom `config/simkatmawa.php`, satu baris per anggota atau per prestasi, dan apakah SIMKATMAWA menerima tautan bukti atau mensyaratkan berkas; `kode_simkatmawa` jenis, kategori, tingkat, dan capaian.
+- Daftar rekognisi pada `CapaianSeeder`, serta kategori/jenis/tingkat pada seeder master terhadap pedoman SIMKATMAWA terbaru.
+- Ambang jumlah negara (`ambang_negara_internasional`, bawaan 3) dan jumlah perguruan tinggi (`ambang_pt_nasional`, bawaan kosong); keduanya hanya peringatan.
+- Definisi IKU (`iku_tingkat_minimal`, `iku_hanya_juara`) dan format lampiran akreditasi sesuai instrumen LAMDIK.
+- Pola email mahasiswa `@student.unsil.ac.id` dan OAuth client Google (UPT TIK).
+- Kemampuan akun `@student.unsil.ac.id` berbagi Drive ke domain `unsil.ac.id`, dan daftar putih domain `config/berkas.php`.
+- Format nomor surat keterangan (`format_nomor_surat_prestasi`, bawaan `{urut}/PRS/FKIP/{tahun}`) dan penandatangan.
+- Kalender akademik (`awal_tahun_akademik_bulan`, bawaan 8).
+
+### Butir go-live yang belum terpenuhi (butuh manusia; tidak dicentang oleh pengembang)
+Dari `vibecoding/05-UJI-PENERIMAAN.md` §4: G2 (UAT; belum ada daftar temuan), **G3 (`database/seeders/data/prodi.csv` masih berisi dua baris CONTOH; ganti dengan data resmi lalu `db:seed --class=ProdiSeeder`)**, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13 (uji pulih pada data produksi), G13b, G13c, G14 (pemantauan di server), G15, G17 (sosialisasi), G18, serta SP-01…SP-03 dan PG-01…PG-02 di staging/produksi.
+Sudah terpenuhi di kode: G1 (pint, Larastan level 6, 543 test hijau), G16 (`DatabaseSeeder` produksi tidak memuat `DemoSeeder`, `BobotPoinContohSeeder`, atau `PanduanSeeder`; `PanduanSeeder` menolak lingkungan selain `local`), G13 sebagian (backup dan prosedur pulih ada; uji pulih pertama pada DB kosong lolos), G19 sebagian (CHANGELOG lengkap; tag dan rilis menunggu manusia).
+
 
 ## [0.8.0] - 2026-10-10
 
