@@ -25,6 +25,8 @@ class PengaturanSeeder extends Seeder
             ['kunci' => 'rentang_hari_duplikat', 'nilai' => '7', 'tipe' => 'int', 'grup' => 'duplikat', 'keterangan' => 'Selisih tanggal maksimal (hari) untuk kandidat duplikat (0–60).'],
             ['kunci' => 'batas_klaim_bulan', 'nilai' => '24', 'tipe' => 'int', 'grup' => 'validasi', 'keterangan' => 'Batas usia kegiatan (bulan) yang masih boleh diklaim.'],
             ['kunci' => 'awal_tahun_akademik_bulan', 'nilai' => '8', 'tipe' => 'int', 'grup' => 'validasi', 'keterangan' => 'Bulan awal tahun akademik 1–12 (perlu verifikasi).'],
+            ['kunci' => 'iku_tingkat_minimal', 'nilai' => 'nasional', 'tipe' => 'string', 'grup' => 'laporan', 'keterangan' => 'Tingkat minimal pemenuh IKU mahasiswa berprestasi (lokal/wilayah/nasional/internasional); definisi IKU perlu verifikasi.'],
+            ['kunci' => 'iku_hanya_juara', 'nilai' => '1', 'tipe' => 'bool', 'grup' => 'laporan', 'keterangan' => 'Hanya capaian juara yang dihitung pada IKU; definisi IKU perlu verifikasi.'],
             ['kunci' => 'wa_aktif', 'nilai' => '0', 'tipe' => 'bool', 'grup' => 'whatsapp', 'keterangan' => 'Aktifkan pengiriman notifikasi WhatsApp (Fonnte).'],
             ['kunci' => 'teks_persetujuan_publikasi', 'nilai' => self::TEKS_PERSETUJUAN, 'tipe' => 'string', 'grup' => 'galeri', 'keterangan' => 'Teks persetujuan publikasi (ditinjau bagian hukum).'],
         ];

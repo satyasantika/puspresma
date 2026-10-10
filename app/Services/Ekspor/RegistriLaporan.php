@@ -13,6 +13,8 @@ class RegistriLaporan
         'rekap_anggota' => RekapAnggotaLaporan::class,
         'peringkat_poin' => PeringkatPoinLaporan::class,
         'katalog' => RekapKatalogLaporan::class,
+        'akreditasi' => AkreditasiLaporan::class,
+        'iku' => IkuLaporan::class,
     ];
 
     public static function buat(string $jenis): LaporanEkspor

@@ -15,6 +15,7 @@ use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
@@ -69,6 +70,9 @@ class Laporan extends Page
                 Select::make('bidang')->label('Bidang')->placeholder('Semua')->options(['akademik' => 'Akademik', 'non_akademik' => 'Non-akademik']),
                 Select::make('tingkat_id')->label('Tingkat')->placeholder('Semua')->options(fn () => Tingkat::orderBy('urutan')->pluck('nama', 'id')->all()),
                 Select::make('capaian_id')->label('Capaian')->placeholder('Semua')->options(fn () => Capaian::orderBy('nama')->pluck('nama', 'id')->all()),
+                Select::make('tingkat_minimal')->label('Tingkat minimal (IKU)')->placeholder('Bawaan pengaturan')
+                    ->options(fn () => Tingkat::orderBy('urutan')->pluck('nama', 'kode')->all()),
+                Toggle::make('hanya_juara')->label('Hanya juara (IKU)')->default(true),
                 Select::make('status')->label('Status')->options([
                     'terverifikasi' => 'Terverifikasi', 'diajukan' => 'Diajukan', 'perlu_perbaikan' => 'Perlu perbaikan', 'ditolak' => 'Ditolak', 'semua' => 'Semua status',
                 ])->default('terverifikasi'),
@@ -84,6 +88,8 @@ class Laporan extends Page
             ['rekap_anggota', 'xlsx', 'LAP-02 Rekap per anggota (XLSX)'],
             ['peringkat_poin', 'xlsx', 'LAP-06 Peringkat poin (XLSX)'], ['peringkat_poin', 'pdf', 'LAP-06 Peringkat poin (PDF)'],
             ['katalog', 'xlsx', 'LAP-09 Rekap katalog (XLSX)'],
+            ['akreditasi', 'xlsx', 'LAP-03 Statistik akreditasi (XLSX)'], ['akreditasi', 'pdf', 'LAP-03 Statistik akreditasi (PDF)'],
+            ['iku', 'xlsx', 'LAP-04 Rekap IKU (XLSX)'], ['iku', 'pdf', 'LAP-04 Rekap IKU (PDF)'],
         ];
 
         return array_map(fn (array $t): Action => Action::make("{$t[0]}_{$t[1]}")->label($t[2])->color('gray')

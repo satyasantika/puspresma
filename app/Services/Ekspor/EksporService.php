@@ -45,15 +45,15 @@ class EksporService
     private function stream(LaporanEkspor $laporan, string $format, array $filter, User $pengguna): StreamedResponse
     {
         $nama = "{$laporan->jenis()}-".now()->format('Ymd-His').".{$format}";
-        $header = $laporan->header($pengguna);
 
-        return response()->streamDownload(function () use ($laporan, $format, $filter, $pengguna, $header): void {
+        return response()->streamDownload(function () use ($laporan, $format, $filter, $pengguna): void {
+            $lembar = $laporan->lembar($filter, $pengguna);
             if ($format === 'pdf') {
-                echo PenulisBerkas::pdf($laporan, $pengguna, $filter, $header, $laporan->baris($filter, $pengguna));
+                echo PenulisBerkas::pdf($laporan, $pengguna, $filter, $lembar);
 
                 return;
             }
-            PenulisBerkas::tabel('php://output', $format, $header, $laporan->baris($filter, $pengguna));
+            PenulisBerkas::buku('php://output', $format, $lembar);
         }, $nama, $format === 'pdf' ? ['Content-Type' => 'application/pdf'] : []);
     }
 
