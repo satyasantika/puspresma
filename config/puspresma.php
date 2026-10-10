@@ -43,6 +43,9 @@ return [
         'chunk' => 500,
     ],
 
+    /** Jumlah prestasi yang dibuat DemoSeeder (lokal/uji kinerja saja). */
+    'demo_prestasi' => (int) env('DEMO_PRESTASI', 60),
+
     /*
     |--------------------------------------------------------------------------
     | Nama antrean
