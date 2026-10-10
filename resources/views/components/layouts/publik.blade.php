@@ -11,6 +11,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="flex min-h-screen flex-col bg-slate-50 text-slate-800 antialiased">
+    <a href="#konten" class="sr-only focus:not-sr-only focus:absolute focus:start-2 focus:top-2 focus:z-10 focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:text-indigo-900">Lewati ke konten</a>
     <header class="border-b border-slate-200 bg-white">
         <nav aria-label="Navigasi utama" class="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 text-sm">
             <a href="{{ route('beranda') }}" class="font-semibold text-indigo-800">Puspresma FKIP Unsil</a>
@@ -22,7 +23,7 @@
         </nav>
     </header>
 
-    <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+    <main id="konten" tabindex="-1" class="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
         {{ $slot }}
     </main>
 
