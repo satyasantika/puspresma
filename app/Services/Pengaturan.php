@@ -34,6 +34,11 @@ class Pengaturan
         $model->update(['nilai' => self::serialisasi($model->tipe, $nilai)]);
 
         Cache::forget(self::KUNCI_CACHE);
+
+        // Pengaturan yang memengaruhi isi galeri publik membuang cache galeri.
+        if (in_array($kunci, ['galeri_aktif', 'teks_persetujuan_publikasi'], true)) {
+            Cache::increment('galeri:versi');
+        }
     }
 
     /** @return array<string, array{nilai: ?string, tipe: string}> */
