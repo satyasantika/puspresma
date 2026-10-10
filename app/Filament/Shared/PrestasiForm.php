@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Portal\Resources\PrestasiSayaResource\Schemas;
+namespace App\Filament\Shared;
 
 use App\Actions\Bukti\SimpanTautanBukti;
 use App\Actions\Prestasi\SimpanPrestasi;
@@ -32,11 +32,12 @@ use Illuminate\Support\HtmlString;
 
 class PrestasiForm
 {
-    public static function configure(Schema $schema): Schema
+    /** Formulir wizard bersama panel portal (mahasiswa) dan admin (atas nama mahasiswa, `$admin = true`). */
+    public static function configure(Schema $schema, bool $admin = false): Schema
     {
         return $schema->components([
             Wizard::make([
-                self::langkahKegiatan(),
+                self::langkahKegiatan($admin),
                 self::langkahCapaian(),
                 self::langkahTim(),
                 self::langkahBukti(),
@@ -44,9 +45,14 @@ class PrestasiForm
         ]);
     }
 
-    private static function langkahKegiatan(): Step
+    private static function langkahKegiatan(bool $admin): Step
     {
         return Step::make('Kegiatan')->columns(2)->schema([
+            Select::make('pengaju_id')->label('Pengaju (mahasiswa)')->searchable()->required()->visibleOn('create')
+                ->visible($admin)->columnSpanFull()
+                ->getSearchResultsUsing(fn (string $search): array => self::cariMahasiswa($search))
+                ->getOptionLabelUsing(fn ($value): ?string => self::labelMahasiswa((string) $value))
+                ->helperText('Prestasi dicatat atas nama mahasiswa ini; ia menjadi anggota dan pengaju.'),
             Select::make('jenis_kegiatan_id')->label('Jenis kegiatan')
                 ->options(fn () => app(OpsiMaster::class)->jenisKegiatan())->required()->live()
                 ->afterStateUpdated(function (Set $set): void {

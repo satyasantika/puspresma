@@ -12,9 +12,9 @@ use App\Models\User;
 class SimpanSnapshotTautan
 {
     /** @return int jumlah snapshot yang dibuat */
-    public function jalankan(Prestasi $prestasi, User $pelaku, string $alasan = 'verifikasi'): int
+    public function jalankan(Prestasi $prestasi, User $pelaku, string $alasan = 'verifikasi', ?TautanBerkas $hanya = null): int
     {
-        $tautan = $prestasi->tautanBukti()->get();
+        $tautan = $hanya === null ? $prestasi->tautanBukti()->get() : $prestasi->tautanBukti()->whereKey($hanya->getKey())->get();
         $dibuka = Aktivitas::query()
             ->where('log_name', 'tautan')->where('event', 'dibuka')
             ->where('causer_id', $pelaku->getKey())

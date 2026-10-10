@@ -3,7 +3,7 @@
 namespace App\Filament\Portal\Resources\PrestasiSayaResource\Pages;
 
 use App\Filament\Portal\Resources\PrestasiSayaResource;
-use App\Filament\Portal\Resources\PrestasiSayaResource\Pages\Concerns\SimpanRelasiPrestasi;
+use App\Filament\Shared\Concerns\SimpanRelasiPrestasi;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 
