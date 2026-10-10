@@ -23,3 +23,21 @@ Diukur pada F8.6 dengan `DemoSeeder` (`DEMO_PRESTASI=10000`: 3 prodi, 200 mahasi
 - Seluruh ekspor di atas melebihi 2.000 baris sehingga di produksi berjalan di antrean `ekspor` (Horizon) dan hasilnya tersimpan di `storage/app/tmp` selama ≤ 24 jam; memori puncak tetap rendah karena penulisan streaming per 500 baris.
 - Kriteria PRD (dasbor dan galeri < 1 detik dari cache; daftar admin < 500 ms pada 50.000 prestasi) terpenuhi untuk dasbor dan galeri; daftar admin 50.000 prestasi belum diukur.
 - Pengukuran ini menemukan dan memperbaiki cacat: iterasi `lazyById` yang mempertahankan urutan tanggal membuat baris terlewat pada ekspor di atas 500 baris (kini memakai `QueryPrestasiLaporan::iterasi`, diuji dengan ukuran chunk kecil).
+
+## Jumlah kueri per halaman (F9.2)
+
+Dijaga oleh `tests/Feature/Kinerja/JumlahKueriTest.php` (25 baris data, cache dihangatkan; lazy loading dilarang di test):
+
+| Halaman | Sebelum | Sesudah | Batas |
+|---|---|---|---|
+| Antrean verifikasi admin | 37 | 15 | ≤ 15 |
+| Prestasi Saya | 40 | ≤ 15 | ≤ 15 |
+| Galeri, katalog, dasbor | lulus | lulus | ≤ 15 |
+
+Penyebab dan perbaikan:
+
+- `PeringatanPrestasi` memicu `exists` per baris karena nilai subquery `NULL` dianggap "atribut tidak dimuat"; kini dibedakan dengan `array_key_exists`.
+- `PrestasiPolicy` (milik/prodi) mengkueri `anggota()` per baris; kini memakai relasi `anggota` yang dimuat eager di tabel.
+- Opsi filter Prodi/Tingkat/Capaian di-cache 5 menit (`opsi:filter-*`).
+
+EXPLAIN: subquery penanda memakai indeks yang sudah ada (`kandidat_duplikat.prestasi_id` lewat FK/unik komposit, dan `tautan_berkas_pemilik_jenis_index`), sehingga tidak diperlukan migrasi indeks baru.

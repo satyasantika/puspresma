@@ -69,3 +69,15 @@ Perintah: `psp php artisan test` (atau `psp ./vendor/bin/pest`), `psp ./vendor/b
 Laravel Boost terpasang (`boost.json`, `.mcp.json` lokal memanggil `puspresma-php`); pedoman Boost berada di akhir `CLAUDE.md` lokal.
 
 Gerbang kualitas sebelum commit: `psp ./vendor/bin/pint --test && psp ./vendor/bin/phpstan analyse --memory-limit=1G && psp php artisan test`.
+
+## Optimasi produksi
+
+Jalankan setelah setiap deploy:
+
+```bash
+php artisan optimize
+php artisan filament:optimize
+php artisan icons:cache
+php artisan view:cache
+php artisan event:cache
+```

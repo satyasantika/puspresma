@@ -24,7 +24,7 @@ class PrestasiSayaTable
                 /** @var Builder<Prestasi> $query */
                 $mahasiswaId === null ? $query->whereRaw('1 = 0') : $query->milikMahasiswa($mahasiswaId);
 
-                return $query->with(['tingkat', 'capaian']);
+                return $query->with(['tingkat', 'capaian', 'anggota']);
             })
             ->defaultSort('tanggal_selesai', 'desc')
             ->columns([
