@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\StatusBerkasEkspor;
+use App\Models\BerkasEkspor;
 use App\Models\RiwayatImpor;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +26,10 @@ class BersihkanTmp extends Command
                 $dihapus++;
             }
         }
+
+        // Tandai ekspor besar yang sudah kedaluwarsa (BR-25).
+        BerkasEkspor::query()->where('status', StatusBerkasEkspor::Siap->value)->where('kedaluwarsa_at', '<', now())
+            ->update(['status' => StatusBerkasEkspor::Kedaluwarsa->value, 'path' => null]);
 
         // Tandai riwayat impor yang berkas galatnya sudah kedaluwarsa.
         RiwayatImpor::query()->whereNotNull('path_galat')->where('kedaluwarsa_at', '<', now())->update(['path_galat' => null]);

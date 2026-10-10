@@ -29,6 +29,7 @@ use Mews\Purifier\Facades\Purifier;
  * @property StatusKompetisi $status
  * @property Carbon $tenggat_pendaftaran
  * @property string|null $biaya_pendaftaran
+ * @property Carbon|null $diterbitkan_at
  * @property Carbon|null $tanggal_buka
  * @property Carbon|null $tanggal_pelaksanaan_mulai
  * @property Carbon|null $tanggal_pelaksanaan_selesai
