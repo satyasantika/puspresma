@@ -1,11 +1,18 @@
 <?php
 
+use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\BukaTautanController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Livewire\Publik\DetailKompetisi;
+use App\Livewire\Publik\KatalogKompetisi;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', BerandaController::class)->middleware('throttle:galeri')->name('beranda');
+
+// Katalog kompetisi publik (F6.2).
+Route::middleware('throttle:katalog-publik')->group(function () {
+    Route::get('/kompetisi', KatalogKompetisi::class)->name('kompetisi.index');
+    Route::get('/kompetisi/{kompetisi:slug}', DetailKompetisi::class)->name('kompetisi.show');
 });
 
 // Nama 'login' dipakai middleware auth untuk mengarahkan tamu (rute web bersama seperti tautan.buka).

@@ -12,6 +12,8 @@ use App\Listeners\HitungPoinSaatTerverifikasi;
 use App\Models\Capaian;
 use App\Models\JenisKegiatan;
 use App\Models\KategoriLomba;
+use App\Models\Kompetisi;
+use App\Models\Prestasi;
 use App\Models\Prodi;
 use App\Models\Tingkat;
 use App\Models\User;
@@ -85,10 +87,9 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Alias pemilik polimorfik tautan_berkas (docs/KEPUTUSAN.md K-11: morphMap, bukan enforceMorphMap, agar subjek activitylog tetap berjalan).
-        // @phpstan-ignore argument.type (kelas model dibuat pada fase berikutnya)
         Relation::morphMap([
-            'prestasi' => 'App\\Models\\Prestasi', // model dibuat di F4.1
-            'kompetisi' => 'App\\Models\\Kompetisi', // model dibuat di F6.1
+            'prestasi' => Prestasi::class,
+            'kompetisi' => Kompetisi::class,
         ]);
 
         Event::listen(StatusPrestasiBerubah::class, DeteksiDuplikatSaatDiajukan::class);
@@ -101,6 +102,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)
             ->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
 
+        RateLimiter::for('galeri', fn (Request $request) => Limit::perMinute(60)->by($request->ip()));
+        RateLimiter::for('katalog-publik', fn (Request $request) => Limit::perMinute(60)->by($request->ip()));
         RateLimiter::for('google-callback', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
 
         // Tombol "Masuk dengan Google" di halaman masuk kedua panel, hanya bila fitur aktif.
