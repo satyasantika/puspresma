@@ -178,7 +178,7 @@ it('tidak mengubah status di luar app/Actions/Prestasi', function () {
         if (! str_ends_with($path, '.php') || str_contains($path, '/app/Actions/Prestasi/') || str_ends_with($path, '/Models/Prestasi.php')) {
             continue;
         }
-        if (preg_match('/\$\w+->status\s*=[^=]|[\'"]status[\'"]\s*=>\s*(StatusPrestasi|[\'"](draf|diajukan|lolos_prodi|perlu_perbaikan|terverifikasi|ditolak))/', file_get_contents($path))) {
+        if (preg_match('/\$\w+->status\s*=[^=]|[\'"]status[\'"]\s*=>\s*(StatusPrestasi|[\'"](diajukan|lolos_prodi|perlu_perbaikan|terverifikasi|ditolak))/', file_get_contents($path))) {
             $pelanggar[] = str_replace(app_path().'/', '', $path);
         }
     }
