@@ -40,6 +40,7 @@ return [
 
     'ekspor' => [
         'batas_stream' => (int) env('EKSPOR_BATAS_STREAM', 2000),
+        'chunk' => 500,
     ],
 
     /*

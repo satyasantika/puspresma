@@ -51,8 +51,7 @@ class SimkatmawaLaporan extends LaporanEkspor
     {
         $perPrestasi = config('simkatmawa.satu_baris_per') === 'prestasi';
 
-        foreach ($this->query($filter, $pengguna)->with(['jenisKegiatan', 'kategoriLomba', 'tingkat', 'capaian', 'dosenPembimbing', 'anggota.mahasiswa', 'anggota.prodi', 'snapshotTautan', 'tautanBukti'])
-            ->lazyById(300, 'prestasi.id', 'id') as $p) {
+        foreach (QueryPrestasiLaporan::iterasi($this->query($filter, $pengguna), ['jenisKegiatan', 'kategoriLomba', 'tingkat', 'capaian', 'dosenPembimbing', 'anggota.mahasiswa', 'anggota.prodi', 'snapshotTautan', 'tautanBukti']) as $p) {
             /** @var Prestasi $p */
             $anggota = $perPrestasi ? $p->anggota->where('is_pengaju', true) : $p->anggota;
             foreach ($anggota as $a) {

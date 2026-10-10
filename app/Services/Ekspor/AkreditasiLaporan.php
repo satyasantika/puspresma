@@ -107,7 +107,7 @@ class AkreditasiLaporan extends LaporanEkspor
     {
         $saring = ['prodi_id' => $prodiId, 'dari' => ($ts - 2).'-01-01', 'sampai' => $ts.'-12-31'];
 
-        foreach (QueryPrestasiLaporan::bangun($saring, $pengguna)->with(['tingkat', 'capaian', 'anggota.mahasiswa'])->lazyById(500, 'prestasi.id', 'id') as $p) {
+        foreach (QueryPrestasiLaporan::iterasi(QueryPrestasiLaporan::bangun($saring, $pengguna), ['tingkat', 'capaian', 'anggota.mahasiswa']) as $p) {
             yield [
                 $p->nama_kegiatan, $p->tingkat->nama, $p->capaian->nama, $p->tahun,
                 $p->anggota->where('prodi_id', $prodiId)->map(fn ($a) => "{$a->mahasiswa->npm}-{$a->mahasiswa->nama}")->implode('; '),

@@ -4,6 +4,21 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ## [Belum dirilis]
 
+## [0.8.0] - 2026-10-10
+
+Fase 8: laporan, dasbor & ekspor.
+
+### Ditambahkan
+- Dasbor statistik (`StatistikPrestasi`, `Cache::flexible` per versi): ringkasan, per prodi anggota (BR-02), tingkat, jenis, capaian, tren bulanan/tahunan; filter tahun dan prodi (admin-prodi dikunci); widget ringkasan, grafik, tabel terbaru, dan kartu antrean.
+- Ekspor: `EksporService` (≤ 2.000 baris di-stream tanpa berkas; lebih besar lewat antrean `ekspor` ke `storage/app/tmp` ≤ 24 jam dengan lock anti klik ganda dan pembatas 10/jam), `berkas_ekspor`, unduhan ber-Policy (410 bila kedaluwarsa), halaman Laporan dan Berkas Ekspor, laporan LAP-01 (rekap), LAP-02 (per anggota), LAP-06 (peringkat poin), LAP-09 (katalog), LAP-07 (rekap pribadi PDF mahasiswa).
+- LAP-03 statistik akreditasi (TS-2/TS-1/TS) dan LAP-04 rekap IKU (mahasiswa unik; parameter di Pengaturan), keduanya XLSX multi-sheet dan PDF.
+- Ekspor SIMKATMAWA dengan pemetaan kolom di `config/simkatmawa.php`, URL bukti dari snapshot verifikasi, pratinjau, dan penandaan "dilaporkan" (massal/pembatalan bercatatan).
+- Surat Keterangan Prestasi ber-QR: penerbitan bernomor ber-lock, cetak PDF on-the-fly (watermark "DICABUT"), pencabutan, halaman verifikasi publik `/verifikasi/{id}` ber-cache tanpa data pribadi, serta portal "Surat Keterangan Saya".
+- `DemoSeeder` (sisipan massal) dan `docs/kinerja.md` berisi hasil uji kinerja 10.000 prestasi.
+
+### Diperbaiki
+- Ekspor di atas 500 baris tidak lagi melewatkan baris (iterasi `lazyById` dengan urutan kueri yang tidak konsisten).
+
 ## [0.7.0] - 2026-10-10
 
 Fase 7: notifikasi & penjadwal.
