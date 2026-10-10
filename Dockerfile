@@ -65,4 +65,6 @@ CMD ["php-fpm"]
 # ---- nginx + aset statis ------------------------------------------------------------------------------------------------
 FROM nginx:1.27-alpine AS web
 COPY docker/nginx/prod.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx/10-awalan.sh /docker-entrypoint.d/10-awalan.sh
+RUN chmod +x /docker-entrypoint.d/10-awalan.sh && : > /etc/nginx/awalan.conf
 COPY --from=app /var/www/html/public /var/www/html/public

@@ -51,3 +51,32 @@ it('mempercayai header X-Forwarded-Prefix dari proxy', function () {
 
     expect(url('/uji'))->toBe('https://supportfkip.unsil.ac.id/puspresma/uji');
 });
+
+it('menurunkan path cookie sesi dari APP_URL bila SESSION_PATH kosong', function (string $appUrl, string $diharapkan) {
+    $kunci = ['APP_URL' => $appUrl, 'SESSION_PATH' => null];
+    $lama = [];
+
+    foreach ($kunci as $nama => $nilai) {
+        $lama[$nama] = [$_ENV[$nama] ?? null, $_SERVER[$nama] ?? null, getenv($nama)];
+        $nilai === null ? putenv($nama) : putenv("{$nama}={$nilai}");
+        $nilai === null ? [$_ENV[$nama], $_SERVER[$nama]] = [null, null] : [$_ENV[$nama], $_SERVER[$nama]] = [$nilai, $nilai];
+        if ($nilai === null) {
+            unset($_ENV[$nama], $_SERVER[$nama]);
+        }
+    }
+
+    try {
+        $config = require config_path('session.php');
+    } finally {
+        foreach ($lama as $nama => [$env, $server, $proses]) {
+            $env === null ? null : $_ENV[$nama] = $env;
+            $server === null ? null : $_SERVER[$nama] = $server;
+            $proses === false ? putenv($nama) : putenv("{$nama}={$proses}");
+        }
+    }
+
+    expect($config['path'])->toBe($diharapkan);
+})->with([
+    'subpath lain' => ['https://supportfkip.unsil.ac.id/siman', '/siman'],
+    'akar domain' => ['http://localhost:8032', '/'],
+]);

@@ -43,6 +43,8 @@ services:
         ASSET_URL: ${ASSET_URL:-https://supportfkip.unsil.ac.id/puspresma}
     restart: unless-stopped
     depends_on: [app]
+    environment:
+      APP_URL: ${APP_URL:?APP_URL wajib diisi di .env}   # awalan subpath diturunkan dari sini
     # Hanya loopback: reverse proxy fakultas yang membuka ke publik (TLS di sana).
     ports: ["127.0.0.1:${HTTP_PORT:-8032}:80"]
     networks: [internal]
