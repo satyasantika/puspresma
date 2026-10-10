@@ -76,7 +76,7 @@ it('menolak super-admin pada ability verifikasi prestasi', function (string $abi
 
     expect(Gate::forUser($super)->denies($ability))->toBeTrue()
         ->and(Gate::forUser($super)->allows('pengguna.kelola'))->toBeTrue();
-})->with(['verifikasi', 'loloskanProdi', 'bukaVerifikasi']);
+})->with(['verifikasi', 'loloskanProdi', 'bukaVerifikasi', 'kembalikan', 'tolak', 'gantiTautan']);
 
 it('membuat super-admin dari env dengan kata sandi acak sekali', function () {
     config(['puspresma.seed_superadmin' => ['email' => 'root@unsil.ac.id', 'name' => 'Root']]);

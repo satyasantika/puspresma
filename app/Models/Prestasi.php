@@ -192,6 +192,19 @@ class Prestasi extends Model
         return $this->morphMany(TautanBerkas::class, 'pemilik')->where('jenis', '!=', 'poster');
     }
 
+    /** @return HasMany<SnapshotTautanVerifikasi, $this> */
+    public function snapshotTautan(): HasMany
+    {
+        return $this->hasMany(SnapshotTautanVerifikasi::class)->orderBy('created_at');
+    }
+
+    /** Ada kandidat duplikat yang belum ditinjau; memblokir verifikasi (BR-10). */
+    public function adaKandidatDuplikatTerbuka(): bool
+    {
+        // TODO F5.2: periksa kandidat_duplikat berstatus belum_ditinjau.
+        return false;
+    }
+
     /** @return HasMany<RiwayatStatusPrestasi, $this> */
     public function riwayatStatus(): HasMany
     {

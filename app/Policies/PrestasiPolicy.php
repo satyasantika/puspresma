@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Enums\StatusPrestasi;
 use App\Models\Prestasi;
 use App\Models\User;
+use App\Services\Pengaturan;
 
 /**
  * Aturan per record: milik/anggota, prodi, bimbingan (BR-03, BR-14, BR-15). Diperluas di F5.1.
@@ -71,6 +72,60 @@ class PrestasiPolicy
 
         return in_array($prestasi->status, [StatusPrestasi::Diajukan, StatusPrestasi::LolosProdi], true)
             && $pelaku->can('prestasi.buat-atas-nama');
+    }
+
+    /** Tahap 1: admin-prodi dari prodi pengaju, hanya bila tahap prodi aktif dan status diajukan (BR-09, BR-15). */
+    public function loloskanProdi(User $pelaku, Prestasi $prestasi): bool
+    {
+        return $prestasi->status === StatusPrestasi::Diajukan && $this->adminProdiPengaju($pelaku, $prestasi);
+    }
+
+    /** Mengembalikan untuk perbaikan: verifikator fakultas, atau admin-prodi pengaju pada tahap 1. */
+    public function kembalikan(User $pelaku, Prestasi $prestasi): bool
+    {
+        return $this->bisaMenilai($pelaku, $prestasi);
+    }
+
+    public function tolak(User $pelaku, Prestasi $prestasi): bool
+    {
+        return $this->bisaMenilai($pelaku, $prestasi);
+    }
+
+    /** Verifikasi final hanya oleh admin-fakultas (bukan super-admin, bukan admin-prodi). */
+    public function verifikasi(User $pelaku, Prestasi $prestasi): bool
+    {
+        return $pelaku->can('prestasi.verifikasi')
+            && in_array($prestasi->status, [StatusPrestasi::Diajukan, StatusPrestasi::LolosProdi], true);
+    }
+
+    /** Buka verifikasi (terverifikasi → perlu_perbaikan) oleh admin-fakultas (BR-12). */
+    public function bukaVerifikasi(User $pelaku, Prestasi $prestasi): bool
+    {
+        return $pelaku->can('prestasi.buka-verifikasi') && $prestasi->status === StatusPrestasi::Terverifikasi;
+    }
+
+    /** Ganti tautan pada prestasi terverifikasi hanya oleh admin-fakultas (BR-30). */
+    public function gantiTautan(User $pelaku, Prestasi $prestasi): bool
+    {
+        return $pelaku->can('prestasi.buka-verifikasi') && $prestasi->status === StatusPrestasi::Terverifikasi;
+    }
+
+    private function bisaMenilai(User $pelaku, Prestasi $prestasi): bool
+    {
+        if (! in_array($prestasi->status, [StatusPrestasi::Diajukan, StatusPrestasi::LolosProdi], true)) {
+            return false;
+        }
+
+        return $pelaku->can('prestasi.verifikasi')
+            || ($prestasi->status === StatusPrestasi::Diajukan && $this->adminProdiPengaju($pelaku, $prestasi));
+    }
+
+    private function adminProdiPengaju(User $pelaku, Prestasi $prestasi): bool
+    {
+        return (bool) Pengaturan::ambil('verifikasi_prodi_aktif', false)
+            && $pelaku->can('prestasi.verifikasi-prodi')
+            && $pelaku->prodi_id !== null
+            && $pelaku->prodi_id === $prestasi->prodi_id;
     }
 
     /** Pengaju atau admin-fakultas dapat mengajukan dari draf/perlu_perbaikan. */
