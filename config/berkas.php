@@ -4,7 +4,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Mode berkas (STANDAR-TEKNIS §1a)
+    | Mode berkas
     |--------------------------------------------------------------------------
     |
     | 'tautan' = tidak ada unggahan ke server; bukti disimpan sebagai URL.

@@ -10,7 +10,7 @@ use App\Models\Prestasi;
 use App\Models\PrestasiAnggota;
 use Illuminate\Support\Facades\DB;
 
-/** Menyimpan data inti beserta tim (dan bukti, F4.4) dalam satu transaksi; UI hanya memanggil Action. */
+/** Menyimpan data inti beserta tim (dan bukti) dalam satu transaksi; UI hanya memanggil Action. */
 trait SimpanRelasiPrestasi
 {
     /** @param  array<string, mixed>  $data */

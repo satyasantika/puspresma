@@ -5,29 +5,36 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 ## [Belum dirilis]
 
 ### Ditambahkan
+- Landing page yang menjelaskan sistem (alur, fitur, statistik publik, kompetisi, prestasi terbaru, dan panduan per peran); tema yang sama dipakai halaman masuk kiri-kanan, panduan HTML, dan seluruh halaman galat HTTP (400–504) yang mandiri.
+- Profil pengguna (nama, nomor WhatsApp) dan ganti kata sandi untuk semua akun; penggantian mengeluarkan semua sesi lain. Super-admin dapat mewajibkan ganti sandi per akun atau massal.
+- Impor pengguna massal lewat salin-tempel (pratinjau, upsert menurut surel, sandi awal opsional) dan pengaturan program studi pengguna (diperlukan admin prodi).
+- Masuk sebagai pengguna lain untuk super-admin (darurat): tautan bertanda tangan, banner permanen, tercatat di log aktivitas.
+- Dukungan subpath `https://<host>/<app>` dari satu `APP_URL`, termasuk proxy yang meneruskan awalan.
 - Rilis otomatis: `scripts/deploy.sh` (cadangan DB, build bertag commit, migrasi dengan image baru, health check, rollback, mode `--tarik` untuk cron) dan job `deploy` di `ci.yml` yang menunggu uji hijau.
 
 ### Diubah
+- Akun super-admin awal `fkip@unsil.ac.id` (sandi awal dari `SEED_SUPERADMIN_PASSWORD`; segera ganti). MFA dimatikan lewat `MFA_AKTIF=false`; kodenya utuh.
+- Panduan super-admin tidak lagi dipublikasikan di halaman publik (tersedia untuk pengguna masuk di Bantuan).
 - `deploy.yml` terpisah dihapus (berjalan paralel dengan CI sehingga kode gagal uji tetap terdeploy); skrip rilis kini ada di repo, bukan di `~/docker-apps/deploy.sh`.
 
 ## [1.0.0] - 2026-10-10
 
-Rilis produksi pertama. Fase 9: pengerasan dan rilis.
+Rilis produksi pertama: pengerasan dan rilis.
 
-### Ditambahkan (Fase 9)
-- Panduan pengguna per peran (`docs/panduan/*.md`) dirender di `/bantuan/{peran}`; menu **Bantuan** di kedua panel (F9.5).
-- Backup harian database terenkripsi (`spatie/laravel-backup`), jadwal, dan `docs/PEMULIHAN.md` (F9.4).
-- Dockerfile/compose produksi: `APP_VERSION`, `RUN_MIGRATIONS` opt-in, healthcheck `/api/health`, `icons:cache` (F9.3).
+### Ditambahkan
+- Panduan pengguna per peran (`docs/panduan/*.md`) dirender di `/bantuan/{peran}`; menu **Bantuan** di kedua panel.
+- Backup harian database terenkripsi (`spatie/laravel-backup`), jadwal, dan `docs/PEMULIHAN.md`.
+- Dockerfile/compose produksi: `APP_VERSION`, `RUN_MIGRATIONS` opt-in, healthcheck `/api/health`, `icons:cache`.
 
 ### Diubah
-- Optimasi kueri antrean admin dan Prestasi Saya (37/40 → ≤ 15 kueri), dijaga `JumlahKueriTest` (F9.2).
+- Optimasi kueri antrean admin dan Prestasi Saya (37/40 → ≤ 15 kueri), dijaga `JumlahKueriTest`.
 
 ### Diperbaiki
-- Tidak ada temuan UAT yang diserahkan penguji manusia pada F9.5; daftar temuan masih kosong. Temuan yang masuk kelak dicatat di sini beserta test regresinya.
+- Tidak ada temuan UAT yang diserahkan penguji manusia pada tahap UAT; daftar temuan masih kosong. Temuan yang masuk kelak dicatat di sini beserta test regresinya.
 
-### Tambahan Fase 9
-- Header keamanan (CSP kecuali lokal, HSTS hanya produksi), matriks otorisasi per peran, uji XSS, dan uji arsitektur (F9.1).
-- Halaman panduan HTML per peran dengan tangkapan layar Playwright di `public/panduan/` (ditautkan dari landing page dan menu pengguna), `PanduanSeeder` (hanya lokal), skrip `tests/panduan/` dan `composer panduan` (F9.6).
+### Tambahan
+- Header keamanan (CSP kecuali lokal, HSTS hanya produksi), matriks otorisasi per peran, uji XSS, dan uji arsitektur.
+- Halaman panduan HTML per peran dengan tangkapan layar Playwright di `public/panduan/` (ditautkan dari landing page dan menu pengguna), `PanduanSeeder` (hanya lokal), skrip `tests/panduan/` dan `composer panduan`.
 
 ### Ringkasan fitur v1.0.0
 - Pengajuan prestasi individu/tim lintas prodi dengan tautan bukti Google Drive (tanpa unggah berkas), daftar putih domain, pemeriksaan keteraksesan, dan snapshot URL saat terverifikasi.
@@ -48,14 +55,15 @@ Nilai berikut sengaja dibuat dapat dikonfigurasi dan **tidak** dianggap final:
 - Format nomor surat keterangan (`format_nomor_surat_prestasi`, bawaan `{urut}/PRS/FKIP/{tahun}`) dan penandatangan.
 - Kalender akademik (`awal_tahun_akademik_bulan`, bawaan 8).
 
-### Butir go-live yang belum terpenuhi (butuh manusia; tidak dicentang oleh pengembang)
-Dari `vibecoding/05-UJI-PENERIMAAN.md` §4: G2 (UAT; belum ada daftar temuan), **G3 (`database/seeders/data/prodi.csv` masih berisi dua baris CONTOH; ganti dengan data resmi lalu `db:seed --class=ProdiSeeder`)**, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13 (uji pulih pada data produksi), G13b, G13c, G14 (pemantauan di server), G15, G17 (sosialisasi), G18, serta SP-01…SP-03 dan PG-01…PG-02 di staging/produksi.
-Sudah terpenuhi di kode: G1 (pint, Larastan level 6, 543 test hijau), G16 (`DatabaseSeeder` produksi tidak memuat `DemoSeeder`, `BobotPoinContohSeeder`, atau `PanduanSeeder`; `PanduanSeeder` menolak lingkungan selain `local`), G13 sebagian (backup dan prosedur pulih ada; uji pulih pertama pada DB kosong lolos), G19 sebagian (CHANGELOG lengkap; tag dan rilis menunggu manusia).
-
+### Sebelum go-live (butuh tindakan manusia)
+- **Data prodi resmi**: `database/seeders/data/prodi.csv` masih berisi dua baris CONTOH; ganti dengan data resmi lalu `db:seed --class=ProdiSeeder`.
+- UAT oleh pengguna sebenarnya (belum ada daftar temuan), sosialisasi, dan konfigurasi server produksi: DNS/TLS, reverse proxy, secret CI, `.env` produksi, SMTP, dan OAuth Google bila dipakai.
+- Uji pulih backup pada data produksi dan pemantauan di server; pengujian di staging untuk skenario pengajuan, verifikasi, dan ekspor.
+- Sudah terpenuhi di kode: Pint, Larastan level 6, dan seluruh test hijau; `DatabaseSeeder` produksi tidak memuat `DemoSeeder`, `BobotPoinContohSeeder`, atau `PanduanSeeder` (yang menolak lingkungan selain `local`); backup dan prosedur pulih ada, dan uji pulih pertama pada DB kosong lolos.
 
 ## [0.8.0] - 2026-10-10
 
-Fase 8: laporan, dasbor & ekspor.
+Laporan, dasbor & ekspor.
 
 ### Ditambahkan
 - Dasbor statistik (`StatistikPrestasi`, `Cache::flexible` per versi): ringkasan, per prodi anggota (BR-02), tingkat, jenis, capaian, tren bulanan/tahunan; filter tahun dan prodi (admin-prodi dikunci); widget ringkasan, grafik, tabel terbaru, dan kartu antrean.
@@ -70,7 +78,7 @@ Fase 8: laporan, dasbor & ekspor.
 
 ## [0.7.0] - 2026-10-10
 
-Fase 7: notifikasi & penjadwal.
+Notifikasi & penjadwal.
 
 ### Ditambahkan
 - Notifikasi (selalu `ShouldQueue`, antrean `notifikasi`, `afterCommit`): prestasi diajukan/perlu perbaikan/terverifikasi/ditolak, permintaan konfirmasi dan penyangkalan pembimbing, kandidat duplikat, anggota tim ditambahkan, kompetisi baru terbit (per chunk 200), tautan bukti tidak dapat diakses (BR-30), berkas ekspor siap; listener per peristiwa dengan penerima yang tepat dan anggota tanpa akun dilewati (tercatat di log).
@@ -80,7 +88,7 @@ Fase 7: notifikasi & penjadwal.
 
 ## [0.6.0] - 2026-10-10
 
-Fase 6: katalog kompetisi & galeri publik.
+Katalog kompetisi & galeri publik.
 
 ### Ditambahkan
 - Katalog kompetisi: tabel `kompetisi`, `kompetisi_prodi`, `kompetisi_minat`, FK `prestasi.kompetisi_id`, deskripsi disanitasi (`mews/purifier`, profil `deskripsi`), poster sebagai tautan, KompetisiResource (terbitkan, arsipkan, duplikat; admin-prodi hanya sasaran prodinya), arsip otomatis (`ArsipkanKompetisiKedaluwarsa`).
@@ -94,7 +102,7 @@ Fase 6: katalog kompetisi & galeri publik.
 
 ## [0.5.0] - 2026-10-10
 
-Fase 5: verifikasi, duplikat, pembimbing & poin.
+Verifikasi, duplikat, pembimbing & poin.
 
 ### Ditambahkan
 - Action verifikasi (`LoloskanTahapProdi`, `KembalikanUntukPerbaikan`, `TolakPrestasi`, `VerifikasiPrestasi`, `BukaVerifikasiPrestasi`) di atas `TransisiStatus`, `PrestasiPolicy` lengkap (tahap prodi opsional BR-09, cakupan prodi BR-15, super-admin ditolak pada seluruh ability verifikasi) dan `snapshot_tautan_verifikasi` yang tidak dapat diubah (BR-28/29).
@@ -108,7 +116,7 @@ Fase 5: verifikasi, duplikat, pembimbing & poin.
 
 ## [0.4.0] - 2026-10-10
 
-Fase 4: pengajuan prestasi & bukti.
+Pengajuan prestasi & bukti.
 
 ### Ditambahkan
 - Tabel `prestasi`, `prestasi_anggota`, `prestasi_anggota_eksternal`, `riwayat_status_prestasi` (UUIDv7, FULLTEXT nama kegiatan + penyelenggara), enum status/bentuk/bidang/moda/peran/konfirmasi pembimbing, model, factory, `NormalisasiTeks` dan scope `melibatkanProdi`/`milikMahasiswa`.
@@ -123,7 +131,7 @@ Fase 4: pengajuan prestasi & bukti.
 
 ## [0.3.0] - 2026-10-10
 
-Fase 3: data master, impor, tautan berkas & login Google.
+Data master, impor, tautan berkas & login Google.
 
 ### Ditambahkan
 - Master akademik: `prodi`, `mahasiswa`, `dosen` (UUIDv7, soft delete, activitylog; `nomor_hp` tidak dicatat nilainya), `users.prodi_id`, `ProdiSeeder` dari CSV (contoh bertanda CONTOH) dan `ProdiScope` untuk membatasi admin-prodi ke prodinya.
@@ -141,7 +149,7 @@ Fase 3: data master, impor, tautan berkas & login Google.
 
 ## [0.2.0] - 2026-10-08
 
-Fase 2: autentikasi, peran & audit.
+Autentikasi, peran & audit.
 
 ### Ditambahkan
 - Panel Filament 5 `admin` (`/admin`, indigo) dan `portal` (`/portal`, emerald) dengan notifikasi basis data dan halaman masuk bersama (`Masuk`) yang menolak akun nonaktif ("Akun Anda dinonaktifkan").
@@ -159,12 +167,12 @@ Fase 2: autentikasi, peran & audit.
 
 ## [0.1.0] - 2026-10-07
 
-Fase 1: fondasi Laravel.
+Fondasi Laravel.
 
 ### Ditambahkan
 - Laravel 13 di PHP 8.5 pada lingkungan Docker FKIP (compose pusat `puspresma-php`, `puspresma-nginx`, port 8032; MariaDB native di host; Redis bersama DB 40/41/42), konfigurasi locale `id`, zona waktu `Asia/Jakarta`, mode ketat Eloquent, dan `config/puspresma.php`.
 - Redis untuk cache, sesi, dan antrean; Laravel Horizon dengan tiga supervisor (`notifikasi`, `umum`, `berat`); service `puspresma-horizon` dan `puspresma-scheduler` di compose pusat.
-- Pest 4, Larastan level 6, Pint, Laravel Boost, dan uji arsitektur (enum, Actions, tanpa `dd`/`dump`, UUID, subpath).
+- Pest 4, Larastan level 6, Pint, dan uji arsitektur (enum, Actions, tanpa `dd`/`dump`, UUID, subpath).
 - Primary key UUIDv7 pada seluruh tabel aplikasi (`users`, `sessions`).
 - Siap subpath `https://supportfkip.unsil.ac.id/puspresma` (root URL, proxy tepercaya, cookie `puspresma_session`, aset Vite berawalan).
 - Endpoint `GET /api/health` dan versi aplikasi pada footer halaman awal.

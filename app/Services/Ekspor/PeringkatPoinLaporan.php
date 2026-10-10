@@ -8,7 +8,7 @@ use App\Services\PeringkatPoin;
 use Generator;
 use Illuminate\Support\Collection;
 
-/** LAP-06: peringkat poin mahasiswa per periode (dari PeringkatPoin F5.5). */
+/** LAP-06: peringkat poin mahasiswa per periode (dari PeringkatPoin). */
 class PeringkatPoinLaporan extends LaporanEkspor
 {
     public function jenis(): string

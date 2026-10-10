@@ -5,7 +5,7 @@ namespace App\Actions\Katalog;
 use App\Enums\StatusKompetisi;
 use App\Models\Kompetisi;
 
-/** Mengarsipkan kompetisi terbit yang tenggatnya lewat; dipanggil scheduler (F7.3). */
+/** Mengarsipkan kompetisi terbit yang tenggatnya lewat; dipanggil scheduler. */
 class ArsipkanKompetisiKedaluwarsa
 {
     /** @return int jumlah kompetisi yang diarsipkan */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * STANDAR-TEKNIS §1a: tidak ada unggahan berkas ke server; satu-satunya input berkas adalah impor Excel/CSV master.
+ * Kebijakan tautan: tidak ada unggahan berkas ke server; satu-satunya input berkas adalah impor Excel/CSV master.
  */
 it('tidak memakai FileUpload, UploadedFile, atau input file kecuali halaman impor', function () {
     $diizinkan = ['Filament/Admin/Pages/Impor', 'Filament/Admin/Concerns/HalamanImpor.php'];

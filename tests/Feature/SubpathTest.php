@@ -37,7 +37,7 @@ it('memasang cookie sesi puspresma_session ber-path /puspresma', function () {
 });
 
 it('mengalihkan tamu ke login tetap di bawah subpath', function () {
-    // Rute login sesungguhnya dibuat di F2; di sini cukup menamai satu rute 'login'.
+    // Cukup menamai satu rute 'login' untuk menguji pengalihan tamu.
     Route::middleware('web')->get('/masuk', fn () => 'masuk')->name('login');
     Route::middleware(['web', 'auth'])->get('/uji-terlindungi', fn () => 'rahasia');
     Route::getRoutes()->refreshNameLookups();

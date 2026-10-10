@@ -7,7 +7,7 @@ use App\Models\Prestasi;
 use App\Models\User;
 use Illuminate\Foundation\Events\Dispatchable;
 
-/** Anggota baru masuk tim prestasi (listener notifikasi dibuat di F7.1). */
+/** Anggota baru masuk tim prestasi (memicu notifikasi). */
 class AnggotaTimDitambahkan
 {
     use Dispatchable;

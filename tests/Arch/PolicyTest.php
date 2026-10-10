@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Setiap Resource Filament wajib memakai Policy (CLAUDE.md: otorisasi di Policy).
+ * Setiap Resource Filament wajib memakai Policy (otorisasi di Policy).
  * Kelas Resource dicari di app/Filament/<Panel>/Resources/*Resource.php.
  */
 it('memberi setiap Resource Filament model yang terdaftar Policy-nya', function () {

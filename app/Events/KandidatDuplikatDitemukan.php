@@ -5,7 +5,7 @@ namespace App\Events;
 use App\Models\Prestasi;
 use Illuminate\Foundation\Events\Dispatchable;
 
-/** Kandidat duplikat baru ditemukan untuk prestasi yang diajukan (notifikasi di F7.1). */
+/** Kandidat duplikat baru ditemukan untuk prestasi yang diajukan (memicu notifikasi). */
 class KandidatDuplikatDitemukan
 {
     use Dispatchable;

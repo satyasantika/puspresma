@@ -22,7 +22,7 @@ use Throwable;
 
 /**
  * Dasar impor master dari Excel/CSV: baca streaming, validasi per baris, upsert per 500 baris,
- * tulis baris gagal ke XLSX galat, dan SELALU hapus berkas sumber (STANDAR-TEKNIS §1a, BR-19).
+ * tulis baris gagal ke XLSX galat, dan SELALU hapus berkas sumber (BR-19).
  */
 abstract class ImporMasterDariExcel implements ShouldQueue
 {

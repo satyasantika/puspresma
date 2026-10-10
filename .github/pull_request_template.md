@@ -4,7 +4,7 @@
 
 ## Langkah yang tercakup
 
-<!-- Daftar langkah di docs/vibecoding/04-PROMPT-BERTAHAP.md, mis. F3.1–F3.7 -->
+<!-- Ringkas cakupan perubahan dan tautkan isu terkait. -->
 
 ## Aturan bisnis (BR-xx) yang disentuh
 
@@ -18,7 +18,7 @@
 - [ ] Migrasi baru tidak mengubah migrasi yang sudah dirilis
 - [ ] Policy dipasang di setiap Resource baru
 - [ ] Tidak ada `.env`, kredensial, atau berkas sementara (`storage/app/tmp`) ikut ter-commit
-- [ ] Tidak ada komponen unggah berkas baru selain impor Excel (kebijakan tautan, STANDAR-TEKNIS §1a)
+- [ ] Tidak ada komponen unggah berkas baru selain impor Excel (kebijakan tautan bukti)
 - [ ] `CHANGELOG.md` diperbarui
 
 ## Cara menguji manual

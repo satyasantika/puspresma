@@ -14,7 +14,7 @@ use Illuminate\Database\Seeder;
 use RuntimeException;
 
 /**
- * Akun demo per peran + data rekaan untuk tangkapan layar panduan (F9.6). HANYA APP_ENV=local.
+ * Akun demo per peran + data rekaan untuk tangkapan layar panduan. HANYA APP_ENV=local.
  * Kata sandi dari PANDUAN_PASSWORD; tanpa data pribadi asli (surel @contoh.test, nama rekaan).
  */
 class PanduanSeeder extends Seeder

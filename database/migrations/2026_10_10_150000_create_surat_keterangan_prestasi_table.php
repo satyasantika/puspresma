@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Hanya data; PDF dan QR dibangkitkan saat diminta dan tidak disimpan (STANDAR-TEKNIS §1a).
+        // Hanya data; PDF dan QR dibangkitkan saat diminta dan tidak disimpan.
         Schema::create('surat_keterangan_prestasi', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('nomor', 100)->unique();

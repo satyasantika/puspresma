@@ -6,7 +6,7 @@ use App\Models\Prestasi;
 use App\Models\User;
 use Illuminate\Foundation\Events\Dispatchable;
 
-/** Dosen pembimbing mengonfirmasi/menyangkal (notifikasi admin dan pengaju di F7.1). */
+/** Dosen pembimbing mengonfirmasi/menyangkal (memicu notifikasi admin dan pengaju). */
 class PembimbingMenjawab
 {
     use Dispatchable;
