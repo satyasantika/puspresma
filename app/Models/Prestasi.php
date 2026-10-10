@@ -4,12 +4,16 @@ namespace App\Models;
 
 use App\Enums\BentukPartisipasi;
 use App\Enums\BidangPrestasi;
+use App\Enums\JenisTautan;
 use App\Enums\ModaKegiatan;
+use App\Enums\PenyediaTautan;
+use App\Enums\StatusCekTautan;
 use App\Enums\StatusKonfirmasiPembimbing;
 use App\Enums\StatusPrestasi;
 use App\Enums\StatusTinjauDuplikat;
 use App\Models\Concerns\TercatatAktivitas;
 use App\Services\NormalisasiTeks;
+use App\Services\Pengaturan;
 use Database\Factories\PrestasiFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -21,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 /**
  * Satu record = satu kegiatan + satu capaian; prestasi tim dicatat sekali dengan banyak anggota (BR-01).
@@ -197,6 +202,81 @@ class Prestasi extends Model
     public function snapshotTautan(): HasMany
     {
         return $this->hasMany(SnapshotTautanVerifikasi::class)->orderBy('created_at');
+    }
+
+    /**
+     * Tampil di galeri publik bila terverifikasi, galeri aktif, pengaju menyetujui, dan tidak disembunyikan (BR-16).
+     */
+    public function tampilDiGaleri(): bool
+    {
+        return $this->status === StatusPrestasi::Terverifikasi
+            && (bool) Pengaturan::ambil('galeri_aktif', true)
+            && ! $this->disembunyikan_dari_galeri
+            && $this->anggota()->where('is_pengaju', true)->where('setuju_publikasi', true)->exists();
+    }
+
+    /**
+     * Foto penyerahan yang boleh tampil publik: diizinkan mahasiswa, Google Drive dengan id, dan dapat diakses
+     * anonim (artinya dibagikan publik). Tautan sertifikat/surat tugas tidak pernah masuk (BR-16).
+     *
+     * @return Collection<int, TautanBerkas>
+     */
+    public function fotoPublik(): Collection
+    {
+        return $this->tautanBukti()
+            ->where('jenis', JenisTautan::FotoPenyerahan->value)
+            ->where('tampil_publik', true)
+            ->where('penyedia', PenyediaTautan::GoogleDrive->value)
+            ->whereNotNull('drive_file_id')
+            ->where('status_cek', StatusCekTautan::DapatDiakses->value)
+            ->get();
+    }
+
+    /**
+     * Alasan prestasi belum tampil di galeri (kosong = tampil).
+     *
+     * @return list<string>
+     */
+    public function alasanTidakTampilDiGaleri(): array
+    {
+        $alasan = [];
+        if ($this->status !== StatusPrestasi::Terverifikasi) {
+            $alasan[] = 'Prestasi belum terverifikasi.';
+        }
+        if (! Pengaturan::ambil('galeri_aktif', true)) {
+            $alasan[] = 'Galeri sedang dinonaktifkan.';
+        }
+        if ($this->disembunyikan_dari_galeri) {
+            $alasan[] = 'Disembunyikan oleh admin.';
+        }
+        if (! $this->anggota()->where('is_pengaju', true)->where('setuju_publikasi', true)->exists()) {
+            $alasan[] = 'Pengaju belum menyetujui publikasi.';
+        }
+
+        return $alasan;
+    }
+
+    /**
+     * Alasan foto belum tampil (kosong bila ada foto yang memenuhi syarat atau tidak ada foto).
+     *
+     * @return list<string>
+     */
+    public function alasanFotoTidakTampil(): array
+    {
+        $foto = $this->tautanBukti()->where('jenis', JenisTautan::FotoPenyerahan->value)->get();
+        if ($foto->isEmpty() || $this->fotoPublik()->isNotEmpty()) {
+            return [];
+        }
+
+        $alasan = [];
+        if ($foto->where('tampil_publik', false)->isNotEmpty()) {
+            $alasan[] = 'Foto belum diizinkan tampil.';
+        }
+        if ($foto->where('tampil_publik', true)->contains(fn (TautanBerkas $t) => $t->status_cek !== StatusCekTautan::DapatDiakses || $t->penyedia !== PenyediaTautan::GoogleDrive)) {
+            $alasan[] = 'Foto tidak dibagikan publik (atau bukan dari Google Drive).';
+        }
+
+        return $alasan;
     }
 
     /** @return HasMany<KandidatDuplikat, $this> */
