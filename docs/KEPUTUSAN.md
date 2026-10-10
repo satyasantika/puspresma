@@ -39,3 +39,15 @@ Super-admin menerima seluruh permission di seeder (PRD §3), tetapi `Gate::befor
 ## K-10 — Retensi log aktivitas dan batas login
 
 Retensi log aktivitas `clean_after_days` = 730 hari (di activitylog v5 kuncinya `clean_after_days`, bukan `delete_records_older_than_days`); angka ini asumsi yang perlu ditetapkan fakultas. Limiter `login` (5/menit per surel+IP) diterapkan pada halaman masuk bersama kedua panel (`App\Filament\Pages\Auth\Masuk`) dan dibersihkan saat login berhasil; log `auth` hanya menyimpan surel, IP, dan user agent. Model `User` hanya mencatat `name`, `email`, `is_active`, dan peristiwa peran (`peran_ditambah`/`peran_dicabut`) lewat event spatie permission (`events_enabled` = true).
+
+## K-11 — morphMap tanpa `enforceMorphMap`
+
+STANDAR F3.7 meminta `Relation::enforceMorphMap`. Mode ketat itu juga berlaku bagi subjek/pelaku activitylog (`subject_type`, `causer_type`), sehingga setiap model berjejak audit (Prodi, User, dst.) akan melempar `ClassMorphViolationException` kecuali seluruhnya didaftarkan. Karena itu dipakai `Relation::morphMap` biasa: alias `prestasi` dan `kompetisi` terdaftar untuk `tautan_berkas.pemilik_type`, model lain tetap memakai nama kelas penuh.
+
+## K-12 — Rute `login` bernama
+
+Middleware `auth` pada rute web bersama (mis. `tautan.buka`) memerlukan rute bernama `login`. `routes/web.php` mendefinisikan `/masuk` yang mengalihkan ke halaman masuk panel admin (`filament.admin.auth.login`); pengalihan ke panel yang benar tetap oleh `ArahkanKePanelSesuaiPeran` setelah login.
+
+## K-13 — Kolom `pesan` pada `riwayat_impor`
+
+Tabel `riwayat_impor` (03-SKEMA 3.22) ditambah kolom `pesan` (TEXT, nullable) untuk alasan impor gagal seluruhnya (mis. "Impor lain sedang berjalan." atau galat berkas). Berkas galat baris hanya diunduh sebelum `kedaluwarsa_at`; pembersihan berkas kedaluwarsa dijadwalkan di F7.3.
