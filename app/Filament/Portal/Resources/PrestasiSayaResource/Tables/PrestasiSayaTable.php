@@ -3,6 +3,7 @@
 namespace App\Filament\Portal\Resources\PrestasiSayaResource\Tables;
 
 use App\Enums\StatusPrestasi;
+use App\Filament\Portal\Resources\PrestasiSayaResource\Actions\AksiPrestasi;
 use App\Models\Prestasi;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -47,6 +48,8 @@ class PrestasiSayaTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                AksiPrestasi::ajukan(),
+                AksiPrestasi::tarikKembali(),
                 DeleteAction::make(),
             ]);
     }

@@ -73,6 +73,18 @@ class PrestasiPolicy
             && $pelaku->can('prestasi.buat-atas-nama');
     }
 
+    /** Pengaju atau admin-fakultas dapat mengajukan dari draf/perlu_perbaikan. */
+    public function ajukan(User $pelaku, Prestasi $prestasi): bool
+    {
+        return $prestasi->status->bolehDiubahMahasiswa() && $this->pengajuAtauAdmin($pelaku, $prestasi);
+    }
+
+    /** Hanya pengaju (bukan admin) yang menarik kembali, hanya dari diajukan. */
+    public function tarikKembali(User $pelaku, Prestasi $prestasi): bool
+    {
+        return $prestasi->status === StatusPrestasi::Diajukan && $this->pengaju($pelaku, $prestasi);
+    }
+
     public function pengajuAtauAdmin(User $pelaku, Prestasi $prestasi): bool
     {
         return $pelaku->can('prestasi.buat-atas-nama') || $this->pengaju($pelaku, $prestasi);

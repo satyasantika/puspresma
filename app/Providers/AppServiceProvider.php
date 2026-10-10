@@ -104,6 +104,7 @@ class AppServiceProvider extends ServiceProvider
             fn () => config('puspresma.google_login') ? view('auth.tombol-google') : '',
         );
 
+        RateLimiter::for('ajukan-prestasi', fn (Request $request) => Limit::perHour(10)->by($request->user()?->getAuthIdentifier() ?: $request->ip()));
         RateLimiter::for('simpan-tautan', fn (Request $request) => Limit::perHour(60)->by($request->user()?->getAuthIdentifier() ?: $request->ip()));
         RateLimiter::for('buka-tautan', fn (Request $request) => Limit::perHour(120)->by($request->user()?->getAuthIdentifier() ?: $request->ip()));
 
