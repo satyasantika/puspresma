@@ -4,6 +4,20 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ## [Belum dirilis]
 
+## [0.6.0] - 2026-10-10
+
+Fase 6: katalog kompetisi & galeri publik.
+
+### Ditambahkan
+- Katalog kompetisi: tabel `kompetisi`, `kompetisi_prodi`, `kompetisi_minat`, FK `prestasi.kompetisi_id`, deskripsi disanitasi (`mews/purifier`, profil `deskripsi`), poster sebagai tautan, KompetisiResource (terbitkan, arsipkan, duplikat; admin-prodi hanya sasaran prodinya), arsip otomatis (`ArsipkanKompetisiKedaluwarsa`).
+- Halaman publik `/kompetisi` dan detail (cache per versi katalog, filter, pencarian, tenggat 3 hari), beranda dengan kompetisi terdekat dan prestasi terbaru, katalog dan penanda minat di portal, prapengisian prestasi dari katalog (`kompetisi_id`).
+- Persetujuan publikasi opt-in per anggota (`UbahPersetujuanPublikasi`, tercatat IP/user agent/versi teks), `Prestasi::tampilDiGaleri()`/`fotoPublik()`, komponen `x-foto-drive` (foto dimuat dari `lh3.googleusercontent.com`, bukan server), Persetujuan Publikasi di portal beserta alasan belum tampil.
+- Galeri publik `/galeri` dan detail (hanya data publik, cache 10 menit dengan pembuangan seketika), kebijakan privasi galeri, moderasi (sembunyikan/tampilkan dengan alasan), pesan saat galeri dinonaktifkan, pembatas laju `galeri` dan `katalog-publik`.
+- Layout publik dengan navigasi, tautan lewati-ke-konten, label formulir, dan fokus terlihat.
+
+### Diubah
+- Perubahan status pemeriksaan tautan foto dan pengaturan galeri menaikkan `galeri:versi`.
+
 ## [0.5.0] - 2026-10-10
 
 Fase 5: verifikasi, duplikat, pembimbing & poin.
