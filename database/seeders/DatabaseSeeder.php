@@ -17,6 +17,10 @@ class DatabaseSeeder extends Seeder
             PeranDanIzinSeeder::class,
             SuperAdminSeeder::class,
             ProdiSeeder::class,
+            JenisKegiatanSeeder::class,
+            KategoriLombaSeeder::class,
+            TingkatSeeder::class,
+            CapaianSeeder::class,
         ]);
     }
 }
