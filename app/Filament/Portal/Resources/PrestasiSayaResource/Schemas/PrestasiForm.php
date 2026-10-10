@@ -2,20 +2,25 @@
 
 namespace App\Filament\Portal\Resources\PrestasiSayaResource\Schemas;
 
+use App\Actions\Bukti\SimpanTautanBukti;
 use App\Actions\Prestasi\SimpanPrestasi;
 use App\Enums\BentukPartisipasi;
 use App\Enums\BidangPrestasi;
 use App\Enums\ModaKegiatan;
 use App\Models\Dosen;
 use App\Models\Mahasiswa;
+use App\Rules\TautanBerkasValid;
 use App\Services\OpsiMaster;
 use App\Services\Pengaturan;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Callout;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
@@ -23,6 +28,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class PrestasiForm
 {
@@ -145,7 +151,31 @@ class PrestasiForm
     private static function langkahBukti(): Step
     {
         return Step::make('Tautan Bukti & Publikasi')->schema([
-            Text::make('Tautan bukti diisi pada langkah berikutnya.'),
+            Callout::make('Cara membagikan berkas')
+                ->description(new HtmlString(
+                    '<ul class="list-disc ps-5 space-y-1">'
+                    .'<li>Sertifikat/piagam dan foto penyerahan boleh dibagikan "Siapa saja yang memiliki link".</li>'
+                    .'<li>Surat tugas atau dokumen yang memuat NIK/NIP/NPM/nilai: bagikan terbatas ke akun/organisasi kampus (unsil.ac.id) atau akun verifikator.</li>'
+                    .'<li>Di aplikasi Google Drive ponsel pilih berkas, lalu "Bagikan" → "Salin link", dan tempel di sini. Tautan ke satu berkas, bukan folder.</li>'
+                    .'<li>Gunakan foto tanpa data lokasi (EXIF); sistem tidak dapat membuangnya dari berkas di Drive.</li>'
+                    .'</ul>'
+                ))->info()->columnSpanFull(),
+            Repeater::make('tautan_bukti')->label('Tautan bukti')->addActionLabel('Tambah tautan')->defaultItems(0)
+                ->maxItems(SimpanTautanBukti::MAKS_PER_PRESTASI)->columns(2)->schema([
+                    Hidden::make('id'),
+                    Select::make('jenis')->label('Jenis')->required()->live()
+                        ->options(collect(SimpanTautanBukti::JENIS_BUKTI)->mapWithKeys(fn ($j) => [$j->value => $j->label()])),
+                    TextInput::make('url')->label('Tautan (https)')->required()->maxLength(2048)->rule(new TautanBerkasValid)
+                        ->helperText('Google Drive atau domain unsil.ac.id; bukan pemendek tautan atau folder.'),
+                    TextInput::make('label')->label('Keterangan')->maxLength(255),
+                    Toggle::make('tampil_publik')->label('Izinkan foto ini tampil di galeri publik')
+                        ->helperText('Hanya bila prestasi terverifikasi; berkas di Drive harus dibagikan "Siapa saja yang memiliki link".')
+                        ->visible(fn (Get $get): bool => $get('jenis') === 'foto_penyerahan'),
+                    Text::make(fn (Get $get): string => filled($get('status_cek'))
+                        ? 'Status pemeriksaan: '.$get('status_cek').($get('status_cek') === 'Tidak dapat diakses'
+                            ? ' — verifikator mungkin tidak bisa membuka; periksa pengaturan berbagi.' : '')
+                        : 'Pemeriksaan keteraksesan dijalankan setelah disimpan.')->color('gray')->columnSpanFull(),
+                ]),
         ]);
     }
 

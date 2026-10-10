@@ -59,6 +59,20 @@ class PrestasiPolicy
         return $prestasi->status === StatusPrestasi::Draf && $this->pengajuAtauAdmin($pelaku, $prestasi);
     }
 
+    /**
+     * Menambah/mengubah/menghapus tautan bukti (BR-06, BR-14): pengaju atau admin-fakultas saat draf/perlu_perbaikan;
+     * admin-fakultas juga saat verifikasi berjalan. Terverifikasi/ditolak terkunci (BR-12/13).
+     */
+    public function kelolaBukti(User $pelaku, Prestasi $prestasi): bool
+    {
+        if ($prestasi->status->bolehDiubahMahasiswa()) {
+            return $this->pengajuAtauAdmin($pelaku, $prestasi);
+        }
+
+        return in_array($prestasi->status, [StatusPrestasi::Diajukan, StatusPrestasi::LolosProdi], true)
+            && $pelaku->can('prestasi.buat-atas-nama');
+    }
+
     public function pengajuAtauAdmin(User $pelaku, Prestasi $prestasi): bool
     {
         return $pelaku->can('prestasi.buat-atas-nama') || $this->pengaju($pelaku, $prestasi);
