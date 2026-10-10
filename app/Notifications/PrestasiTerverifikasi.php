@@ -4,9 +4,12 @@ namespace App\Notifications;
 
 use App\Models\Prestasi;
 use App\Models\User;
+use App\Notifications\Concerns\BisaWhatsApp;
 
 class PrestasiTerverifikasi extends NotifikasiAplikasi
 {
+    use BisaWhatsApp;
+
     public function __construct(public Prestasi $prestasi)
     {
         parent::__construct();
