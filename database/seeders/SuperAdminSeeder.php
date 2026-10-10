@@ -9,8 +9,9 @@ use Illuminate\Support\Str;
 class SuperAdminSeeder extends Seeder
 {
     /**
-     * Membuat/menautkan akun super-admin dari SEED_SUPERADMIN_EMAIL dan SEED_SUPERADMIN_NAME.
-     * Kata sandi acak dicetak sekali ke konsol hanya saat akun baru dibuat.
+     * Membuat/menautkan akun super-admin (bawaan fkip@unsil.ac.id; ubah lewat SEED_SUPERADMIN_EMAIL/_NAME/_PASSWORD).
+     * Kata sandi hanya diatur saat akun baru dibuat, tidak pernah menimpa kata sandi yang sudah diganti.
+     * SEED_SUPERADMIN_PASSWORD kosong = sandi acak yang dicetak sekali ke konsol.
      */
     public function run(): void
     {
@@ -25,7 +26,8 @@ class SuperAdminSeeder extends Seeder
         $user = User::firstWhere('email', $email);
 
         if ($user === null) {
-            $sandi = Str::password(20, symbols: false);
+            $sandi = config('puspresma.seed_superadmin.password') ?: Str::password(20, symbols: false);
+            $acak = blank(config('puspresma.seed_superadmin.password'));
             $user = User::create([
                 'name' => config('puspresma.seed_superadmin.name') ?: 'Super Admin',
                 'email' => $email,
@@ -35,7 +37,9 @@ class SuperAdminSeeder extends Seeder
             $user->forceFill(['email_verified_at' => now()])->save();
 
             $this->command->info("Akun super-admin dibuat: {$email}");
-            $this->command->warn("Kata sandi (ditampilkan sekali): {$sandi}");
+            if ($acak) {
+                $this->command->warn("Kata sandi (ditampilkan sekali): {$sandi}");
+            }
         }
 
         $user->assignRole('super-admin');
