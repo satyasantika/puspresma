@@ -119,6 +119,12 @@ class PrestasiPolicy
         return $pelaku->can('prestasi.buka-verifikasi') && $prestasi->status === StatusPrestasi::Terverifikasi;
     }
 
+    /** Penandaan "dilaporkan ke SIMKATMAWA" hanya untuk terverifikasi oleh admin-fakultas (BR-27). */
+    public function tandaiSimkatmawa(User $pelaku, Prestasi $prestasi): bool
+    {
+        return $pelaku->can('simkatmawa.ekspor') && $prestasi->status === StatusPrestasi::Terverifikasi;
+    }
+
     private function bisaMenilai(User $pelaku, Prestasi $prestasi): bool
     {
         if (! in_array($prestasi->status, [StatusPrestasi::Diajukan, StatusPrestasi::LolosProdi], true)) {
