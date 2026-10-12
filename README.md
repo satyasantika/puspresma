@@ -67,7 +67,7 @@ npm install && npm run build    # atau `npm run dev`
 ```
 
 Akun super admin awal dibuat oleh seeder dari `SEED_SUPERADMIN_EMAIL` (bawaan `fkip@unsil.ac.id`) dan
-`SEED_SUPERADMIN_PASSWORD`. **Ganti kata sandi awal segera setelah masuk** (menu Profil). Autentikasi dua langkah
+`SEED_SUPERADMIN_PASSWORD` (isi manual di `.env`; bila kosong, sandi acak dicetak sekali ke konsol). **Ganti kata sandi awal segera setelah masuk** (menu Profil). Autentikasi dua langkah
 dimatikan secara bawaan (`MFA_AKTIF=false`); nyalakan dengan `MFA_AKTIF=true` untuk mewajibkannya bagi super admin
 dan admin fakultas.
 

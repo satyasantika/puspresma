@@ -84,7 +84,7 @@ return [
         'email' => env('SEED_SUPERADMIN_EMAIL', 'fkip@unsil.ac.id'),
         'name' => env('SEED_SUPERADMIN_NAME', 'Super Admin'),
         // Kata sandi awal akun baru. Segera ganti setelah masuk pertama; kosongkan di env untuk sandi acak.
-        'password' => env('SEED_SUPERADMIN_PASSWORD', 'siliwangi'),
+        'password' => env('SEED_SUPERADMIN_PASSWORD'),
     ],
 
     /*
