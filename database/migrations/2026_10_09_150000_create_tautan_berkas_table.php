@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('status_cek', ['belum', 'dapat_diakses', 'tidak_dapat_diakses'])->default('belum')->index();
             $table->dateTime('dicek_pada')->nullable();
             $table->foreignUuid('ditambahkan_oleh')->constrained('users')->restrictOnDelete();
-            // Perluasan Puspresma (03-SKEMA 3.14).
+            // Perluasan khusus Puspresma.
             $table->boolean('tampil_publik')->default(false);
             $table->string('url_normal', 2048);
             $table->timestamps();

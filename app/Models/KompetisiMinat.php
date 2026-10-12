@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** Penanda "berminat" mahasiswa pada kompetisi; dasar pengingat H-3/H-1 (F7.3). */
+/** Penanda "berminat" mahasiswa pada kompetisi; dasar pengingat H-3/H-1. */
 #[Fillable(['kompetisi_id', 'mahasiswa_id', 'diingatkan_h3_at', 'diingatkan_h1_at'])]
 class KompetisiMinat extends Model
 {

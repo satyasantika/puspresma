@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Services\Pengaturan;
 
 /**
- * Aturan per record: milik/anggota, prodi, bimbingan (BR-03, BR-14, BR-15). Diperluas di F5.1.
+ * Aturan per record: milik/anggota, prodi, bimbingan (BR-03, BR-14, BR-15).
  */
 class PrestasiPolicy
 {

@@ -23,7 +23,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $app_authentication_secret
  * @property array<string>|null $app_authentication_recovery_codes
  */
-#[Fillable(['name', 'email', 'password', 'npm', 'nidn', 'nip', 'prodi_id', 'google_id', 'nomor_wa', 'notif_wa_aktif', 'is_active'])]
+#[Fillable(['name', 'email', 'password', 'npm', 'nidn', 'nip', 'prodi_id', 'google_id', 'nomor_wa', 'notif_wa_aktif', 'is_active', 'wajib_ganti_sandi'])]
 #[Hidden(['password', 'remember_token', 'app_authentication_secret', 'app_authentication_recovery_codes'])]
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery
 {
@@ -61,6 +61,11 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     public function wajibMfa(): bool
     {
+        // MFA dimatikan sementara lewat MFA_AKTIF=false; kodenya tetap tersedia dan dapat dinyalakan kembali.
+        if (! config('puspresma.mfa_aktif')) {
+            return false;
+        }
+
         // Akun demo panduan (PanduanSeeder) hanya ada di lokal dan tidak memakai MFA agar tangkapan layar otomatis dapat login.
         if (app()->environment('local') && str_starts_with((string) $this->email, 'panduan.') && str_ends_with((string) $this->email, '@contoh.test')) {
             return false;
@@ -98,7 +103,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         $this->save();
     }
 
-    protected $attributes = ['is_active' => true, 'notif_wa_aktif' => false];
+    protected $attributes = ['is_active' => true, 'notif_wa_aktif' => false, 'wajib_ganti_sandi' => false];
 
     /** Peran yang boleh membuka tiap panel Filament. */
     public const PERAN_PANEL = [
@@ -124,6 +129,8 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
             'password' => 'hashed',
             'notif_wa_aktif' => 'boolean',
             'is_active' => 'boolean',
+            'wajib_ganti_sandi' => 'boolean',
+            'sandi_diubah_at' => 'datetime',
             'last_login_at' => 'datetime',
             'app_authentication_secret' => 'encrypted',
             'app_authentication_recovery_codes' => 'encrypted:array',

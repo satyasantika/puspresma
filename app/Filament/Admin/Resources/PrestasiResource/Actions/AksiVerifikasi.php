@@ -27,7 +27,7 @@ use Filament\Notifications\Notification;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Validation\ValidationException;
 
-/** Aksi verifikator di panel admin; semua logika di Action bisnis F5.1, galat dijadikan notifikasi Filament. */
+/** Aksi verifikator di panel admin; semua logika di Action bisnis, galat dijadikan notifikasi Filament. */
 class AksiVerifikasi
 {
     /** @return list<Action> */

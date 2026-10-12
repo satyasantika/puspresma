@@ -37,7 +37,7 @@ it('memasang cookie sesi puspresma_session ber-path /puspresma', function () {
 });
 
 it('mengalihkan tamu ke login tetap di bawah subpath', function () {
-    // Rute login sesungguhnya dibuat di F2; di sini cukup menamai satu rute 'login'.
+    // Cukup menamai satu rute 'login' untuk menguji pengalihan tamu.
     Route::middleware('web')->get('/masuk', fn () => 'masuk')->name('login');
     Route::middleware(['web', 'auth'])->get('/uji-terlindungi', fn () => 'rahasia');
     Route::getRoutes()->refreshNameLookups();
@@ -51,3 +51,32 @@ it('mempercayai header X-Forwarded-Prefix dari proxy', function () {
 
     expect(url('/uji'))->toBe('https://supportfkip.unsil.ac.id/puspresma/uji');
 });
+
+it('menurunkan path cookie sesi dari APP_URL bila SESSION_PATH kosong', function (string $appUrl, string $diharapkan) {
+    $kunci = ['APP_URL' => $appUrl, 'SESSION_PATH' => null];
+    $lama = [];
+
+    foreach ($kunci as $nama => $nilai) {
+        $lama[$nama] = [$_ENV[$nama] ?? null, $_SERVER[$nama] ?? null, getenv($nama)];
+        $nilai === null ? putenv($nama) : putenv("{$nama}={$nilai}");
+        $nilai === null ? [$_ENV[$nama], $_SERVER[$nama]] = [null, null] : [$_ENV[$nama], $_SERVER[$nama]] = [$nilai, $nilai];
+        if ($nilai === null) {
+            unset($_ENV[$nama], $_SERVER[$nama]);
+        }
+    }
+
+    try {
+        $config = require config_path('session.php');
+    } finally {
+        foreach ($lama as $nama => [$env, $server, $proses]) {
+            $env === null ? null : $_ENV[$nama] = $env;
+            $server === null ? null : $_SERVER[$nama] = $server;
+            $proses === false ? putenv($nama) : putenv("{$nama}={$proses}");
+        }
+    }
+
+    expect($config['path'])->toBe($diharapkan);
+})->with([
+    'subpath lain' => ['https://supportfkip.unsil.ac.id/siman', '/siman'],
+    'akar domain' => ['http://localhost:8032', '/'],
+]);

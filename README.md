@@ -2,43 +2,111 @@
 
 [![CI](https://github.com/satyasantika/puspresma/actions/workflows/ci.yml/badge.svg)](https://github.com/satyasantika/puspresma/actions/workflows/ci.yml)
 
-Puspresma (Pusat Prestasi Mahasiswa) FKIP Universitas Siliwangi mencatat prestasi akademik dan non-akademik mahasiswa
-(kompetisi dan rekognisi; tingkat lokal, wilayah, nasional, internasional) sebagai bukti dukung akreditasi, laporan
-kinerja/IKU, bahan ekspor SIMKATMAWA, dan seleksi beasiswa. Bukti prestasi berupa tautan (tanpa unggah berkas ke server).
+**Puspresma** (Pusat Prestasi Mahasiswa) Fakultas Keguruan dan Ilmu Pendidikan Universitas Siliwangi adalah aplikasi web
+untuk mencatat, memverifikasi, dan melaporkan prestasi akademik dan non-akademik mahasiswa (kompetisi dan rekognisi;
+tingkat lokal, wilayah, nasional, hingga internasional). Datanya menjadi bukti dukung akreditasi, bahan laporan
+kinerja/IKU, berkas siap-lapor SIMKATMAWA, dan dasar seleksi beasiswa.
 
-Stack: Laravel 13, PHP 8.5, MariaDB, Redis 7, Filament 5, Livewire 4, Tailwind 4.
+![Landing page Puspresma](docs/gambar/landing.png)
 
-## Dokumentasi
+## Fitur utama
 
-Lihat `docs/`: keputusan teknis (`KEPUTUSAN.md`) dan deploy (`DEPLOY.md`; CI di `.github/workflows/ci.yml`, deploy otomatis di `deploy.yml`).
+- **Pengajuan prestasi** oleh mahasiswa, termasuk tim lintas prodi: prestasi dicatat sekali, setiap anggota internal
+  mendapat kredit, statistik prodi tetap akurat dan total fakultas dihitung unik.
+- **Bukti berupa tautan** Google Drive (tanpa unggah berkas ke server). Tautan divalidasi (https, domain terdaftar,
+  bukan folder atau pemendek), diperiksa keteraksesannya secara berkala, dan perubahannya dicatat.
+- **Verifikasi bertahap** prodi lalu fakultas dengan catatan wajib untuk perbaikan/penolakan, riwayat status, deteksi
+  kandidat duplikat, konfirmasi dosen pembimbing, dan penguncian setelah terverifikasi. Snapshot tautan disimpan saat
+  terverifikasi.
+- **Galeri publik berbasis persetujuan** (sesuai UU PDP): hanya prestasi terverifikasi yang disetujui pengaju; tanpa NPM
+  dan tanpa tautan sertifikat; persetujuan dapat ditarik dan berlaku seketika.
+- **Katalog kompetisi** dengan pengingat tenggat, **poin prestasi** opsional (bobot per jenis, tingkat, dan capaian), dan
+  **surat keterangan prestasi ber-QR** yang keasliannya dapat diperiksa publik.
+- **Dasbor, laporan, dan ekspor** Excel/PDF, termasuk berkas SIMKATMAWA; ekspor besar diproses lewat antrean.
+- **Kelola pengguna**: impor massal dengan salin-tempel, profil dan ganti kata sandi, kewajiban ganti sandi per akun,
+  keluar otomatis dari perangkat lain saat sandi diganti, dan masuk sebagai pengguna lain untuk keadaan darurat
+  (tercatat di log aktivitas).
+- **Keamanan dan audit**: otorisasi per record lewat Policy, log aktivitas, header keamanan (CSP, HSTS), pembatasan
+  percobaan masuk, MFA aplikasi authenticator (opsional), dan backup basis data terenkripsi harian.
 
-## Menjalankan lokal
+![Halaman masuk](docs/gambar/masuk.png)
 
-Aplikasi memakai container yang dikelola compose pusat `~/code/docker-compose.yml` (`puspresma-php` PHP 8.5, `puspresma-nginx`, jaringan `laranet`), **MariaDB** native di host (DB `db_puspresma`, `db_puspresma_testing`), dan Redis bersama (`redis`, DB 40/41/42). Tidak ada container milik repo ini (tanpa Sail, tanpa MySQL/Redis/Mailpit sendiri).
+## Peran
+
+| Peran | Panel | Ringkasan |
+|---|---|---|
+| Mahasiswa | Portal | Mengajukan prestasi, menautkan bukti, memantau status, mengatur persetujuan galeri, meminta surat keterangan |
+| Dosen | Portal | Mengonfirmasi atau menyangkal bimbingan prestasi mahasiswa |
+| Admin prodi | Admin | Verifikasi tahap prodi, peninjauan duplikat, laporan prodi |
+| Admin fakultas | Admin | Verifikasi akhir, master data, kompetisi, galeri, surat, pengaturan, ekspor |
+| Pimpinan | Admin | Dasbor dan laporan (akses baca) |
+| Super admin | Admin | Pengguna dan peran, audit, antrean, backup (tidak memverifikasi prestasi: pemisahan tugas) |
+
+Panduan bergambar per peran tersedia di `/panduan/index.html` dan dari landing page; panduan teks di menu **Bantuan**
+(`docs/panduan/`).
+
+## Teknologi
+
+Laravel 13 · PHP 8.5 · MariaDB 10.11 · Redis 7 · Laravel Horizon · Filament 5 · Livewire 4 · Tailwind 4 · Pest 4 ·
+Larastan (level 6) · Pint. Pustaka utama: spatie/laravel-permission, spatie/laravel-activitylog, spatie/laravel-backup,
+spatie/simple-excel, dompdf, endroid/qr-code, Socialite (login Google kampus, opsional).
+
+Konvensi: istilah domain berbahasa Indonesia, satu aksi bisnis satu kelas di `app/Actions`, perubahan status prestasi
+hanya lewat `TransisiStatus`, kunci utama UUIDv7, dan pengaturan ambang dibaca lewat `Pengaturan::ambil`.
+
+## Menjalankan di lingkungan lokal
+
+Prasyarat: Docker (PHP 8.5 dan nginx), MariaDB 10.11, Redis, dan Node untuk membangun aset.
 
 ```bash
-alias psp='docker exec -w /var/www/html puspresma-php'
-cp .env.example .env && psp php artisan key:generate   # isi DB_PASSWORD (dan REDIS_PASSWORD) di .env
-psp composer install
-psp php artisan migrate --seed
-git config core.hooksPath .githooks                     # aktifkan hook commit-msg dan pre-commit
+cp .env.example .env            # isi DB_PASSWORD dan REDIS_PASSWORD
+composer install
+php artisan key:generate
+php artisan migrate --seed      # master data, peran, dan akun super admin awal
+npm install && npm run build    # atau `npm run dev`
 ```
 
-Aplikasi: http://localhost:8032 (port dari compose pusat). Perintah PHP/Composer selalu lewat `psp`; `npm install && npm run dev` dijalankan dari host (container belum berisi Node). Git dijalankan di host.
+Akun super admin awal dibuat oleh seeder dari `SEED_SUPERADMIN_EMAIL` (bawaan `fkip@unsil.ac.id`) dan
+`SEED_SUPERADMIN_PASSWORD` (isi manual di `.env`; bila kosong, sandi acak dicetak sekali ke konsol). **Ganti kata sandi awal segera setelah masuk** (menu Profil). Autentikasi dua langkah
+dimatikan secara bawaan (`MFA_AKTIF=false`); nyalakan dengan `MFA_AKTIF=true` untuk mewajibkannya bagi super admin
+dan admin fakultas.
 
-Pemeliharaan: bila container `puspresma-php` dibuat ulang dan nginx menjawab 502, jalankan `docker exec puspresma-nginx nginx -s reload`.
+Antrean (Horizon) dan penjadwal (`schedule:work`) berjalan sebagai proses terpisah. Setelah mengubah kode job, mulai
+ulang Horizon. Jadwal harian meliputi pengarsipan kompetisi kedaluwarsa, pembersihan `storage/app/tmp`, pemeriksaan
+tautan bukti, pengingat tenggat, dan backup.
 
-Antrean dan penjadwal berjalan sebagai service compose pusat `puspresma-horizon` (`php artisan horizon`) dan `puspresma-scheduler` (`schedule:work`). Setelah mengubah kode job: `cd ~/code && docker compose restart puspresma-horizon`. Dasbor Horizon: http://localhost:8032/horizon (hanya lingkungan local sampai F2.2).
+Data prodi resmi: ganti `database/seeders/data/prodi.csv`, lalu `php artisan db:seed --class=ProdiSeeder`.
 
-## Penjadwal
+## Pengujian
 
-Service `puspresma-scheduler` menjalankan `php artisan schedule:work` (lock Redis, `onOneServer` + `withoutOverlapping`). Jadwal: `horizon:snapshot` tiap 5 menit; `puspresma:arsipkan-kompetisi` 00:30; `puspresma:bersihkan-tmp` tiap jam; `puspresma:periksa-tautan` Minggu 02:00; pengingat tenggat kompetisi 07:00; `puspresma:ringkasan-antrean` Senin–Jumat 07:30; `puspresma:pengingat-pembimbing` Senin 08:00; `activitylog:clean` dan `queue:prune-failed --hours=720` tiap tanggal 1. Lihat daftar lengkap dengan `psp php artisan schedule:list`, jalankan satu tugas dengan `psp php artisan schedule:test`, dan pantau log penjadwal dengan `docker compose logs -f puspresma-scheduler`.
+```bash
+./vendor/bin/pest --parallel                              # seluruh test (basis data db_puspresma_testing)
+./vendor/bin/phpstan analyse --memory-limit=1G            # Larastan level 6
+./vendor/bin/pint --test                                  # gaya kode
+```
 
-## Subpath produksi `/puspresma`
+Pintasan: `composer test`, `composer stan`, `composer lint`, `composer cek`. Test memakai cache `array`, antrean `sync`,
+dan sesi `array`, sehingga tidak menyentuh Redis. Hook commit di `.githooks` (`git config core.hooksPath .githooks`)
+menjalankan gerbang yang sama sebelum commit.
 
-Produksi: `https://supportfkip.unsil.ac.id/puspresma` (reverse proxy memotong awalan). Atur di `.env`: `APP_URL` dan `ASSET_URL` = URL tersebut, `SESSION_PATH=/puspresma`, `SESSION_COOKIE=puspresma_session`, `SESSION_SECURE_COOKIE=true`, `TRUSTED_PROXIES=<ip proxy>`. Bila `APP_URL` berpath, `AppServiceProvider` memaksa root URL (dan skema https); semua URL harus lewat `route()`/`url()`/`asset()` (diuji `tests/Arch/SubpathTest.php` dan `tests/Feature/SubpathTest.php`). Gateway lokal `:8080` tidak tersedia pada mesin ini; akses lokal langsung di `http://localhost:8032`, subpath diuji lewat konfigurasi override di test.
+## Deploy
 
-Build aset dengan awalan (dijalankan di host; `public/build/` tidak di-commit): `ASSET_URL=https://supportfkip.unsil.ac.id/puspresma npm run build` sehingga `laravel-vite-plugin` menulis URL aset (termasuk `url()` di CSS) berawalan `/puspresma/build/`.
+Image produksi memakai `Dockerfile` (target `app` dan `web`) dan `docker-compose.prod.yml`. Rilis otomatis: push ke
+`main` menjalankan CI (Pint, Larastan, Pest) lalu, bila hijau, `scripts/deploy.sh` di server (cadangan DB, build,
+migrasi, health check, dan rollback). Rinciannya ada di [`docs/DEPLOY.md`](docs/DEPLOY.md); prosedur pemulihan di
+[`docs/PEMULIHAN.md`](docs/PEMULIHAN.md); keputusan desain di [`docs/KEPUTUSAN.md`](docs/KEPUTUSAN.md).
+
+### Subpath `https://<host>/<app>`
+
+Aplikasi dapat dipasang di subfolder, misalnya `https://supportfkip.unsil.ac.id/puspresma`. Cukup atur `APP_URL` dan
+`ASSET_URL` ke URL lengkap beserta subfolder, lalu bangun aset dengan nilai yang sama:
+
+```bash
+ASSET_URL=https://supportfkip.unsil.ac.id/puspresma npm run build
+```
+
+Path cookie sesi, awalan di nginx, dan pembuangan awalan di aplikasi diturunkan otomatis dari `APP_URL`. Reverse proxy
+boleh memotong awalan (disarankan) atau meneruskannya apa adanya:
 
 ```nginx
 location = /puspresma { return 301 /puspresma/; }
@@ -52,48 +120,26 @@ location /puspresma/ {
 }
 ```
 
-QR dan tautan tercetak memuat awalan `/puspresma`: tetapkan awalan final sebelum mencetak, jangan diubah setelah produksi.
+Isi `TRUSTED_PROXIES` dengan IP proxy (bukan `*`) di produksi. QR dan tautan tercetak memuat awalan: tetapkan awalan
+final sebelum mencetak.
 
-## Pengujian
+Setelah setiap deploy (dijalankan otomatis oleh entrypoint dan `scripts/deploy.sh`): `php artisan optimize`,
+`filament:optimize`, dan `icons:cache`.
 
-Test memakai Pest 4 dan basis data MariaDB host terpisah `db_puspresma_testing` (cache `array`, antrean `sync`, sesi `array`; tidak menyentuh Redis). Buat sekali di MariaDB host (ganti `<rahasia>` dan sesuaikan host pengguna dengan subnet Docker):
+## Memperbarui panduan bergambar
 
-```sql
-CREATE DATABASE db_puspresma CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE DATABASE db_puspresma_testing CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-GRANT ALL PRIVILEGES ON `db_puspresma%`.* TO 'app'@'172.%';
-```
-
-Perintah: `psp php artisan test` (atau `psp ./vendor/bin/pest`), `psp ./vendor/bin/phpstan analyse --memory-limit=1G` (Larastan level 6), `psp ./vendor/bin/pint --test`. Pintasan Composer: `composer test`, `composer lint`, `composer stan`, `composer cek`.
-
-Laravel Boost terpasang (`boost.json`, `.mcp.json` lokal memanggil `puspresma-php`); pedoman Boost berada di akhir `CLAUDE.md` lokal.
-
-Gerbang kualitas sebelum commit: `psp ./vendor/bin/pint --test && psp ./vendor/bin/phpstan analyse --memory-limit=1G && psp php artisan test`.
-
-## Memperbarui panduan
-
-Panduan pengguna HTML per peran ada di `public/panduan/` (tampil di `/panduan/index.html`, ditautkan dari landing page dan menu pengguna kedua panel).
-Panduan Markdown di `docs/panduan/` dirender di dalam aplikasi pada `/bantuan` (menu **Bantuan**).
-
-Tangkapan layar dibuat otomatis (hanya lokal): isi `PANDUAN_PASSWORD` di `.env`, pastikan `php artisan filament:assets` sudah dijalankan, lalu:
+Tangkapan layar dibuat otomatis dengan Playwright (hanya di lokal) dari akun demo `panduan.<peran>@contoh.test`:
 
 ```bash
-psp php artisan migrate:fresh --seeder=PanduanSeeder    # akun demo panduan.<peran>@contoh.test + data rekaan
-composer panduan                                         # (host) seeder + Playwright + HTML; atau jalankan manual:
-PANDUAN_PASSWORD=... node tests/panduan/tangkap.mjs [peran]   # butuh paket `playwright` (PLAYWRIGHT_PATH bila di luar proyek)
-node tests/panduan/bangun-html.mjs                       # menyusun ulang public/panduan/*.html dari alur.json + peran.json
+php artisan migrate:fresh --seeder=PanduanSeeder          # akun demo + data rekaan; isi PANDUAN_PASSWORD di .env
+PANDUAN_PASSWORD=... node tests/panduan/tangkap.mjs [peran]
+node tests/panduan/bangun-html.mjs                        # menyusun public/panduan/*.html
 ```
 
-Alur layar per peran ada di `tests/panduan/alur.json`; teks peran di `tests/panduan/peran.json`. Jika Chromium di kontainer Playwright crash (SIGTRAP di sebagian host WSL), jalankan skrip langsung di host.
+Alur layar per peran ada di `tests/panduan/alur.json` dan teks peran di `tests/panduan/peran.json`. Panduan super admin
+tidak dipublikasikan di halaman publik.
 
-## Optimasi produksi
+## Halaman galat
 
-Jalankan setelah setiap deploy:
-
-```bash
-php artisan optimize
-php artisan filament:optimize
-php artisan icons:cache
-php artisan view:cache
-php artisan event:cache
-```
+Seluruh galat HTTP umum (400–504) memakai halaman bertema di `resources/views/errors/`. Untuk pemeliharaan terencana:
+`php artisan down --render="errors::503" --retry=60`.

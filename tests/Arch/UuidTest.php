@@ -23,7 +23,7 @@ it('tidak memakai kunci auto-increment di migrasi', function () {
     foreach (glob(database_path('migrations/*.php')) as $berkas) {
         $isi = file_get_contents($berkas);
 
-        // tabel infrastruktur kerangka kerja (STANDAR-TEKNIS §4a butir 6)
+        // tabel infrastruktur kerangka kerja
         // tabel impor Filament (bila ada pengecualian tercatat di docs/KEPUTUSAN.md)
         if (preg_match('/_create_(cache|jobs|imports|failed_import_rows)_table\.php$/', $berkas)) {
             continue;

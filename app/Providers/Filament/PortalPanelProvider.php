@@ -2,8 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\EditProfil;
 use App\Filament\Pages\Auth\Masuk;
 use App\Http\Middleware\ArahkanKePanelSesuaiPeran;
+use App\Http\Middleware\WajibGantiSandi;
 use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -31,7 +33,8 @@ class PortalPanelProvider extends PanelProvider
             ->brandName('Puspresma FKIP Unsil')
             ->login(Masuk::class)
             ->passwordReset()
-            ->colors(['primary' => Color::Emerald])
+            ->profile(EditProfil::class)
+            ->colors(['primary' => Color::Indigo])
             ->databaseNotifications()
             ->userMenuItems([
                 Action::make('bantuan')->label('Bantuan')->icon('heroicon-o-question-mark-circle')
@@ -59,6 +62,7 @@ class PortalPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                WajibGantiSandi::class,
             ]);
     }
 }

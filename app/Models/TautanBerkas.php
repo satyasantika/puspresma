@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
- * Tautan berkas polimorfik (tanpa unggahan ke server, STANDAR-TEKNIS §1a).
+ * Tautan berkas polimorfik (tanpa unggahan ke server).
  *
  * @property JenisTautan $jenis
  * @property PenyediaTautan $penyedia

@@ -17,7 +17,7 @@ class WajibMfa
     {
         $user = Filament::auth()->user();
 
-        if (! $user instanceof User || ! $user->wajibMfa() || MultiFactorChallenge::make()->hasEnabledProviders($user)) {
+        if (! $user instanceof User || session()->has('impersonator_id') || ! $user->wajibMfa() || MultiFactorChallenge::make()->hasEnabledProviders($user)) {
             return $next($request);
         }
 

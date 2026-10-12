@@ -1,4 +1,4 @@
-// Tangkapan layar panduan (F9.6). Jalankan lewat `composer panduan` (kontainer Playwright). Butuh PanduanSeeder + PANDUAN_PASSWORD.
+// Tangkapan layar panduan. Jalankan lewat `composer panduan` (Playwright). Butuh PanduanSeeder + PANDUAN_PASSWORD.
 import { readFileSync, mkdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';

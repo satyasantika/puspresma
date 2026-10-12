@@ -81,15 +81,21 @@ return [
     */
 
     'seed_superadmin' => [
-        'email' => env('SEED_SUPERADMIN_EMAIL'),
+        'email' => env('SEED_SUPERADMIN_EMAIL', 'fkip@unsil.ac.id'),
         'name' => env('SEED_SUPERADMIN_NAME', 'Super Admin'),
+        // Kata sandi awal akun baru. Segera ganti setelah masuk pertama; kosongkan di env untuk sandi acak.
+        'password' => env('SEED_SUPERADMIN_PASSWORD'),
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Peran yang wajib MFA aplikasi authenticator (TOTP)
+    | MFA aplikasi authenticator (TOTP)
     |--------------------------------------------------------------------------
+    | MFA_AKTIF=false mematikan kewajiban dan pengaturan MFA di kedua panel. Nyalakan kembali dengan MFA_AKTIF=true;
+    | peran di bawah wajib memasangnya sebelum memakai panel.
     */
+
+    'mfa_aktif' => (bool) env('MFA_AKTIF', false),
 
     'peran_wajib_mfa' => ['super-admin', 'admin-fakultas'],
 ];

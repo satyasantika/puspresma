@@ -3,8 +3,10 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Admin\Pages\Dashboard;
+use App\Filament\Pages\Auth\EditProfil;
 use App\Filament\Pages\Auth\Masuk;
 use App\Http\Middleware\ArahkanKePanelSesuaiPeran;
+use App\Http\Middleware\WajibGantiSandi;
 use App\Http\Middleware\WajibMfa;
 use Filament\Actions\Action;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
@@ -26,6 +28,18 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $panel = $this->panelDasar($panel);
+
+        if (config('puspresma.mfa_aktif')) {
+            $panel->multiFactorAuthentication([AppAuthentication::make()->recoverable()], isRequired: true)
+                ->multiFactorAuthenticationRequiredMiddlewareName(WajibMfa::class);
+        }
+
+        return $panel;
+    }
+
+    private function panelDasar(Panel $panel): Panel
+    {
         return $panel
             ->default()
             ->id('admin')
@@ -33,10 +47,8 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('Puspresma FKIP Unsil')
             ->login(Masuk::class)
             ->passwordReset()
-            ->profile()
-            // MFA TOTP + kode pemulihan: wajib bagi peran di config puspresma.peran_wajib_mfa, opsional bagi peran lain (WajibMfa).
-            ->multiFactorAuthentication([AppAuthentication::make()->recoverable()], isRequired: true)
-            ->multiFactorAuthenticationRequiredMiddlewareName(WajibMfa::class)
+            ->profile(EditProfil::class)
+            // MFA TOTP + kode pemulihan: hanya bila MFA_AKTIF=true; wajib bagi peran di config puspresma.peran_wajib_mfa (WajibMfa).
             ->colors(['primary' => Color::Indigo])
             ->databaseNotifications()
             ->userMenuItems([
@@ -65,6 +77,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                WajibGantiSandi::class,
             ]);
     }
 }

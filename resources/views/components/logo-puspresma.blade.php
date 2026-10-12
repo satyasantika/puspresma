@@ -1,0 +1,1 @@
+<svg {{ $attributes }} viewBox="0 0 48 48" role="img" aria-label="Logo Puspresma"><rect width="48" height="48" rx="12" fill="#fbbf24"/><path d="M15 12h18v7c0 6-4 10-9 10s-9-4-9-10v-7Zm-5 2h5v3c0 2 1 3 3 3v2c-5 0-8-3-8-7v-1Zm28 0h5v1c0 4-3 7-8 7v-2c2 0 3-1 3-3v-3ZM21 30h6v4h5v3H16v-3h5v-4Z" fill="#1e1b4b"/></svg>

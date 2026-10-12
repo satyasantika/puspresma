@@ -1,5 +1,6 @@
 <?php
 
+use App\Support\AwalanSubpath;
 use Illuminate\Support\Str;
 
 return [
@@ -143,7 +144,8 @@ return [
     |
     */
 
-    'path' => env('SESSION_PATH', '/'),
+    // Bawaan mengikuti path APP_URL (mis. /puspresma) sehingga cukup satu nilai untuk memindahkan aplikasi ke subpath lain.
+    'path' => env('SESSION_PATH') ?: (AwalanSubpath::dariUrl(env('APP_URL')) ?: '/'),
 
     /*
     |--------------------------------------------------------------------------

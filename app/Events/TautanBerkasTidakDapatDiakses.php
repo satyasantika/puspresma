@@ -5,7 +5,7 @@ namespace App\Events;
 use App\Models\TautanBerkas;
 use Illuminate\Foundation\Events\Dispatchable;
 
-/** Tautan yang sebelumnya dapat diakses kini tidak dapat diakses (notifikasi pemilik di F7.1). */
+/** Tautan yang sebelumnya dapat diakses kini tidak dapat diakses (memicu notifikasi pemilik). */
 class TautanBerkasTidakDapatDiakses
 {
     use Dispatchable;

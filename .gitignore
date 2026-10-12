@@ -23,10 +23,13 @@
 /*.csv
 /storage/app/backup*
 
-# Bahan lama di luar repo aplikasi
-/vibecoding/
+# Bahan kerja lokal di luar aplikasi (tidak di-commit): catatan pengembangan, regulasi, konfigurasi alat bantu.
+/.persiapan/
 /CLAUDE.md
-/Permendikbudristek-No-46-Tahun-2023-PPKSP.pdf
+/AGENTS.md
+/boost.json
+/.mcp.json
+/.claude/
 *.log
 .DS_Store
 .env.backup

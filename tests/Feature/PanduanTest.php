@@ -9,10 +9,18 @@ function berkasPanduan(string $nama): string
     return public_path("panduan/{$nama}");
 }
 
-it('menyediakan halaman HTML panduan untuk setiap peran dan mencantumkannya di indeks', function (string $peran) {
+const PERAN_PUBLIK = ['mahasiswa', 'dosen', 'admin-prodi', 'admin-fakultas', 'pimpinan'];
+
+it('menyediakan halaman HTML panduan untuk setiap peran publik dan mencantumkannya di indeks', function (string $peran) {
     expect(berkasPanduan("{$peran}.html"))->toBeFile()
         ->and(file_get_contents(berkasPanduan('index.html')))->toContain("href=\"{$peran}.html\"");
-})->with(PanduanSeeder::PERAN);
+})->with(PERAN_PUBLIK);
+
+it('tidak memublikasikan panduan super-admin', function () {
+    expect(berkasPanduan('super-admin.html'))->not->toBeFile()
+        ->and(is_dir(berkasPanduan('img/super-admin')))->toBeFalse()
+        ->and(file_get_contents(berkasPanduan('index.html')))->not->toContain('super-admin');
+});
 
 it('memakai peran yang sama dengan seeder peran', function () {
     $this->seed(PeranDanIzinSeeder::class);
@@ -43,7 +51,7 @@ it('tidak memakai href/src berawalan "/" atau http://localhost', function () {
 });
 
 it('menautkan panduan dari landing page', function () {
-    $this->get(route('beranda'))->assertOk()->assertSee('panduan/index.html', false)->assertSee('Panduan Pengguna');
+    $this->get(route('beranda'))->assertOk()->assertSee('panduan/index.html', false)->assertSee('Panduan pengguna bergambar');
 });
 
 it('menjaga ukuran total panduan ≤ 15 MB', function () {

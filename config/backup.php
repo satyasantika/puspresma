@@ -9,7 +9,7 @@ use Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumAgeInDays;
 use Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes;
 
 /*
-| Backup Puspresma (F9.4): HANYA basis data. Bukti prestasi berupa tautan (Google Drive), tidak ada berkas pengguna
+| Backup Puspresma: HANYA basis data. Bukti prestasi berupa tautan (Google Drive), tidak ada berkas pengguna
 | di server, sehingga tidak ada direktori yang dicadangkan. Arsip dienkripsi dengan BACKUP_ARCHIVE_PASSWORD.
 */
 return [

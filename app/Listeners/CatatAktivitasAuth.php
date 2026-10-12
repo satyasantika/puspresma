@@ -15,6 +15,11 @@ class CatatAktivitasAuth
 {
     public function handle(Login|Failed|Logout $event): void
     {
+        // Peralihan identitas "masuk sebagai" dicatat sendiri oleh MulaiImpersonasi/AkhiriImpersonasi.
+        if (request()->attributes->get('tanpa_catat_login')) {
+            return;
+        }
+
         [$peristiwa, $deskripsi] = match (true) {
             $event instanceof Login => ['login', 'Login berhasil'],
             $event instanceof Failed => ['login_gagal', 'Login gagal'],

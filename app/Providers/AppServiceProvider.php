@@ -127,6 +127,14 @@ class AppServiceProvider extends ServiceProvider
             fn () => config('puspresma.google_login') ? view('auth.tombol-google') : '',
         );
 
+        // Tema halaman masuk/atur ulang sandi (tamu): panel merek di kiri, formulir di kanan, selaras dengan landing page.
+        $halamanTamu = fn (): bool => filament()->auth()->guest() && request()->routeIs('filament.*.auth.*');
+        FilamentView::registerRenderHook(PanelsRenderHook::STYLES_AFTER, fn () => $halamanTamu() ? view('filament.masuk.gaya') : '');
+        FilamentView::registerRenderHook(PanelsRenderHook::SIMPLE_LAYOUT_START, fn () => $halamanTamu() ? view('filament.masuk.panel-merek') : '');
+
+        // Banner permanen selama super-admin "masuk sebagai" pengguna lain.
+        FilamentView::registerRenderHook(PanelsRenderHook::BODY_START, fn () => view('components.banner-impersonasi'));
+
         RateLimiter::for('ajukan-prestasi', fn (Request $request) => Limit::perHour(10)->by($request->user()?->getAuthIdentifier() ?: $request->ip()));
         RateLimiter::for('simpan-tautan', fn (Request $request) => Limit::perHour(60)->by($request->user()?->getAuthIdentifier() ?: $request->ip()));
         RateLimiter::for('buka-tautan', fn (Request $request) => Limit::perHour(120)->by($request->user()?->getAuthIdentifier() ?: $request->ip()));

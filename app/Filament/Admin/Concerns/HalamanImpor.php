@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Halaman impor master dari Excel/CSV: unduh templat (stream), unggah berkas ke disk 'tmp' lalu antre,
- * dan riwayat impor. Satu-satunya tempat input berkas yang diizinkan (STANDAR-TEKNIS §1a).
+ * dan riwayat impor. Satu-satunya tempat input berkas yang diizinkan.
  */
 trait HalamanImpor
 {

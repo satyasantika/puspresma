@@ -21,7 +21,7 @@ use Illuminate\Validation\ValidationException;
 class SimpanPengguna
 {
     /**
-     * @param  array<string, mixed>  $data  name, email, password (opsional), npm, nidn, nip, nomor_wa, is_active, peran (list)
+     * @param  array<string, mixed>  $data  name, email, password (opsional), npm, nidn, nip, nomor_wa, prodi_id, is_active, wajib_ganti_sandi, peran (list)
      */
     public function jalankan(?User $user, array $data, User $pelaku): User
     {
@@ -40,10 +40,13 @@ class SimpanPengguna
         }
 
         return DB::transaction(function () use ($user, $data, $peran, $aktif) {
-            $profil = collect($data)->only(['name', 'email', 'npm', 'nidn', 'nip', 'nomor_wa'])
+            $profil = collect($data)->only(['name', 'email', 'npm', 'nidn', 'nip', 'nomor_wa', 'prodi_id'])
                 ->map(fn ($nilai) => filled($nilai) ? $nilai : null)
                 ->all();
             $profil['is_active'] = $aktif;
+            if (array_key_exists('wajib_ganti_sandi', $data)) {
+                $profil['wajib_ganti_sandi'] = (bool) $data['wajib_ganti_sandi'];
+            }
             $baru = $user === null;
             $perluTautanReset = false;
 
@@ -96,7 +99,9 @@ class SimpanPengguna
             'nidn' => ['nullable', 'string', 'max:20'],
             'nip' => ['nullable', 'string', 'max:30'],
             'nomor_wa' => ['nullable', 'string', 'max:20'],
+            'prodi_id' => ['nullable', 'uuid', Rule::exists('prodi', 'id')],
             'is_active' => ['boolean'],
+            'wajib_ganti_sandi' => ['boolean'],
             'peran' => ['array'],
             'peran.*' => ['string', Rule::in(array_keys(PeranDanIzinSeeder::PERAN))],
         ])->validate();

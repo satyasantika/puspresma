@@ -4,7 +4,7 @@ namespace App\Notifications;
 
 use App\Models\User;
 
-/** Hasil ekspor besar siap diunduh (dibuat oleh antrean `ekspor`, F8.2). */
+/** Hasil ekspor besar siap diunduh (dibuat oleh antrean `ekspor`). */
 class BerkasEksporSiap extends NotifikasiAplikasi
 {
     public function __construct(public string $namaBerkas, public ?string $urlUnduh = null)

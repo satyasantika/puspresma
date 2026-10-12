@@ -43,7 +43,7 @@ return new class extends Migration
             $table->dateTime('dikonfirmasi_pembimbing_at')->nullable();
             $table->string('nomor_sertifikat', 100)->nullable();
             $table->text('deskripsi')->nullable();
-            // FK ke kompetisi ditambahkan di F6.1 (tabel belum ada).
+            // FK ke kompetisi ditambahkan oleh migrasi kompetisi (tabel belum ada saat ini).
             $table->uuid('kompetisi_id')->nullable();
             $table->string('status', 20)->default('draf')->index();
             $table->dateTime('diajukan_at')->nullable();
