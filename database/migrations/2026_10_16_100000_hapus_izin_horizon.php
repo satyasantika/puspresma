@@ -17,7 +17,7 @@ return new class extends Migration
     {
         DB::table('permissions')->where('name', self::NAMA)->delete();
 
-        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->lupakanCache();
     }
 
     public function down(): void
@@ -33,6 +33,15 @@ return new class extends Migration
             ]);
         }
 
-        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->lupakanCache();
+    }
+
+    /**
+     * Cache izin dibersihkan sebisanya: migrasi dapat berjalan dari image baru saat `.env` server masih
+     * menunjuk Redis yang sudah tidak terjangkau, dan itu tidak boleh menggagalkan perubahan data.
+     */
+    private function lupakanCache(): void
+    {
+        rescue(fn () => app(PermissionRegistrar::class)->forgetCachedPermissions(), report: false);
     }
 };

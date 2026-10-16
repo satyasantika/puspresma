@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-# Puspresma FKIP — citra produksi (pola docker-apps): target `app` (php-fpm, Horizon, scheduler) dan `web` (nginx + aset statis).
+# Puspresma FKIP — citra produksi (pola docker-apps): target `app` (php-fpm dan scheduler/worker) dan `web` (nginx + aset statis).
 # Build:  docker compose -f docker-compose.prod.yml build   (ASSET_URL wajib terisi agar aset Vite berawalan /puspresma/)
 
 ARG PHP_VERSION=8.5
@@ -13,8 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-ext-install -j"$(nproc)" pdo_mysql mbstring exif pcntl bcmath gd zip intl \
     # PHP 8.5+ menyertakan opcache bawaan; versi lebih lama memasangnya sebagai ekstensi terpisah
     && (php -m | grep -qi 'zend opcache' || docker-php-ext-install opcache) \
-    && pecl install redis && docker-php-ext-enable redis \
-    && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* /tmp/pear
+    && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/*
 
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/zz-puspresma.ini
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/zz-puspresma.conf
