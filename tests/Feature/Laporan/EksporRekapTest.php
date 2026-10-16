@@ -115,7 +115,7 @@ it('mendispatch job ke antrean ekspor dan hanya satu job pada klik ganda dalam 2
     expect(fn () => $layanan->minta(RegistriLaporan::buat('rekap_prestasi'), 'xlsx', [], $this->fakultas))->toThrow(ValidationException::class, 'sedang diproses');
 
     Queue::assertPushed(EksporBerkasJob::class, 1);
-    Queue::assertPushedOn('ekspor', EksporBerkasJob::class);
+    Queue::assertPushedOn('berat', EksporBerkasJob::class);
     expect(BerkasEkspor::count())->toBe(1);
 });
 

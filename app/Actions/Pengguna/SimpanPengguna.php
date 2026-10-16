@@ -140,7 +140,7 @@ class SimpanPengguna
 
         $notifikasi = new ResetPassword($token);
         $notifikasi->url = $panel->getResetPasswordUrl($token, $user);
-        $notifikasi->onQueue('notifikasi')->afterCommit();
+        $notifikasi->onQueue(config('puspresma.antrean.notifikasi'))->afterCommit();
 
         $user->notify($notifikasi);
     }

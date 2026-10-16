@@ -32,7 +32,7 @@ it('mendaftarkan semua perintah terjadwal dengan lock satu server dan tanpa tump
     $acara = collect(app(Schedule::class)->events());
     $deskripsi = $acara->map(fn ($e) => $e->command ?? $e->description ?? '')->implode("\n");
 
-    foreach (['horizon:snapshot', 'puspresma:arsipkan-kompetisi', 'puspresma:bersihkan-tmp', 'puspresma:periksa-tautan', 'KirimPengingatTenggatKompetisi',
+    foreach (['queue:work database --queue=default', 'queue:work database-berat --queue=berat', 'detak-penjadwal', 'queue:prune-batches', 'puspresma:arsipkan-kompetisi', 'puspresma:bersihkan-tmp', 'puspresma:periksa-tautan', 'KirimPengingatTenggatKompetisi',
         'puspresma:ringkasan-antrean', 'puspresma:pengingat-pembimbing', 'activitylog:clean', 'queue:prune-failed --hours=720'] as $perintah) {
         expect($deskripsi)->toContain($perintah);
     }

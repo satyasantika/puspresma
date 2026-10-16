@@ -18,7 +18,7 @@ it('memuat konfigurasi puspresma', function () {
         ->and(config('puspresma.impor.mimes'))->toBe(['xlsx', 'csv'])
         ->and(config('puspresma.domain_mahasiswa'))->toBe('student.unsil.ac.id')
         ->and(config('puspresma.domain_pegawai'))->toBe('unsil.ac.id')
-        ->and(config('puspresma.antrean.ekspor'))->toBe('ekspor')
+        ->and(config('puspresma.antrean.ekspor'))->toBe('berat')
         ->and(config('puspresma.google_login'))->toBeFalse();
 });
 

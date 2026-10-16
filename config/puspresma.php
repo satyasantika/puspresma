@@ -53,11 +53,15 @@ return [
     |--------------------------------------------------------------------------
     */
 
+    // Koneksi antrean job berat (ekspor, impor). phpunit memakai `sync` agar job berjalan inline.
+    'koneksi_berat' => env('PUSPRESMA_KONEKSI_BERAT', 'database-berat'),
+
+    // Profil Ringan (STANDAR-TEKNIS §1b): hanya dua antrean fisik. Kunci tetap nama logis lama.
     'antrean' => [
-        'notifikasi' => 'notifikasi',
-        'ekspor' => 'ekspor',
-        'impor' => 'impor',
-        'berkas' => 'berkas',
+        'notifikasi' => 'default',
+        'berkas' => 'default',
+        'ekspor' => 'berat',
+        'impor' => 'berat',
     ],
 
     /*

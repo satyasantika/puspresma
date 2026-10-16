@@ -96,7 +96,7 @@ it('mengirim perlu perbaikan ke anggota ber-akun saja dengan catatan di surel da
 
     Notification::assertSentTo([$this->userPengaju, $this->userAnggota], PrestasiPerluPerbaikan::class, function ($n, $kanal) {
         $surat = $n->toMail($this->userPengaju);
-        expect($n->queue)->toBe('notifikasi')->and($n->afterCommit)->toBeTrue()->and($kanal)->toBe(['database', 'mail'])
+        expect($n->queue)->toBe('default')->and($n->afterCommit)->toBeTrue()->and($kanal)->toBe(['database', 'mail'])
             ->and($surat->subject)->toBe('Prestasi Anda perlu perbaikan')
             ->and(implode(' ', $surat->introLines))->toContain('Mohon lengkapi sertifikat juara.');
 

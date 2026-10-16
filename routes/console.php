@@ -15,11 +15,21 @@ Artisan::command('inspire', function () {
 |--------------------------------------------------------------------------
 |
 | Dijalankan oleh service `puspresma-scheduler` (php artisan schedule:work).
-| Semua tugas memakai lock Redis agar tidak tumpang tindih / ganda.
+| Semua tugas memakai lock cache `database` (tabel cache_locks) agar tidak tumpang tindih / ganda.
+| Penjadwal juga menyalakan worker antrean tiap menit (Profil Ringan, STANDAR-TEKNIS §1b).
 |
 */
 
-Schedule::command('horizon:snapshot')->everyFiveMinutes()->onOneServer()->withoutOverlapping();
+// Worker antrean: berhenti saat antrean kosong; jeda proses job paling lama ±1 menit.
+// --memory=256 pada worker default melindungi RAM server (3,8 GiB).
+Schedule::command('queue:work database --queue=default --stop-when-empty --max-time=55 --timeout=60 --tries=3 --memory=256')
+    ->everyMinute()->onOneServer()->withoutOverlapping(2)->runInBackground();
+Schedule::command('queue:work database-berat --queue=berat --stop-when-empty --max-time=600 --timeout=900 --tries=2 --memory=512')
+    ->everyMinute()->onOneServer()->withoutOverlapping(30)->runInBackground();
+// Detak penjadwal: dibaca /api/health; peringatan bila lebih tua dari 5 menit.
+Schedule::call(fn () => cache()->put(config('app.kode').':detak-penjadwal', now(), 600))
+    ->name('detak-penjadwal')->everyMinute()->onOneServer()->withoutOverlapping();
+Schedule::command('queue:prune-batches --hours=168')->dailyAt('03:05')->onOneServer()->withoutOverlapping();
 Schedule::command('puspresma:arsipkan-kompetisi')->dailyAt('00:30')->onOneServer()->withoutOverlapping();
 Schedule::command('puspresma:bersihkan-tmp')->hourly()->onOneServer()->withoutOverlapping();
 Schedule::command('puspresma:periksa-tautan')->weeklyOn(0, '02:00')->onOneServer()->withoutOverlapping();
