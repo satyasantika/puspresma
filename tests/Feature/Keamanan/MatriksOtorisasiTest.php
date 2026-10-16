@@ -83,7 +83,6 @@ function kasusMatriks(): array
         'buka prestasi orang lain di portal (IDOR)' => ['super-admin' => 302, 'admin-fakultas' => 302, 'admin-prodi' => 302, 'pimpinan' => 302, 'dosen' => 403, 'mahasiswa' => 403],
         'ability verifikasi' => ['super-admin' => 403, 'admin-fakultas' => 200, 'admin-prodi' => 403, 'pimpinan' => 403, 'dosen' => 403, 'mahasiswa' => 403],
         'ability buka verifikasi' => ['super-admin' => 403, 'admin-fakultas' => 200, 'admin-prodi' => 403, 'pimpinan' => 403, 'dosen' => 403, 'mahasiswa' => 403],
-        'ability horizon' => ['super-admin' => 200, 'admin-fakultas' => 403, 'admin-prodi' => 403, 'pimpinan' => 403, 'dosen' => 403, 'mahasiswa' => 403],
     ];
 
     $kasus = [];
@@ -122,7 +121,6 @@ it('menegakkan matriks otorisasi PRD §3.2', function (string $peran, string $ka
         })(),
         'ability verifikasi' => Gate::forUser($pelaku)->allows('verifikasi', $this->prestasiDiajukan) ? 200 : 403,
         'ability buka verifikasi' => Gate::forUser($pelaku)->allows('bukaVerifikasi', $this->prestasiLain) ? 200 : 403,
-        'ability horizon' => Gate::forUser($pelaku)->allows('viewHorizon') ? 200 : 403,
     };
 
     expect($status)->toBe($diharapkan);

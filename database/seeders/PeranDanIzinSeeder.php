@@ -19,7 +19,7 @@ class PeranDanIzinSeeder extends Seeder
         'poin.kelola', 'poin.hitung-ulang',
         'kompetisi.kelola', 'kompetisi.kelola-prodi',
         'galeri.moderasi', 'laporan.lihat', 'laporan.ekspor', 'simkatmawa.ekspor',
-        'surat.terbitkan', 'pengaturan.kelola', 'audit.lihat', 'horizon.akses',
+        'surat.terbitkan', 'pengaturan.kelola', 'audit.lihat',
     ];
 
     /** Pemetaan peran ke permission; super-admin menerima semua izin. */

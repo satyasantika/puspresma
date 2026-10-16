@@ -34,8 +34,7 @@ it('memetakan izin admin-fakultas tanpa hak pengguna.kelola', function () {
 
     expect($admin->can('prestasi.verifikasi'))->toBeTrue()
         ->and($admin->can('audit.lihat'))->toBeTrue()
-        ->and($admin->can('pengguna.kelola'))->toBeFalse()
-        ->and($admin->can('horizon.akses'))->toBeFalse();
+        ->and($admin->can('pengguna.kelola'))->toBeFalse();
 });
 
 it('mengalihkan mahasiswa dari /admin ke /portal', function () {
@@ -62,13 +61,6 @@ it('menolak panel bagi pengguna nonaktif', function () {
     $user->update(['is_active' => false]);
 
     $this->actingAs($user)->get('/admin')->assertForbidden();
-});
-
-it('hanya super-admin yang membuka horizon', function () {
-    $this->get('/horizon')->assertForbidden();
-    $this->actingAs(penggunaDenganPeran('admin-fakultas'))->get('/horizon')->assertForbidden();
-    $this->actingAs(penggunaDenganPeran('mahasiswa'))->get('/horizon')->assertForbidden();
-    $this->actingAs(penggunaDenganPeran('super-admin'))->get('/horizon')->assertOk();
 });
 
 it('menolak super-admin pada ability verifikasi prestasi', function (string $ability) {
