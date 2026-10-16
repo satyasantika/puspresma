@@ -47,19 +47,19 @@ Panduan bergambar per peran tersedia di `/panduan/index.html` dan dari landing p
 
 ## Teknologi
 
-Laravel 13 · PHP 8.5 · MariaDB 10.11 · Redis 7 · Laravel Horizon · Filament 5 · Livewire 4 · Tailwind 4 · Pest 4 ·
+Laravel 13 · PHP 8.5 · MariaDB 10.11 (cache, sesi, antrean: driver database; tanpa Redis/Horizon) · Filament 5 · Livewire 4 · Tailwind 4 · Pest 4 ·
 Larastan (level 6) · Pint. Pustaka utama: spatie/laravel-permission, spatie/laravel-activitylog, spatie/laravel-backup,
 spatie/simple-excel, dompdf, endroid/qr-code, Socialite (login Google kampus, opsional).
 
 Konvensi: istilah domain berbahasa Indonesia, satu aksi bisnis satu kelas di `app/Actions`, perubahan status prestasi
-hanya lewat `TransisiStatus`, kunci utama UUIDv7, dan pengaturan ambang dibaca lewat `Pengaturan::ambil`.
+hanya lewat `TransisiStatus`, kunci utama UUIDv7 (tipe `UUID` native MariaDB), dan pengaturan ambang dibaca lewat `Pengaturan::ambil`.
 
 ## Menjalankan di lingkungan lokal
 
-Prasyarat: Docker (PHP 8.5 dan nginx), MariaDB 10.11, Redis, dan Node untuk membangun aset.
+Prasyarat: Docker (PHP 8.5 dan nginx), MariaDB 10.11, dan Node untuk membangun aset.
 
 ```bash
-cp .env.example .env            # isi DB_PASSWORD dan REDIS_PASSWORD
+cp .env.example .env            # isi DB_PASSWORD
 composer install
 php artisan key:generate
 php artisan migrate --seed      # master data, peran, dan akun super admin awal
@@ -71,8 +71,8 @@ Akun super admin awal dibuat oleh seeder dari `SEED_SUPERADMIN_EMAIL` (bawaan `f
 dimatikan secara bawaan (`MFA_AKTIF=false`); nyalakan dengan `MFA_AKTIF=true` untuk mewajibkannya bagi super admin
 dan admin fakultas.
 
-Antrean (Horizon) dan penjadwal (`schedule:work`) berjalan sebagai proses terpisah. Setelah mengubah kode job, mulai
-ulang Horizon. Jadwal harian meliputi pengarsipan kompetisi kedaluwarsa, pembersihan `storage/app/tmp`, pemeriksaan
+Penjadwal (`schedule:work`) berjalan sebagai proses terpisah dan sekaligus menyalakan worker antrean (driver database,
+STANDAR-TEKNIS §1b; tanpa Horizon). Setelah mengubah kode job, mulai ulang penjadwal. Jadwal harian meliputi pengarsipan kompetisi kedaluwarsa, pembersihan `storage/app/tmp`, pemeriksaan
 tautan bukti, pengingat tenggat, dan backup.
 
 Data prodi resmi: ganti `database/seeders/data/prodi.csv`, lalu `php artisan db:seed --class=ProdiSeeder`.
@@ -86,7 +86,7 @@ Data prodi resmi: ganti `database/seeders/data/prodi.csv`, lalu `php artisan db:
 ```
 
 Pintasan: `composer test`, `composer stan`, `composer lint`, `composer cek`. Test memakai cache `array`, antrean `sync`,
-dan sesi `array`, sehingga tidak menyentuh Redis. Hook commit di `.githooks` (`git config core.hooksPath .githooks`)
+dan sesi `array`, sehingga tidak menyentuh antrean atau cache database. Hook commit di `.githooks` (`git config core.hooksPath .githooks`)
 menjalankan gerbang yang sama sebelum commit.
 
 ## Deploy

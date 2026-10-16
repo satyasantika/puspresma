@@ -4,6 +4,11 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ## [Belum dirilis]
 
+### Diubah (dokumentasi)
+- Dokumen diselaraskan dengan keputusan pemilik 16 Oktober 2026: PHP 8.5, MariaDB 10.11+ native di host (bukan MySQL 8.4), kolasi `utf8mb4_unicode_ci`, tanpa SQLite. Mencakup `CLAUDE.md`, `README.md`, `docs/DEPLOY.md`, `docs/KEPUTUSAN.md` (catatan di K-01 dan K-03; butir nama database dan port di K-19), dan `.persiapan/vibecoding/*.md` (kecuali `STANDAR-TEKNIS.md` dan `STANDAR-GIT.md`). Penomoran langkah tidak berubah.
+- Keputusan pemilik 16 Oktober 2026 (lanjutan): nama database seragam `db_puspresma` / `db_puspresma_testing` (menyelesaikan bagian nama database di K-19; port lokal 8016 vs 8032 tetap terbuka); kolom UUID disebut tipe `UUID` native MariaDB (bukan `CHAR(36)`) dengan gerbang uji tipe kolom, urutan UUIDv7, FK, dan morph; produksi memakai MariaDB native di host lewat `host.docker.internal` (prompt F9.3 ditulis ulang tanpa container database; `docker-compose.prod.yml` dan komentar `docker/backup/backup.sh` ditandai Fase B); pertentangan `VARCHAR(30)` vs `ENUM` `PenyediaTautan` di `03-SKEMA-DATABASE.md` diselesaikan (ENUM, sesuai migrasi). Lihat K-19 dan K-20.
+- Dokumen non-spesifikasi (`docs/DEPLOY.md`, `docs/KEPUTUSAN.md`, `docs/kinerja.md`, `docs/panduan/super-admin.md`) diselaraskan dengan Profil Ringan (STANDAR-TEKNIS §1b): tanpa Redis/Horizon, cache-sesi-antrean-lock di MySQL, penjadwal sekaligus worker, pemantauan lewat `/api/health` dan `queue:failed` / `queue:retry`. Berlaku setelah Fase B; kondisi kode saat ini ditandai di tiap dokumen.
+
 ### Ditambahkan
 - Landing page yang menjelaskan sistem (alur, fitur, statistik publik, kompetisi, prestasi terbaru, dan panduan per peran); tema yang sama dipakai halaman masuk kiri-kanan, panduan HTML, dan seluruh halaman galat HTTP (400–504) yang mandiri.
 - Profil pengguna (nama, nomor WhatsApp) dan ganti kata sandi untuk semua akun; penggantian mengeluarkan semua sesi lain. Super-admin dapat mewajibkan ganti sandi per akun atau massal.
