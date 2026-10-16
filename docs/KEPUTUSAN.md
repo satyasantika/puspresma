@@ -22,13 +22,13 @@ PHP 8.5 (`composer.json` `"php": "^8.5"`, CI dan Dockerfile produksi 8.5). Port 
 
 ## K-05 — Redis
 
-> **Digantikan oleh Profil Ringan (STANDAR-TEKNIS §1b, keputusan 15 Oktober 2026); berlaku setelah Fase B.** Cache, sesi, antrean, dan lock akan memakai driver database; Redis tidak lagi dipakai. Berikut keputusan awal (kondisi saat ini).
+> **Digantikan oleh Profil Ringan (STANDAR-TEKNIS §1b, keputusan 15 Oktober 2026), diterapkan di kode (K-21).** Cache, sesi, antrean, dan lock memakai driver database; Redis tidak lagi dipakai. Berikut keputusan awal (riwayat).
 
 Redis memakai container bersama `redis` (DB 40 default, 41 cache, 42 antrean; prefiks `puspresma_`). Kata sandi dibaca dari `.env` lokal. Test memakai driver array/sync dan tidak menyentuh Redis.
 
 ## K-06 — Service Horizon dan scheduler di compose pusat
 
-> **Digantikan oleh Profil Ringan; berlaku setelah Fase B.** Service `puspresma-horizon` dihapus; `puspresma-scheduler` (`schedule:work`) tetap dan sekaligus menyalakan worker antrean (`--stop-when-empty` tiap menit, antrean `default` dan `berat`). Berikut keputusan awal (kondisi saat ini).
+> **Digantikan oleh Profil Ringan, diterapkan di kode (K-21).** Service `puspresma-horizon` di compose pusat harus dihapus (di luar repo); `puspresma-scheduler` (`schedule:work`) tetap dan sekaligus menyalakan worker antrean (`--stop-when-empty` tiap menit, antrean `default` dan `berat`). Berikut keputusan awal (riwayat).
 
 Ditambahkan ke `~/code/docker-compose.yml` (di luar repo): `puspresma-horizon` (`php artisan horizon`, `stop_grace_period: 60s`) dan `puspresma-scheduler` (`schedule:work`), memakai image PHP 8.5 dan kode yang sama. Test tidak menyentuh Redis: `phpunit.xml` memaksa cache/sesi `array` dan antrean `sync`, sehingga pengaturan Redis diuji lewat `.env.example` dan konfigurasi koneksi (`RedisHorizonTest`).
 
@@ -91,5 +91,19 @@ Keputusan 16 Oktober 2026 menyamakan PHP 8.5 dan MariaDB 10.11+ (kolasi `utf8mb4
 
 - **Tipe UUID**: kolom `uuid()` / `foreignUuid()` / `uuidMorphs()` mengikuti Blueprint Laravel 13, yaitu tipe `UUID` native MariaDB (UUIDv7 dibuat aplikasi lewat `HasUuids`). Dokumen tidak lagi menyebut `CHAR(36)` sebagai tipe kolom; `char('id', 36)` dan `binary(16)` eksplisit dilarang. Gerbang uji (Pest, F1.5): kolom `id` bertipe `uuid`/`char(36)`; 100 id UUIDv7 terurut; FK dan morph berfungsi.
 - **Skema**: di `03-SKEMA-DATABASE.md`, `PenyediaTautan` dan `StatusCekTautan` pada `tautan_berkas` adalah `ENUM` MariaDB (sesuai migrasi `create_tautan_berkas_table` dan STANDAR-TEKNIS §1a); enum lain tetap `VARCHAR`. Pertentangan di dokumen itu sudah diselesaikan.
-- **Produksi**: MariaDB native di host lewat `host.docker.internal` (`extra_hosts` host-gateway); compose produksi tidak boleh memuat container database. Kondisi kode saat ini (service `db` profil `db-lokal` di `docker-compose.prod.yml`, `docker/backup/backup.sh` yang kepala komentarnya masih menyebut `mysqldump` padahal perintahnya sudah `mariadb-dump`) ditandai untuk **Fase B**. Service container MariaDB di CI bersifat sementara, hanya untuk CI.
+- **Produksi**: MariaDB native di host lewat `host.docker.internal` (`extra_hosts` host-gateway); compose produksi tidak boleh memuat container database. Service `db` profil `db-lokal` di `docker-compose.prod.yml` dihapus dan komentar `backup.sh` diperbaiki (K-21). Service container MariaDB di CI bersifat sementara, hanya untuk CI.
 - **PHP 8.5**: `composer.json` `^8.5` dan Dockerfile 8.5; tidak ada pekerjaan.
+
+## K-21 — Pelaksanaan Profil Ringan di kode: pilihan teknis (16 Oktober 2026)
+
+Pilihan saat menerapkan K-05, K-06, dan K-20 pada kode (cabang `feat/profil-ringan`). **Menunggu persetujuan pemilik**; butir (!) berbeda dari teks standar atau menyentuh kebijakan.
+
+1. Nama antrean logis lama dipertahankan di `config/puspresma.php` dan dipetakan ke dua antrean fisik: `notifikasi` dan `berkas` ke `default`; `ekspor` dan `impor` ke `berat`. Kode job tidak berubah.
+2. Job berat memakai koneksi `database-berat` yang bisa diatur lewat `PUSPRESMA_KONEKSI_BERAT` (bawaan `database-berat`, `sync` di phpunit agar tes ekspor ujung ke ujung tetap berjalan inline).
+3. (!) Worker `default` memakai `--timeout=60` (standar §1b) dan `--memory=256` (tambahan saya agar job tidak menghabiskan RAM server 3,8 GiB). **Belum diverifikasi**: job di antrean `default` yang dulu berjalan lebih lama di Horizon (mis. `KirimKompetisiBaruTerbit` yang menotifikasi banyak pengguna) dapat terpotong pada 60 detik. Perlu diukur di staging.
+4. `/api/health` mempertahankan bentuk JSON lama (`status`, `checks.database`, `checks.queue_size`); kunci `redis` dihapus dan ditambah `job_tertunda`, `job_gagal_24j`, `detak_penjadwal`. 503 hanya bila basis data gagal. Belum ada konsumen eksternal yang diketahui (integrasi FKIP Edu belum dibangun).
+5. (!) `Cache::lock` (5 titik) dipertahankan di atas cache `database` (tabel `cache_locks`); standar §1b menganjurkan transaksi + `lockForUpdate`. Penggantian ditunda sampai ada uji konkurensi yang membuktikannya.
+6. Izin `horizon.akses` dihapus dari seeder dan dari data lewat migrasi baru; pembersihan cache izin dibuat tidak fatal karena `migrate` berjalan dari image baru sebelum container diganti.
+7. (!) CI yang aktif diubah: service dan ekstensi Redis dihapus. Healthcheck nginx diperketat menjadi `"status":"ok"` persis.
+8. (!) `mem_limit` (app 512m, nginx 64m, scheduler 768m, backup 128m) adalah perkiraan awal; scheduler 768m menampung worker 256m dan 512m sekaligus. Wajib dibuktikan dengan `docker stats`.
+9. Port lokal (8016 vs 8032) tetap terbuka (K-19). Peralihan produksi dan pembatalannya ada di `docs/DEPLOY.md`; `deploy.sh --rollback` saja tidak cukup untuk kembali ke Redis/Horizon.

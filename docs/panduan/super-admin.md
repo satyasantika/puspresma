@@ -32,13 +32,11 @@ Hanya super-admin, untuk membantu pengguna yang terkunci atau memeriksa masalah 
 2. Bila diaktifkan, simpan kode pemulihan di tempat aman dan jangan membagikan rahasia MFA. **Reset MFA** tersedia di tabel pengguna.
 
 ## 3. Antrean dan kesehatan sistem
-> **Profil Ringan berlaku setelah Fase B; kondisi saat ini:** dasbor Horizon (`/horizon`) menampilkan antrean `notifikasi`, `default`, `berkas`, `impor`, `ekspor`; setelah mengubah kode job, restart layanan Horizon. `/api/health` menampilkan status DB, Redis, dan ukuran antrean.
-
-Setelah Fase B (tanpa Horizon dan Redis):
-- Tidak ada dasbor antrean. Pantau lewat `/api/health` (status DB dan ukuran antrean). Job diproses worker yang dinyalakan penjadwal tiap menit, jadi jeda proses ≤ ±1 menit; setelah mengubah kode job, mulai ulang container `puspresma-scheduler`.
-- Job gagal dilihat dengan `php artisan queue:failed` dan diulang dengan `php artisan queue:retry <id|all>` (dijalankan di container aplikasi).
-- Job gagal dipangkas otomatis setelah 30 hari.
+- Tidak ada dasbor antrean. Pantau lewat `/api/health`: `database`, ukuran antrean, `job_tertunda` (lebih dari 10 menit), `job_gagal_24j`, dan `detak_penjadwal` (`ok`, `terlambat`, atau `belum-ada`).
+- Job diproses worker yang dinyalakan penjadwal tiap menit, jadi jeda proses paling lama ±1 menit. Setelah mengubah kode job, mulai ulang container `puspresma-scheduler`.
+- Job gagal dilihat dengan `php artisan queue:failed` dan diulang dengan `php artisan queue:retry <id|all>` (dijalankan di container aplikasi). Job gagal dipangkas otomatis setelah 30 hari.
 - Ringkasan antrean mingguan dikirim ke surel admin.
+- `detak_penjadwal` `belum-ada` atau `terlambat` berarti penjadwal tidak berjalan: periksa container `scheduler` dan `CACHE_STORE` di `.env`.
 
 ## 4. Backup
 1. Basis data dicadangkan otomatis harian 01:00 (terenkripsi), dibersihkan 01:30, dipantau 09:00; kegagalan dikirim ke surel super-admin.

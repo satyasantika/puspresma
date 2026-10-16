@@ -4,6 +4,23 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 
 ## [Belum dirilis]
 
+### Dihapus
+- Horizon (`laravel/horizon` beserta `laravel/sentinel` dan `symfony/polyfill-php83`), `config/horizon.php`, `HorizonServiceProvider`, gerbang `viewHorizon`, `HORIZON_PREFIX`/`HORIZON_EMAILS`, dan rute `/horizon`.
+- Izin `horizon.akses` dari seeder dan dari data (migrasi `2026_10_16_100000_hapus_izin_horizon`).
+- Redis: kunci `redis` pada `/api/health`, variabel `REDIS_*` pada contoh env, phpredis pada `Dockerfile`, serta service dan ekstensi Redis pada CI.
+- Container `queue`, `redis`, dan `db` (profil `db-lokal`) dari `docker-compose.prod.yml`.
+
+### Ditambahkan
+- Koneksi antrean `database-berat` (`retry_after` 960), worker dinyalakan penjadwal tiap menit (`--stop-when-empty`), detak penjadwal, dan `queue:prune-batches`.
+- `/api/health`: `job_tertunda`, `job_gagal_24j`, `detak_penjadwal`; 503 hanya bila basis data gagal.
+- `APP_KODE`, `PUSPRESMA_KONEKSI_BERAT`, `mem_limit` dan rotasi log (`json-file`, 10m x 3) pada tiap container produksi.
+- Gerbang uji: skema UUID native (tipe kolom, kecocokan FK, urutan 100 id UUIDv7, relasi polimorfik), antrean hanya `default`/`berat`, tanpa `Redis::` di `app/`, contoh env, compose produksi, Dockerfile, dan CI tanpa Redis/Horizon, PHP-FPM `ondemand`.
+
+### Diubah
+- Nama antrean logis dipetakan ke `default` (notifikasi, berkas) dan `berat` (ekspor, impor); sesi, antrean, dan cache memakai driver `database`.
+- Pool PHP-FPM `ondemand` dengan 4 worker (sebelumnya `dynamic`, 20 worker); healthcheck nginx mencocokkan `"status":"ok"` persis.
+- Peralihan produksi dan pembatalannya didokumentasikan di `docs/DEPLOY.md`. **Ubah `.env` server sebelum merge ke `main`** (deploy otomatis).
+
 ### Diubah (dokumentasi)
 - Dokumen diselaraskan dengan keputusan pemilik 16 Oktober 2026: PHP 8.5, MariaDB 10.11+ native di host (bukan MySQL 8.4), kolasi `utf8mb4_unicode_ci`, tanpa SQLite. Mencakup `CLAUDE.md`, `README.md`, `docs/DEPLOY.md`, `docs/KEPUTUSAN.md` (catatan di K-01 dan K-03; butir nama database dan port di K-19), dan `.persiapan/vibecoding/*.md` (kecuali `STANDAR-TEKNIS.md` dan `STANDAR-GIT.md`). Penomoran langkah tidak berubah.
 - Keputusan pemilik 16 Oktober 2026 (lanjutan): nama database seragam `db_puspresma` / `db_puspresma_testing` (menyelesaikan bagian nama database di K-19; port lokal 8016 vs 8032 tetap terbuka); kolom UUID disebut tipe `UUID` native MariaDB (bukan `CHAR(36)`) dengan gerbang uji tipe kolom, urutan UUIDv7, FK, dan morph; produksi memakai MariaDB native di host lewat `host.docker.internal` (prompt F9.3 ditulis ulang tanpa container database; `docker-compose.prod.yml` dan komentar `docker/backup/backup.sh` ditandai Fase B); pertentangan `VARCHAR(30)` vs `ENUM` `PenyediaTautan` di `03-SKEMA-DATABASE.md` diselesaikan (ENUM, sesuai migrasi). Lihat K-19 dan K-20.

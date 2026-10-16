@@ -2,7 +2,7 @@
 
 Diukur dengan `DemoSeeder` (`DEMO_PRESTASI=10000`: 3 prodi, 200 mahasiswa, 20 dosen, 10.000 prestasi — 60% terverifikasi — dengan 1–4 anggota per prestasi, tautan sertifikat, dan snapshot verifikasi).
 
-- **Lingkungan**: Docker lokal (`puspresma-php`, PHP 8.5), MariaDB 10.11 native di host (`db_puspresma_testing`), Redis bersama (cache; Profil Ringan setelah Fase B memakai cache database, sehingga angka cache perlu diukur ulang). Bukan server produksi; angka produksi akan berbeda.
+- **Lingkungan**: Docker lokal (`puspresma-php`, PHP 8.5), MariaDB 10.11 native di host (`db_puspresma_testing`), cache memakai Redis bersama saat pengukuran; Profil Ringan memakai cache database, sehingga angka cache perlu diukur ulang. Bukan server produksi; angka produksi akan berbeda.
 - **Cara**: `DB_DATABASE=db_puspresma_testing DEMO_PRESTASI=10000 php artisan db:seed --class=DemoSeeder` (≈ 6 detik), lalu skrip yang memanggil layanan `StatistikPrestasi`, `GaleriPublik`, dan `PenulisBerkas` (XLSX streaming, chunk 500) dengan pengguna admin-fakultas.
 - **Data terverifikasi**: 6.028 prestasi, 17.976 baris anggota.
 
@@ -20,7 +20,7 @@ Diukur dengan `DemoSeeder` (`DEMO_PRESTASI=10000`: 3 prodi, 200 mahasiswa, 20 do
 
 ## Catatan
 
-- Seluruh ekspor di atas melebihi 2.000 baris sehingga di produksi berjalan di antrean `ekspor` (Horizon; setelah Fase B antrean `berat` dengan worker dari penjadwal) dan hasilnya tersimpan di `storage/app/tmp` selama ≤ 24 jam; memori puncak tetap rendah karena penulisan streaming per 500 baris.
+- Seluruh ekspor di atas melebihi 2.000 baris sehingga di produksi berjalan di antrean `berat` (worker dari penjadwal; saat pengukuran masih antrean `ekspor` di Horizon) dan hasilnya tersimpan di `storage/app/tmp` selama ≤ 24 jam; memori puncak tetap rendah karena penulisan streaming per 500 baris.
 - Kriteria PRD (dasbor dan galeri < 1 detik dari cache; daftar admin < 500 ms pada 50.000 prestasi) terpenuhi untuk dasbor dan galeri; daftar admin 50.000 prestasi belum diukur.
 - Pengukuran ini menemukan dan memperbaiki cacat: iterasi `lazyById` yang mempertahankan urutan tanggal membuat baris terlewat pada ekspor di atas 500 baris (kini memakai `QueryPrestasiLaporan::iterasi`, diuji dengan ukuran chunk kecil).
 
