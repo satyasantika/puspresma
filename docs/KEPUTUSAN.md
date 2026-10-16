@@ -2,6 +2,8 @@
 
 ## K-01 — MariaDB sebagai pengganti MySQL 8.4
 
+> Diselaraskan oleh keputusan 16 Oktober 2026: standar kini PHP 8.5 + MariaDB.
+
 Basis data memakai MariaDB 10.11 native di host (`db_puspresma`, `db_puspresma_testing`; koneksi `DB_CONNECTION=mariadb`, `DB_HOST=host.docker.internal`). Kolom `uuid()` Laravel dipetakan ke tipe native `uuid` MariaDB. Collation `utf8mb4_unicode_ci` (bawaan Laravel untuk MariaDB) menggantikan `utf8mb4_0900_ai_ci` yang hanya ada di MySQL 8. Kredensial basis data dibaca dari `.env` lokal dan tidak pernah di-commit.
 
 ## K-02 — Compose pusat, bukan `docker-compose.yml` di repo
@@ -9,6 +11,8 @@ Basis data memakai MariaDB 10.11 native di host (`db_puspresma`, `db_puspresma_t
 Lingkungan lokal memakai compose pusat `~/code/docker-compose.yml` (service `puspresma-php` PHP 8.5 dan `puspresma-nginx` di port host 8032, jaringan `laranet`; konfigurasi nginx `~/code/docker/nginx/puspresma.conf`). Repo ini tidak memuat `docker-compose.yml` dev maupun `docker/php/Dockerfile` dev; yang ada hanya `Dockerfile` dan `docker-compose.prod.yml` untuk produksi. Perintah: `docker exec -w /var/www/html puspresma-php <cmd>` (alias `psp`). Node tidak ada di container sehingga `npm` dijalankan di host. Setelah container `puspresma-php` dibuat ulang, `puspresma-nginx` perlu `nginx -s reload` agar memakai IP upstream baru (gejala: 502).
 
 ## K-03 — Versi dan port
+
+> Diselaraskan oleh keputusan 16 Oktober 2026: standar kini PHP 8.5 + MariaDB. (Port 8032 vs 8016 tetap menunggu keputusan pemilik, lihat K-19.)
 
 PHP 8.5 (`composer.json` `"php": "^8.5"`, CI dan Dockerfile produksi 8.5). Port lokal 8032 (bukan 8016) dan loopback produksi 8032. Gateway lokal `:8080` tidak tersedia; subpath diuji lewat konfigurasi override di test.
 
@@ -18,9 +22,13 @@ PHP 8.5 (`composer.json` `"php": "^8.5"`, CI dan Dockerfile produksi 8.5). Port 
 
 ## K-05 — Redis
 
+> **Digantikan oleh Profil Ringan (STANDAR-TEKNIS §1b, keputusan 15 Oktober 2026); berlaku setelah Fase B.** Cache, sesi, antrean, dan lock akan memakai driver database; Redis tidak lagi dipakai. Berikut keputusan awal (kondisi saat ini).
+
 Redis memakai container bersama `redis` (DB 40 default, 41 cache, 42 antrean; prefiks `puspresma_`). Kata sandi dibaca dari `.env` lokal. Test memakai driver array/sync dan tidak menyentuh Redis.
 
 ## K-06 — Service Horizon dan scheduler di compose pusat
+
+> **Digantikan oleh Profil Ringan; berlaku setelah Fase B.** Service `puspresma-horizon` dihapus; `puspresma-scheduler` (`schedule:work`) tetap dan sekaligus menyalakan worker antrean (`--stop-when-empty` tiap menit, antrean `default` dan `berat`). Berikut keputusan awal (kondisi saat ini).
 
 Ditambahkan ke `~/code/docker-compose.yml` (di luar repo): `puspresma-horizon` (`php artisan horizon`, `stop_grace_period: 60s`) dan `puspresma-scheduler` (`schedule:work`), memakai image PHP 8.5 dan kode yang sama. Test tidak menyentuh Redis: `phpunit.xml` memaksa cache/sesi `array` dan antrean `sync`, sehingga pengaturan Redis diuji lewat `.env.example` dan konfigurasi koneksi (`RedisHorizonTest`).
 
@@ -30,7 +38,7 @@ Ditambahkan ke `~/code/docker-compose.yml` (di luar repo): `puspresma-horizon` (
 
 ## K-08 — Pemisahan tugas super-admin pada verifikasi
 
-Super-admin menerima seluruh permission di seeder, tetapi `Gate::before` menolak tiga ability Policy `verifikasi`, `loloskanProdi`, dan `bukaVerifikasi` untuknya. Policy baru wajib memakai nama ability tersebut (bukan `can('prestasi.verifikasi')` langsung) agar pengecualian berlaku, karena pemeriksaan permission spatie berjalan lebih dahulu daripada `Gate::before` aplikasi. Gerbang Horizon memakai peran `super-admin`, bukan permission `horizon.akses`; permission itu tetap dibuat untuk kelengkapan.
+Super-admin menerima seluruh permission di seeder, tetapi `Gate::before` menolak tiga ability Policy `verifikasi`, `loloskanProdi`, dan `bukaVerifikasi` untuknya. Policy baru wajib memakai nama ability tersebut (bukan `can('prestasi.verifikasi')` langsung) agar pengecualian berlaku, karena pemeriksaan permission spatie berjalan lebih dahulu daripada `Gate::before` aplikasi. Gerbang Horizon (hilang setelah Fase B) memakai peran `super-admin`, bukan permission `horizon.akses`; permission itu tetap dibuat untuk kelengkapan.
 
 ## K-09 — Pengalihan panel sebelum Authenticate
 
@@ -71,3 +79,17 @@ Pengguna mengganti kata sandi di halaman Profil (sandi lama diperiksa, kebijakan
 ## K-18 — Masuk sebagai pengguna lain
 
 Fitur darurat khusus super-admin tanpa dependensi tambahan: tautan bertanda tangan berumur 1 menit yang terikat pada super-admin penekannya, tidak dapat bersarang, tidak untuk diri sendiri atau akun nonaktif, dan tidak mengubah `last_login_at`. Awal dan akhir sesi dicatat, aktivitas selama sesi membawa `impersonator_id`, dan banner permanen menampilkan tombol kembali. Kewajiban MFA dan ganti sandi pada akun target tidak diberlakukan selama sesi ini, dan kata sandi target tidak dapat diganti.
+
+## K-19 — Nama database (selesai) dan port lokal (menunggu keputusan pemilik)
+
+Keputusan 16 Oktober 2026 menyamakan PHP 8.5 dan MariaDB 10.11+ (kolasi `utf8mb4_unicode_ci`) di seluruh dokumen. Dari dua pertentangan antardokumen, satu sudah diputuskan:
+
+- **Nama database — SELESAI (keputusan pemilik 16 Oktober 2026)**: nama seragam `db_<app>` / `db_<app>_testing` (STANDAR-TEKNIS §2.1), yaitu `db_puspresma` dan `db_puspresma_testing`. `CLAUDE.md`, `.persiapan/vibecoding/CLAUDE.md`, dan `04-PROMPT-BERTAHAP.md` telah disamakan (sebelumnya `puspresma` / `puspresma_testing` / `puspresma_test`). Nama pengguna DB tidak diubah.
+- **Port lokal — TETAP TERBUKA**: `CLAUDE.md`, `.persiapan/vibecoding/CLAUDE.md`, dan `04-PROMPT-BERTAHAP.md` memakai 8016; README, KEPUTUSAN (K-03), dan DEPLOY memakai 8032. Fakta: STANDAR-TEKNIS §2.1 mengalokasikan 8016 untuk puspresma. Belum diputuskan; tidak diseragamkan.
+
+## K-20 — UUID native dan MariaDB native di produksi (keputusan 16 Oktober 2026)
+
+- **Tipe UUID**: kolom `uuid()` / `foreignUuid()` / `uuidMorphs()` mengikuti Blueprint Laravel 13, yaitu tipe `UUID` native MariaDB (UUIDv7 dibuat aplikasi lewat `HasUuids`). Dokumen tidak lagi menyebut `CHAR(36)` sebagai tipe kolom; `char('id', 36)` dan `binary(16)` eksplisit dilarang. Gerbang uji (Pest, F1.5): kolom `id` bertipe `uuid`/`char(36)`; 100 id UUIDv7 terurut; FK dan morph berfungsi.
+- **Skema**: di `03-SKEMA-DATABASE.md`, `PenyediaTautan` dan `StatusCekTautan` pada `tautan_berkas` adalah `ENUM` MariaDB (sesuai migrasi `create_tautan_berkas_table` dan STANDAR-TEKNIS §1a); enum lain tetap `VARCHAR`. Pertentangan di dokumen itu sudah diselesaikan.
+- **Produksi**: MariaDB native di host lewat `host.docker.internal` (`extra_hosts` host-gateway); compose produksi tidak boleh memuat container database. Kondisi kode saat ini (service `db` profil `db-lokal` di `docker-compose.prod.yml`, `docker/backup/backup.sh` yang kepala komentarnya masih menyebut `mysqldump` padahal perintahnya sudah `mariadb-dump`) ditandai untuk **Fase B**. Service container MariaDB di CI bersifat sementara, hanya untuk CI.
+- **PHP 8.5**: `composer.json` `^8.5` dan Dockerfile 8.5; tidak ada pekerjaan.
