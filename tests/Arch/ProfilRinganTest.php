@@ -51,3 +51,20 @@ it('tidak memakai Redis di kode aplikasi', function () {
             ->not->toContain('Illuminate\\Support\\Facades\\Redis');
     }
 });
+
+it('tidak memasang Horizon', function () {
+    $composer = json_decode(file_get_contents(base_path('composer.json')), true);
+
+    expect($composer['require'])->not->toHaveKey('laravel/horizon')
+        ->and(file_exists(config_path('horizon.php')))->toBeFalse()
+        ->and(file_exists(app_path('Providers/HorizonServiceProvider.php')))->toBeFalse()
+        ->and(file_get_contents(base_path('bootstrap/providers.php')))->not->toContain('Horizon');
+});
+
+it('tidak merujuk kelas Horizon di kode aplikasi', function () {
+    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(app_path())) as $berkas) {
+        if ($berkas->getExtension() === 'php') {
+            expect(file_get_contents($berkas->getPathname()))->not->toContain('Laravel\\Horizon');
+        }
+    }
+});
