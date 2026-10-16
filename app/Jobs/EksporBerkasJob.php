@@ -29,7 +29,7 @@ class EksporBerkasJob implements ShouldQueue
 
     public function __construct(public BerkasEkspor $berkas)
     {
-        $this->onQueue(config('puspresma.antrean.ekspor'));
+        $this->onConnection(config('puspresma.koneksi_berat'))->onQueue(config('puspresma.antrean.ekspor'));
     }
 
     public function handle(): void

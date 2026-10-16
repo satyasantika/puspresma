@@ -42,7 +42,7 @@ abstract class ImporMasterDariExcel implements ShouldQueue
 
     public function __construct(public RiwayatImpor $riwayat)
     {
-        $this->onQueue(config('puspresma.antrean.impor'));
+        $this->onConnection(config('puspresma.koneksi_berat'))->onQueue(config('puspresma.antrean.impor'));
     }
 
     /** @return class-string<Model> */

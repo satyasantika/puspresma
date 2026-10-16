@@ -2,39 +2,63 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\CarbonInterface;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
-use Illuminate\Support\Facades\Redis;
 use Throwable;
 
 /**
- * GET /api/health — kesiapan integrasi FKIP Edu dan pemantauan.
- * Tidak pernah membocorkan pesan exception.
+ * GET /api/health — kesiapan integrasi FKIP Edu dan pemantauan (STANDAR-TEKNIS §1b, Profil Ringan).
+ * Tidak pernah membocorkan pesan exception. 503 hanya bila basis data gagal; antrean dan detak penjadwal
+ * bersifat informatif agar healthcheck kontainer tidak memicu restart berantai.
  */
 class HealthController extends Controller
 {
+    private const DETAK_MAKS_MENIT = 5;
+
     public function __invoke(): JsonResponse
     {
         $database = $this->periksa(fn () => DB::select('select 1'));
-        $redis = $this->periksa(fn () => Redis::connection()->ping());
-
-        $sehat = $database && $redis;
 
         return response()->json([
-            'status' => $sehat ? 'ok' : 'degraded',
+            'status' => $database ? 'ok' : 'degraded',
             'app' => config('app.name'),
             'version' => config('app.version'),
             'time' => now()->toIso8601String(),
             'checks' => [
                 'database' => $database,
-                'redis' => $redis,
                 'queue_size' => [
-                    'notifikasi' => $redis ? $this->ukuranAntrean((string) config('puspresma.antrean.notifikasi')) : 0,
-                    'ekspor' => $redis ? $this->ukuranAntrean((string) config('puspresma.antrean.ekspor')) : 0,
+                    'notifikasi' => $this->ukuranAntrean((string) config('puspresma.antrean.notifikasi')),
+                    'ekspor' => $this->ukuranAntrean((string) config('puspresma.antrean.ekspor')),
                 ],
+                'job_tertunda' => $this->hitung(fn () => DB::table('jobs')
+                    ->whereNull('reserved_at')
+                    ->where('available_at', '<=', now()->subMinutes(10)->getTimestamp())
+                    ->count()),
+                'job_gagal_24j' => $this->hitung(fn () => DB::table('failed_jobs')
+                    ->where('failed_at', '>=', now()->subDay())
+                    ->count()),
+                'detak_penjadwal' => $this->detakPenjadwal(),
             ],
-        ], $sehat ? 200 : 503);
+        ], $database ? 200 : 503);
+    }
+
+    /** ok | terlambat (lebih dari 5 menit) | belum-ada. */
+    private function detakPenjadwal(): string
+    {
+        try {
+            $detak = Cache::get(config('app.kode').':detak-penjadwal');
+        } catch (Throwable) {
+            return 'belum-ada';
+        }
+
+        if (! $detak instanceof CarbonInterface) {
+            return 'belum-ada';
+        }
+
+        return $detak->diffInMinutes(now(), true) > self::DETAK_MAKS_MENIT ? 'terlambat' : 'ok';
     }
 
     /**
@@ -48,6 +72,18 @@ class HealthController extends Controller
             return true;
         } catch (Throwable) {
             return false;
+        }
+    }
+
+    /**
+     * @param  callable(): int  $hitung
+     */
+    private function hitung(callable $hitung): int
+    {
+        try {
+            return (int) $hitung();
+        } catch (Throwable) {
+            return -1;
         }
     }
 

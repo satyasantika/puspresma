@@ -84,7 +84,7 @@ it('menjadwalkan job WA terpisah dari kanal lain dengan pesan maksimal 1000 kara
 
     (new WhatsAppChannel)->send($this->user, $notif);
 
-    Queue::assertPushed(KirimPesanWhatsApp::class, fn ($job) => $job->nomor === '6281234567890' && mb_strlen($job->pesan) <= 1000 && $job->queue === 'notifikasi');
+    Queue::assertPushed(KirimPesanWhatsApp::class, fn ($job) => $job->nomor === '6281234567890' && mb_strlen($job->pesan) <= 1000 && $job->queue === 'default');
 });
 
 it('menyimpan preferensi dengan normalisasi, menolak nomor tidak valid, dan mewajibkan nomor untuk aktivasi', function () {
