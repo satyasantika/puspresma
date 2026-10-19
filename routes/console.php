@@ -27,7 +27,7 @@ Schedule::command('queue:work database --queue=default --stop-when-empty --max-t
 Schedule::command('queue:work database-berat --queue=berat --stop-when-empty --max-time=600 --timeout=900 --tries=2 --memory=512')
     ->everyMinute()->onOneServer()->withoutOverlapping(30)->runInBackground();
 // Detak penjadwal: dibaca /api/health; peringatan bila lebih tua dari 5 menit.
-Schedule::call(fn () => cache()->put(config('app.kode').':detak-penjadwal', now(), 600))
+Schedule::call(fn () => cache()->put(config('app.kode').':detak-penjadwal', now()->getTimestamp(), 600))
     ->name('detak-penjadwal')->everyMinute()->onOneServer()->withoutOverlapping();
 Schedule::command('queue:prune-batches --hours=168')->dailyAt('03:05')->onOneServer()->withoutOverlapping();
 Schedule::command('puspresma:arsipkan-kompetisi')->dailyAt('00:30')->onOneServer()->withoutOverlapping();

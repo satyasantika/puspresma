@@ -8,7 +8,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     config(['app.version' => '9.9.9']);
-    cache()->put(config('app.kode').':detak-penjadwal', now(), 600);
+    cache()->put(config('app.kode').':detak-penjadwal', now()->getTimestamp(), 600);
 });
 
 it('mengembalikan status ok dengan struktur json lengkap tanpa Redis', function () {
@@ -51,7 +51,7 @@ it('menghitung job gagal dalam 24 jam terakhir', function () {
 });
 
 it('menandai detak penjadwal terlambat atau belum ada', function () {
-    cache()->put(config('app.kode').':detak-penjadwal', now()->subMinutes(6), 600);
+    cache()->put(config('app.kode').':detak-penjadwal', now()->subMinutes(6)->getTimestamp(), 600);
     $this->getJson('/api/health')->assertOk()->assertJsonPath('checks.detak_penjadwal', 'terlambat');
 
     cache()->forget(config('app.kode').':detak-penjadwal');

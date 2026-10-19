@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\CarbonInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -54,11 +53,11 @@ class HealthController extends Controller
             return 'belum-ada';
         }
 
-        if (! $detak instanceof CarbonInterface) {
+        if (! is_int($detak)) {
             return 'belum-ada';
         }
 
-        return $detak->diffInMinutes(now(), true) > self::DETAK_MAKS_MENIT ? 'terlambat' : 'ok';
+        return (now()->getTimestamp() - $detak) > self::DETAK_MAKS_MENIT * 60 ? 'terlambat' : 'ok';
     }
 
     /**
