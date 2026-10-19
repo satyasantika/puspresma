@@ -16,6 +16,11 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id-ID/1.1.0/) dan
 - `APP_KODE`, `PUSPRESMA_KONEKSI_BERAT`, `mem_limit` dan rotasi log (`json-file`, 10m x 3) pada tiap container produksi.
 - Gerbang uji: skema UUID native (tipe kolom, kecocokan FK, urutan 100 id UUIDv7, relasi polimorfik), antrean hanya `default`/`berat`, tanpa `Redis::` di `app/`, contoh env, compose produksi, Dockerfile, dan CI tanpa Redis/Horizon, PHP-FPM `ondemand`.
 
+### Diperbaiki
+- Detak penjadwal kini disimpan di cache sebagai stempel waktu unix (`int`), bukan objek Carbon: objek yang disimpan lewat driver cache non-Redis (database/array) kadang gagal deserialize konsisten lintas driver, membuat `/api/health` salah membaca `detak_penjadwal` sebagai `belum-ada` padahal penjadwal berjalan normal.
+- `config/backup.php`: lengkapi peta notifikasi `spatie/laravel-backup` dengan ketiga kelas notifikasi sukses (dipetakan ke array kosong). Paket tersebut mengakses kunci kelas notifikasi tanpa `isset()`; kunci yang hilang membuat cadangan basis data yang BERHASIL pun melempar galat saat produksi benar-benar menjalankan `backup:run` (celah ini tidak pernah tertangkap tes karena tes sebelumnya hanya memeriksa nilai config, bukan menjalankan perintah cadangan).
+- Peralihan `.env` produksi ke Profil Ringan (`SESSION_DRIVER`/`QUEUE_CONNECTION`/`CACHE_STORE=database`, `APP_KODE=puspresma`, variabel `REDIS_*`/`HORIZON_*` dihapus) dituntaskan di server sesuai prosedur 8 langkah di `docs/DEPLOY.md`; cadangan basis data dan `.env` lama (`.env.sebelum-profil-ringan`) tersimpan sebelum perubahan.
+
 ### Diubah
 - Nama antrean logis dipetakan ke `default` (notifikasi, berkas) dan `berat` (ekspor, impor); sesi, antrean, dan cache memakai driver `database`.
 - Pool PHP-FPM `ondemand` dengan 4 worker (sebelumnya `dynamic`, 20 worker); healthcheck nginx mencocokkan `"status":"ok"` persis.
