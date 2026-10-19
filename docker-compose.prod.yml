@@ -26,7 +26,7 @@ x-app: &app
     PHP_MEMORY_LIMIT: 512M
 
 services:
-  app:
+  php:
     <<: *app
     mem_limit: 512m
     build:
@@ -54,7 +54,7 @@ services:
     restart: unless-stopped
     mem_limit: 64m
     logging: *log
-    depends_on: [app]
+    depends_on: [php]
     environment:
       APP_URL: ${APP_URL:?APP_URL wajib diisi di .env}   # awalan subpath diturunkan dari sini
     # Hanya loopback: reverse proxy fakultas yang membuka ke publik (TLS di sana).
