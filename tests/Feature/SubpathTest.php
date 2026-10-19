@@ -78,5 +78,5 @@ it('menurunkan path cookie sesi dari APP_URL bila SESSION_PATH kosong', function
     expect($config['path'])->toBe($diharapkan);
 })->with([
     'subpath lain' => ['https://supportfkip.unsil.ac.id/siman', '/siman'],
-    'akar domain' => ['http://localhost:8032', '/'],
+    'akar domain' => ['http://localhost:8023', '/'],
 ]);

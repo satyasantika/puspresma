@@ -8,7 +8,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_PATH ?? 'playwright');
 
 const akar = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const dasar = (process.env.PANDUAN_BASE_URL ?? 'http://localhost:8032').replace(/\/$/, '');
+const dasar = (process.env.PANDUAN_BASE_URL ?? 'http://localhost:8023').replace(/\/$/, '');
 const sandi = process.env.PANDUAN_PASSWORD;
 if (!sandi) {
     console.error('PANDUAN_PASSWORD wajib diisi');

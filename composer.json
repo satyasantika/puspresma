@@ -91,7 +91,7 @@
         ],
         "panduan": [
             "@php artisan migrate:fresh --seeder=PanduanSeeder --no-interaction",
-            "docker run --rm --ipc=host --network host -v \"$PWD\":/work -w /work -e PANDUAN_BASE_URL=${PANDUAN_BASE_URL:-http://localhost:8032} -e PANDUAN_PASSWORD -e PLAYWRIGHT_PATH=/opt/pw/node_modules/playwright --user root mcr.microsoft.com/playwright:v1.63.0-noble sh -c 'mkdir -p /opt/pw && cd /opt/pw && npm init -y >/dev/null && npm i playwright@1.63.0 >/dev/null 2>&1; cd /work && node tests/panduan/tangkap.mjs'",
+            "docker run --rm --ipc=host --network host -v \"$PWD\":/work -w /work -e PANDUAN_BASE_URL=${PANDUAN_BASE_URL:-http://localhost:8023} -e PANDUAN_PASSWORD -e PLAYWRIGHT_PATH=/opt/pw/node_modules/playwright --user root mcr.microsoft.com/playwright:v1.63.0-noble sh -c 'mkdir -p /opt/pw && cd /opt/pw && npm init -y >/dev/null && npm i playwright@1.63.0 >/dev/null 2>&1; cd /work && node tests/panduan/tangkap.mjs'",
             "node tests/panduan/bangun-html.mjs"
         ]
     },

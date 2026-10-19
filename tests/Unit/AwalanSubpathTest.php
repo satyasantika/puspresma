@@ -9,7 +9,7 @@ it('menurunkan awalan dari APP_URL', function (?string $url, string $awalan) {
     'garis miring akhir' => ['https://supportfkip.unsil.ac.id/siman/', '/siman'],
     'dua tingkat' => ['https://contoh.id/a/b', '/a/b'],
     'akar domain' => ['https://supportfkip.unsil.ac.id', ''],
-    'akar dengan garis miring' => ['http://localhost:8032/', ''],
+    'akar dengan garis miring' => ['http://localhost:8023/', ''],
     'kosong' => [null, ''],
 ]);
 
