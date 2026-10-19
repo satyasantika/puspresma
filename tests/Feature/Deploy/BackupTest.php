@@ -4,6 +4,12 @@ use App\Models\User;
 use App\Support\PenerimaNotifikasiBackup;
 use Database\Seeders\PeranDanIzinSeeder;
 use Illuminate\Console\Scheduling\Schedule;
+use Spatie\Backup\Notifications\Notifications\BackupHasFailedNotification;
+use Spatie\Backup\Notifications\Notifications\BackupWasSuccessfulNotification;
+use Spatie\Backup\Notifications\Notifications\CleanupHasFailedNotification;
+use Spatie\Backup\Notifications\Notifications\CleanupWasSuccessfulNotification;
+use Spatie\Backup\Notifications\Notifications\HealthyBackupWasFoundNotification;
+use Spatie\Backup\Notifications\Notifications\UnhealthyBackupWasFoundNotification;
 
 it('hanya mencadangkan database dan tidak memuat direktori storage', function () {
     expect(config('backup.backup.source.files.include'))->toBe([])
@@ -38,4 +44,21 @@ it('mendaftarkan jadwal backup harian', function () {
     expect($cocok('backup:run --only-db'))->toBe('0 1 * * *')
         ->and($cocok('backup:clean'))->toBe('30 1 * * *')
         ->and($cocok('backup:monitor'))->toBe('0 9 * * *');
+});
+
+it('memetakan semua kelas notifikasi spatie/laravel-backup agar via() tidak pernah menemui kunci kosong', function () {
+    // Spatie\Backup\Notifications\BaseNotification::via() mengakses
+    // config('backup.notifications.notifications')[static::class] tanpa isset(): kunci yang
+    // hilang membuat backup SUKSES pun gagal (Undefined array key) begitu dijalankan sungguhan
+    // di produksi (bukan hanya di tes config seperti di atas).
+    $wajib = [
+        BackupHasFailedNotification::class,
+        UnhealthyBackupWasFoundNotification::class,
+        CleanupHasFailedNotification::class,
+        BackupWasSuccessfulNotification::class,
+        HealthyBackupWasFoundNotification::class,
+        CleanupWasSuccessfulNotification::class,
+    ];
+
+    expect(array_keys(config('backup.notifications.notifications')))->toEqualCanonicalizing($wajib);
 });
