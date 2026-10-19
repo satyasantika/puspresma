@@ -60,7 +60,7 @@ tunggu_sehat() {
 
   echo "GAGAL: $url tidak sehat setelah $((HEALTH_ATTEMPTS * HEALTH_INTERVAL)) detik." >&2
   echo "--- 50 baris terakhir log app ---" >&2
-  "${COMPOSE[@]}" logs --tail=50 app >&2 || true
+  "${COMPOSE[@]}" logs --tail=50 php >&2 || true
   return 1
 }
 
@@ -71,13 +71,13 @@ cadangan() {
     log "cadangan dilewati (PUSPRESMA_LEWATI_CADANGAN=1)"
     return 0
   fi
-  if [[ -z "$("${COMPOSE[@]}" ps -q app 2>/dev/null)" ]]; then
-    log "cadangan dilewati: container app belum berjalan (rilis pertama?)"
+  if [[ -z "$("${COMPOSE[@]}" ps -q php 2>/dev/null)" ]]; then
+    log "cadangan dilewati: container php belum berjalan (rilis pertama?)"
     return 0
   fi
 
   log "cadangan DB pra-rilis"
-  "${COMPOSE[@]}" exec -T app php artisan backup:run --only-db --no-interaction
+  "${COMPOSE[@]}" exec -T php php artisan backup:run --only-db --no-interaction
 }
 
 daftar_tag() {
@@ -138,7 +138,7 @@ rilis() {
   # Migrasi memakai image BARU, sebelum container diganti. Migrasi harus kompatibel mundur
   # (rilis lama masih melayani permintaan sampai up -d selesai).
   log "migrasi basis data"
-  PUSPRESMA_VERSI="$sha" "${COMPOSE[@]}" run --rm --no-deps -T app php artisan migrate --force --no-interaction
+  PUSPRESMA_VERSI="$sha" "${COMPOSE[@]}" run --rm --no-deps -T php php artisan migrate --force --no-interaction
 
   log "up -d"
   PUSPRESMA_VERSI="$sha" APP_VERSION="$versi" "${COMPOSE[@]}" up -d --remove-orphans
