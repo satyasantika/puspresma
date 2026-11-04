@@ -9,6 +9,7 @@ use App\Events\KompetisiDiterbitkan;
 use App\Events\PembimbingMenjawab;
 use App\Events\StatusPrestasiBerubah;
 use App\Events\TautanBerkasTidakDapatDiakses;
+use App\Http\Livewire\HandleRequestsSubpath;
 use App\Jobs\KirimKompetisiBaruTerbit;
 use App\Listeners\CatatAktivitasAuth;
 use App\Listeners\CatatLoginTerakhir;
@@ -42,6 +43,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Mechanisms\HandleRequests\HandleRequests;
 use RuntimeException;
 use Spatie\Permission\Events\RoleAttachedEvent;
 use Spatie\Permission\Events\RoleDetachedEvent;
@@ -64,6 +66,15 @@ class AppServiceProvider extends ServiceProvider
                 default => throw new RuntimeException("Mode berkas '{$mode}' belum didukung."),
             };
         });
+
+        // Livewire getUpdateUri() relatif sudah memuat subpath (toRoute absolute:false
+        // hanya strip scheme+host); FrontendAssets lalu membungkusnya lagi dengan url(),
+        // menambahkan subpath sekali lagi -> dobel. Paksa URL absolut agar url() mengenalinya
+        // sebagai URL valid dan tidak mengubahnya lagi. Hanya untuk deployment bersubpath.
+        $path = parse_url((string) config('app.url'), PHP_URL_PATH);
+        if ($path !== null && $path !== '' && $path !== '/') {
+            $this->app->bind(HandleRequests::class, HandleRequestsSubpath::class);
+        }
     }
 
     /**
